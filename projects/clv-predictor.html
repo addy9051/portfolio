@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CLV &amp; Cross-Sell Predictor — Ankit Addya</title>
+  <meta name="description" content="End-to-end ML system predicting customer lifetime value, churn risk, and cross-sell opportunities for a global corporate travel agency." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Bebas+Neue&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    /* ── Project page shell ────────────────────────────────────── */
+    .proj-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray);
+      padding: 10px 0 0;
+      transition: color 0.2s;
+    }
+    .proj-back:hover { color: var(--black); }
+    .proj-back svg  { width: 16px; height: 16px; stroke: currentColor; fill: none; }
+
+    .proj-page {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0 32px 120px;
+    }
+
+    /* ── Role tags ─────────────────────────────────────────────── */
+    .role-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .rtag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 999px;
+      letter-spacing: 0.02em;
+    }
+    .rtag-da { background: #E6F1FB; color: #0C447C; }
+    .rtag-ba { background: #E1F5EE; color: #085041; }
+    .rtag-ds { background: #EEEDFE; color: #3C3489; }
+
+    /* ── Hero block ────────────────────────────────────────────── */
+    .proj-hero {
+      background: #111111;
+      border-radius: 20px;
+      padding: 48px;
+      margin: 32px 0 10px;
+      color: #ffffff;
+      position: relative;
+      overflow: hidden;
+    }
+    .proj-hero::before {
+      content: 'CLV';
+      position: absolute;
+      right: -10px;
+      bottom: -30px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 160px;
+      color: rgba(255,85,0,0.08);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+    .proj-hero-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 14px;
+    }
+    .proj-hero h1 {
+      font-size: clamp(22px, 3.5vw, 36px);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 14px;
+      color: #ffffff;
+    }
+    .proj-hero-sub {
+      font-size: 15px;
+      color: #aaaaaa;
+      line-height: 1.65;
+      max-width: 580px;
+      margin-bottom: 28px;
+    }
+    .proj-metrics-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .proj-metric {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+    }
+    .proj-metric-val {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--orange);
+      line-height: 1;
+    }
+    .proj-metric-label {
+      font-size: 10px;
+      color: #888888;
+      margin-top: 5px;
+      line-height: 1.4;
+    }
+    .proj-meta-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+    .proj-meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #888888;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 999px;
+      padding: 5px 12px;
+    }
+    .proj-hero-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn-hero-github {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(255,255,255,0.2);
+      background: transparent;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background 0.2s, border-color 0.2s;
+      text-decoration: none;
+    }
+    .btn-hero-github svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
+    .btn-hero-github:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); }
+
+    /* ── Section cards ─────────────────────────────────────────── */
+    .proj-section {
+      border: 1.5px solid var(--card-border);
+      border-radius: 16px;
+      background: var(--white);
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+    .proj-section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .sec-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .sec-head-text { flex: 1; }
+    .sec-title { font-size: 15px; font-weight: 600; color: var(--black); }
+    .sec-desc { font-size: 12px; color: var(--gray); margin-top: 2px; }
+    .sec-audience { display: flex; gap: 5px; margin-left: auto; flex-shrink: 0; }
+    .proj-section-body { padding: 20px; }
+
+    /* ── Body typography ───────────────────────────────────────── */
+    .proj-p {
+      font-size: 14px;
+      color: #333333;
+      line-height: 1.75;
+      margin-bottom: 12px;
+    }
+    .proj-p:last-child { margin-bottom: 0; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .info-card {
+      background: var(--gray-light);
+      border-radius: 10px;
+      padding: 14px;
+    }
+    .info-card-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--gray);
+      margin-bottom: 6px;
+    }
+    .info-card-value {
+      font-size: 13px;
+      color: var(--black);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    /* ── Problem statement pull quote ──────────────────────────── */
+    .pull-quote {
+      border-left: 3px solid var(--orange);
+      padding: 12px 16px;
+      background: #FFF8F5;
+      border-radius: 0 10px 10px 0;
+      margin-bottom: 14px;
+    }
+    .pull-quote p {
+      font-size: 14px;
+      font-style: italic;
+      color: #333333;
+      line-height: 1.7;
+    }
+
+    /* ── Root cause steps ──────────────────────────────────────── */
+    .step-list { display: flex; flex-direction: column; gap: 0; }
+    .step-row {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 10px 0;
+    }
+    .step-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 16px;
+    }
+    .step-content { flex: 1; }
+    .step-title { font-size: 14px; font-weight: 600; color: var(--black); margin-bottom: 3px; }
+    .step-body { font-size: 13px; color: var(--gray); line-height: 1.6; }
+    .step-connector {
+      width: 2px;
+      height: 10px;
+      background: var(--card-border);
+      margin-left: 15px;
+    }
+
+    /* ── Technical stack tags ──────────────────────────────────── */
+    .stack-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+    .stag-proj {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--gray-light);
+      color: #333333;
+      border: 1px solid var(--card-border);
+    }
+
+    /* ── Architecture diagram ──────────────────────────────────── */
+    .arch-diagram {
+      background: var(--gray-light);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 14px 0;
+    }
+    .arch-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .arch-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 10px 14px;
+      background: white;
+      border: 1.5px solid var(--card-border);
+      border-radius: 10px;
+      min-width: 80px;
+      text-align: center;
+    }
+    .arch-node-icon { font-size: 18px; }
+    .arch-node-label { font-size: 10px; font-weight: 600; color: var(--black); }
+    .arch-node-sub { font-size: 9px; color: var(--gray); }
+    .arch-arrow {
+      font-size: 16px;
+      color: var(--gray);
+      flex-shrink: 0;
+    }
+    .arch-layer-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--gray);
+      margin-bottom: 8px;
+    }
+    .arch-layer { margin-bottom: 12px; }
+    .arch-layer:last-child { margin-bottom: 0; }
+
+    /* ── Decision table ────────────────────────────────────────── */
+    .decision-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 13px;
+    }
+    .decision-table th {
+      text-align: left;
+      padding: 8px 12px;
+      background: var(--gray-light);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--gray);
+      border-bottom: 1.5px solid var(--card-border);
+    }
+    .decision-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--card-border);
+      color: #333333;
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    .decision-table tr:last-child td { border-bottom: none; }
+    .decision-table .chosen { font-weight: 600; color: var(--orange); }
+
+    /* ── Findings / insight cards ──────────────────────────────── */
+    .insight-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .insight-card {
+      border: 1.5px solid var(--card-border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .insight-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px;
+      line-height: 1;
+      color: var(--orange);
+      margin-bottom: 4px;
+    }
+    .insight-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 6px;
+    }
+    .insight-body {
+      font-size: 12px;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    /* ── Segment cards ─────────────────────────────────────────── */
+    .segment-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .seg-card {
+      border-radius: 10px;
+      padding: 14px;
+      border: 1.5px solid var(--card-border);
+    }
+    .seg-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+    }
+    .seg-name { font-size: 13px; font-weight: 600; color: var(--black); margin-bottom: 4px; }
+    .seg-action { font-size: 12px; color: var(--gray); line-height: 1.5; }
+    .seg-pct {
+      font-size: 18px;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    /* ── Impact metrics ────────────────────────────────────────── */
+    .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .impact-card {
+      background: #F5FFF9;
+      border: 1.5px solid #C2EDDA;
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+    }
+    .impact-val {
+      font-size: 26px;
+      font-weight: 700;
+      color: #0F6E56;
+    }
+    .impact-label {
+      font-size: 11px;
+      color: #3B6D55;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* ── Reflections two-col ───────────────────────────────────── */
+    .refl-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .refl-card {
+      background: var(--gray-light);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .refl-card-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+    .refl-card.good .refl-card-label { color: #0F6E56; }
+    .refl-card.change .refl-card-label { color: #854F0B; }
+    .refl-item {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: #333333;
+      line-height: 1.55;
+    }
+    .refl-item:last-child { margin-bottom: 0; }
+    .refl-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+    .refl-card.good .refl-dot { background: #0F6E56; }
+    .refl-card.change .refl-dot { background: #EF9F27; }
+
+    /* ── Model chart images ────────────────────────────────────── */
+    .chart-block { margin: 20px 0; }
+    .chart-block + .chart-block { margin-top: 28px; }
+    .chart-img-wrap {
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1.5px solid var(--card-border);
+      cursor: zoom-in;
+    }
+    .chart-img-wrap img {
+      width: 100%;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+    .chart-img-wrap:hover img { transform: scale(1.01); }
+    .chart-caption {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-top: 10px;
+    }
+    .chart-caption-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--orange);
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+    .chart-caption-text {
+      font-size: 12px;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+    .chart-caption-text strong { color: var(--black); }
+
+    /* ── Dashboard section tabs ─────────────────────────────────── */
+    .dash-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 20px;
+      border-bottom: 1.5px solid var(--card-border);
+      padding-bottom: 0;
+    }
+    .dash-tab {
+      padding: 9px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray);
+      background: none;
+      border: none;
+      cursor: pointer;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -1.5px;
+      transition: color 0.15s, border-color 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .dash-tab:hover { color: var(--black); }
+    .dash-tab.active { color: var(--black); border-bottom-color: var(--orange); font-weight: 600; }
+    .dash-tab svg { width: 14px; height: 14px; fill: currentColor; }
+    .dash-panel { display: none; }
+    .dash-panel.active { display: block; }
+
+    /* ── Screenshot gallery ─────────────────────────────────────── */
+    .screenshot-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .screenshot-item {
+      border: 1.5px solid var(--card-border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .screenshot-item:hover {
+      border-color: #bbbbbb;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+    .screenshot-item a { display: block; }
+    .screenshot-item img {
+      width: 100%;
+      display: block;
+      object-fit: cover;
+    }
+    .screenshot-caption {
+      padding: 10px 12px;
+      border-top: 1px solid var(--card-border);
+      background: var(--gray-light);
+    }
+    .screenshot-caption-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 2px;
+    }
+    .screenshot-caption-desc {
+      font-size: 11px;
+      color: var(--gray);
+      line-height: 1.5;
+    }
+    .enlarge-hint {
+      font-size: 11px;
+      color: var(--gray);
+      margin-top: 12px;
+      text-align: right;
+    }
+
+    /* ── Lightbox ───────────────────────────────────────────────── */
+    .lightbox-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      cursor: zoom-out;
+    }
+    .lightbox-backdrop.open { display: flex; }
+    .lightbox-backdrop img {
+      max-width: 100%;
+      max-height: 90vh;
+      border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      object-fit: contain;
+      cursor: default;
+    }
+    .lightbox-close {
+      position: fixed;
+      top: 20px;
+      right: 24px;
+      color: #ffffff;
+      font-size: 32px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      line-height: 1;
+      opacity: 0.7;
+      transition: opacity 0.15s;
+      z-index: 10000;
+    }
+    .lightbox-close:hover { opacity: 1; }
+    .lightbox-label {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #cccccc;
+      font-size: 12px;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    /* ── Responsive ────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .proj-page { padding: 0 20px 80px; }
+      .proj-hero { padding: 28px 24px; border-radius: 14px; }
+      .proj-metrics-row { grid-template-columns: 1fr 1fr; }
+      .two-col, .insight-grid, .segment-grid, .refl-grid { grid-template-columns: 1fr; }
+      .impact-grid { grid-template-columns: 1fr 1fr; }
+      .proj-hero::before { font-size: 100px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Minimal top nav ──────────────────────────────────────── -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="../index.html#projects" class="nav-link active">← Portfolio</a>
+    </div>
+  </nav>
+
+  <div class="proj-page" style="padding-top: 100px;">
+
+    <!-- ── SECTION 1: HERO ──────────────────────────────────────── -->
+    <div class="proj-hero">
+      <div class="proj-hero-eyebrow">Project Deep-Dive</div>
+      <h1>Customer Lifetime Value &amp;<br>Cross-Sell Predictor</h1>
+      <p class="proj-hero-sub">Increasing revenue per account by predicting 12-month CLV, detecting churn risk 8–12 weeks early, and recommending next-best products for 5,000 corporate travel clients — served through a FastAPI inference layer with agentic AI outreach.</p>
+
+      <div class="role-tags" style="margin-bottom:24px">
+        <span class="rtag rtag-da">&#x1F4CA; Data Analyst</span>
+        <span class="rtag rtag-ba">&#x1F4BC; Business Analyst</span>
+        <span class="rtag rtag-ds">&#x1F9E0; Data Scientist</span>
+      </div>
+
+      <div class="proj-metrics-row">
+        <div class="proj-metric">
+          <div class="proj-metric-val">0.61</div>
+          <div class="proj-metric-label">CLV R² score</div>
+        </div>
+        <div class="proj-metric">
+          <div class="proj-metric-val">0.89</div>
+          <div class="proj-metric-label">Churn C-index</div>
+        </div>
+        <div class="proj-metric">
+          <div class="proj-metric-val">0.92+</div>
+          <div class="proj-metric-label">Cross-sell AUC</div>
+        </div>
+        <div class="proj-metric">
+          <div class="proj-metric-val">0.77</div>
+          <div class="proj-metric-label">Segment silhouette</div>
+        </div>
+      </div>
+
+      <div class="proj-meta-pills">
+        <span class="proj-meta-pill">&#x1F3E2; Corporate Travel / B2B SaaS</span>
+        <span class="proj-meta-pill">&#x1F4C5; ~3 months</span>
+        <span class="proj-meta-pill" style="color:#4ade80">&#x2713; Completed</span>
+      </div>
+
+      <div class="proj-hero-actions">
+        <a href="https://github.com/addy9051/customer_lifetime_value_and_cross_sell_predictor" class="btn-hero-github" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          View on GitHub
+        </a>
+      </div>
+    </div>
+
+    <!-- ── SECTION 2: BUSINESS CONTEXT ──────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#FAECE7;color:#993C1D">2</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Business Context</div>
+          <div class="sec-desc">What the company does, the market condition, and why this mattered</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span></div>
+      </div>
+      <div class="proj-section-body">
+        <p class="proj-p">A Global Travel Agency manages end-to-end corporate travel programmes for approximately 5,000 business accounts — ranging from SMEs to multinationals. Revenue flows from subscription management fees, per-transaction commissions on flights, hotels, and ground transport, and ancillary service bundles.</p>
+        <p class="proj-p">The post-pandemic rebound created a paradox: corporate travel volumes were recovering fast, but account churn was accelerating in parallel. Procurement teams were scrutinising every vendor contract, and travel managers were consolidating providers. The agency needed to shift from a reactive service model to a proactive commercial one.</p>
+        <div class="two-col" style="margin-top:14px">
+          <div class="info-card">
+            <div class="info-card-label">Sector</div>
+            <div class="info-card-value">Corporate Travel Management (B2B)</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Revenue model</div>
+            <div class="info-card-value">Subscription fees + transaction commissions + ancillary bundles</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Account base</div>
+            <div class="info-card-value">~5,000 corporate clients across size tiers</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Market context</div>
+            <div class="info-card-value">Post-pandemic recovery with rising vendor consolidation pressure</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 3: PROBLEM STATEMENT ─────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#FAEEDA;color:#854F0B">3</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Problem Statement</div>
+          <div class="sec-desc">What was broken, and the cost of leaving it unsolved</div>
+        </div>
+        <div class="sec-audience">
+          <span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span>
+          <span class="rtag rtag-da" style="font-size:11px;padding:3px 8px">DA</span>
+        </div>
+      </div>
+      <div class="proj-section-body">
+        <div class="pull-quote">
+          <p>The commercial team had no forward-looking signal: they could not tell which accounts were worth retaining, which were likely to leave, or which services each account was most likely to adopt next — so every intervention was reactive and every cross-sell conversation was a cold call.</p>
+        </div>
+        <div class="two-col">
+          <div class="info-card">
+            <div class="info-card-label">Stakeholder pain</div>
+            <div class="info-card-value">Account managers spending time on at-risk accounts only after receiving cancellation notices — too late to intervene effectively.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Business cost</div>
+            <div class="info-card-value">Revenue leakage from two sources: undetected churn eroding the base, and unguided cross-sell leaving wallet share on the table.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 4: ROOT CAUSE ANALYSIS ───────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#E1F5EE;color:#0F6E56">4</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Root Cause Analysis</div>
+          <div class="sec-desc">How I diagnosed the problem before writing a single line of model code</div>
+        </div>
+        <div class="sec-audience">
+          <span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span>
+          <span class="rtag rtag-da" style="font-size:11px;padding:3px 8px">DA</span>
+        </div>
+      </div>
+      <div class="proj-section-body">
+        <div class="step-list">
+          <div class="step-row">
+            <div class="step-icon" style="background:#E1F5EE">&#x1F50D;</div>
+            <div class="step-content">
+              <div class="step-title">Signal identification</div>
+              <div class="step-body">Exploratory analysis revealed that account spend frequency — not total spend — was the leading indicator of disengagement. Accounts that reduced booking cadence by &gt;30% over a rolling 90-day window had a 3× higher cancellation rate in the following quarter. This signal existed in the transaction data but was never surfaced.</div>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-row">
+            <div class="step-icon" style="background:#FAEEDA">&#x1F9E9;</div>
+            <div class="step-content">
+              <div class="step-title">MECE decomposition of the revenue problem</div>
+              <div class="step-body">Revenue per account = (Baseline spend × Retention probability) + (Cross-sell revenue × Adoption probability). The agency was managing none of these four components analytically. Each required a separate modelling objective: CLV regression for baseline, survival modelling for retention, clustering for segment strategy, and classification for adoption.</div>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-row">
+            <div class="step-icon" style="background:#E6F1FB">&#x1F3AF;</div>
+            <div class="step-content">
+              <div class="step-title">Root cause pinpointed</div>
+              <div class="step-body">No integrated ML pipeline existed to convert raw transaction signals into commercial predictions. The data sat in a Snowflake warehouse but had never been modelled. The fix was not a reporting dashboard — it was a connected inference system that could score every account on four dimensions and route the output to the right stakeholder.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 5: TECHNICAL APPROACH ────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#EEEDFE;color:#3C3489">5</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Technical Approach</div>
+          <div class="sec-desc">What I built, how I built it, and why this method over alternatives</div>
+        </div>
+        <div class="sec-audience">
+          <span class="rtag rtag-da" style="font-size:11px;padding:3px 8px">DA</span>
+          <span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span>
+        </div>
+      </div>
+      <div class="proj-section-body">
+
+        <!-- Architecture -->
+        <div class="arch-diagram">
+          <div class="arch-layer">
+            <div class="arch-layer-label">Data Layer</div>
+            <div class="arch-row">
+              <div class="arch-node"><div class="arch-node-icon">&#x2744;</div><div class="arch-node-label">Snowflake</div><div class="arch-node-sub">Raw + Bronze</div></div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F9F1;</div><div class="arch-node-label">dbt</div><div class="arch-node-sub">Silver + Gold</div></div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F4CA;</div><div class="arch-node-label">Feature store</div><div class="arch-node-sub">180+ features</div></div>
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-label">Modelling Layer</div>
+            <div class="arch-row">
+              <div class="arch-node"><div class="arch-node-icon">&#x1F4C8;</div><div class="arch-node-label">XGBoost</div><div class="arch-node-sub">CLV Regression</div></div>
+              <div class="arch-node"><div class="arch-node-icon">&#x23F3;</div><div class="arch-node-label">Cox PH</div><div class="arch-node-sub">Churn Survival</div></div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F52C;</div><div class="arch-node-label">UMAP + HDBSCAN</div><div class="arch-node-sub">Segmentation</div></div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F3AF;</div><div class="arch-node-label">XGBoost</div><div class="arch-node-sub">Cross-Sell Clf</div></div>
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-label">Serving + Output Layer</div>
+            <div class="arch-row">
+              <div class="arch-node"><div class="arch-node-icon">&#x26A1;</div><div class="arch-node-label">FastAPI</div><div class="arch-node-sub">REST API</div></div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F4CA;</div><div class="arch-node-label">Power BI</div><div class="arch-node-sub">Exec Dashboard</div></div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F916;</div><div class="arch-node-label">DSPy + GPT-4o</div><div class="arch-node-sub">AI Outreach</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modelling decisions table -->
+        <p class="proj-p" style="margin-top:16px;font-weight:600;font-size:13px;color:var(--black)">Why these models?</p>
+        <table class="decision-table">
+          <thead>
+            <tr>
+              <th>Objective</th>
+              <th>Chosen model</th>
+              <th>Why not the alternative</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>12-month revenue prediction (CLV)</td>
+              <td class="chosen">XGBoost Regressor</td>
+              <td>Linear regression underfits the non-linear interaction between firmographic tier and booking behaviour. Neural nets would overfit on 5K accounts without more data.</td>
+            </tr>
+            <tr>
+              <td>Churn risk scoring</td>
+              <td class="chosen">Cox Proportional Hazards</td>
+              <td>Binary classifiers require a fixed time horizon and discard when-to-churn information. Cox PH gives a hazard curve per account, which is more actionable for CSMs who need lead time.</td>
+            </tr>
+            <tr>
+              <td>Customer segmentation</td>
+              <td class="chosen">UMAP + HDBSCAN</td>
+              <td>K-Means assumes spherical clusters and requires k upfront. HDBSCAN finds density-based clusters of arbitrary shape and naturally handles noise accounts as outliers.</td>
+            </tr>
+            <tr>
+              <td>Product recommendation</td>
+              <td class="chosen">XGBoost Classifier (per product)</td>
+              <td>Collaborative filtering requires dense interaction matrices — not available for B2B with sparse purchase history. Separate binary classifiers per product give interpretable feature importances per service.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="proj-p" style="margin-top:10px;font-weight:600;font-size:13px;color:var(--black)">Full stack</p>
+        <div class="stack-row">
+          <span class="stag-proj">Python</span>
+          <span class="stag-proj">Snowflake</span>
+          <span class="stag-proj">dbt</span>
+          <span class="stag-proj">XGBoost</span>
+          <span class="stag-proj">Cox PH (lifelines)</span>
+          <span class="stag-proj">UMAP</span>
+          <span class="stag-proj">HDBSCAN</span>
+          <span class="stag-proj">Scikit-learn</span>
+          <span class="stag-proj">FastAPI</span>
+          <span class="stag-proj">Docker</span>
+          <span class="stag-proj">MLflow</span>
+          <span class="stag-proj">Power BI</span>
+          <span class="stag-proj">Streamlit</span>
+          <span class="stag-proj">DSPy</span>
+          <span class="stag-proj">Azure OpenAI GPT-4o</span>
+          <span class="stag-proj">Pandas</span>
+          <span class="stag-proj">Pytest</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 6: KEY FINDINGS ───────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#E6F1FB;color:#185FA5">6</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Key Findings &amp; Insights</div>
+          <div class="sec-desc">The analytical output — what the data actually showed</div>
+        </div>
+        <div class="sec-audience">
+          <span class="rtag rtag-da" style="font-size:11px;padding:3px 8px">DA</span>
+          <span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span>
+        </div>
+      </div>
+      <div class="proj-section-body">
+
+        <div class="insight-grid">
+          <div class="insight-card">
+            <div class="insight-num">63%</div>
+            <div class="insight-title">Revenue from top 20% of accounts</div>
+            <div class="insight-body">Classic Pareto held: the highest CLV tier (1,000 accounts) generated nearly two-thirds of total agency revenue. Loss of even 5% of this tier would outweigh gains from the entire long tail.</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-num">8–12w</div>
+            <div class="insight-title">Churn signal lead time</div>
+            <div class="insight-body">The Cox model identified at-risk accounts 8–12 weeks before cancellation based on declining booking frequency and reduced service diversity — a window large enough for proactive CSM outreach.</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-num">4</div>
+            <div class="insight-title">Distinct customer segments</div>
+            <div class="insight-body">HDBSCAN found four stable clusters: Champions (high CLV, high engagement), At-Risk High-Value (high CLV, declining activity), Growth Potential (low CLV, rising trajectory), and Dormant (low spend, infrequent bookings).</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-num">Hotel + Ground</div>
+            <div class="insight-title">Highest-probability cross-sell bundle</div>
+            <div class="insight-body">Accounts already purchasing flight management showed 73% adoption probability for hotel booking services, and 68% for ground transport — the two highest-confidence cross-sell recommendations across all product pairs.</div>
+          </div>
+        </div>
+
+        <!-- Model charts -->
+        <p class="proj-p" style="font-weight:600;font-size:13px;color:var(--black);margin-top:20px;margin-bottom:14px">Model output charts</p>
+
+        <div class="chart-block">
+          <div class="chart-img-wrap" data-lightbox="../assets/clv/shap_importance.png" data-label="SHAP Feature Importance — CLV Model">
+            <img src="../assets/clv/shap_importance.png" alt="SHAP feature importance bar chart for the CLV XGBoost model" loading="lazy" />
+          </div>
+          <div class="chart-caption">
+            <div class="chart-caption-dot"></div>
+            <div class="chart-caption-text"><strong>90-day spend and booking count dominate CLV predictions.</strong> Recency features (total_spend_90d, booking_count_90d) carry more predictive weight than tenure — an account that books frequently in the last quarter is a stronger CLV signal than one with years of low-frequency history.</div>
+          </div>
+        </div>
+
+        <div class="chart-block">
+          <div class="chart-img-wrap" data-lightbox="../assets/clv/kaplan_meier.png" data-label="Kaplan-Meier Survival Curves — Overall and by Client Tier">
+            <img src="../assets/clv/kaplan_meier.png" alt="Kaplan-Meier customer survival curves overall and segmented by tier" loading="lazy" />
+          </div>
+          <div class="chart-caption">
+            <div class="chart-caption-dot"></div>
+            <div class="chart-caption-text"><strong>High-tier accounts churn faster than low-tier ones — the counterintuitive finding.</strong> High-spend accounts have more leverage in vendor consolidation decisions and exit earlier when dissatisfied. This reversed the assumption that high-value accounts were the safest, and refocused retention effort on them specifically.</div>
+          </div>
+        </div>
+
+        <div class="chart-block">
+          <div class="chart-img-wrap" data-lightbox="../assets/clv/segment_umap.png" data-label="UMAP Projection — Customer Segments and CLV Distribution">
+            <img src="../assets/clv/segment_umap.png" alt="UMAP scatter plot showing customer segments and CLV heat distribution" loading="lazy" />
+          </div>
+          <div class="chart-caption">
+            <div class="chart-caption-dot"></div>
+            <div class="chart-caption-text"><strong>At-Risk accounts (red, left panel) cluster tightly and spatially separate from the main body.</strong> The right panel overlays CLV heat — the densest high-CLV region overlaps exactly with the At-Risk cluster, confirming that this is the highest-value cohort also facing the greatest churn hazard. The business intervention target is unambiguous.</div>
+          </div>
+        </div>
+
+        <!-- Segment actions -->
+        <p class="proj-p" style="font-weight:600;font-size:13px;color:var(--black);margin-top:24px;margin-bottom:6px">Segment action map</p>
+        <div class="segment-grid">
+          <div class="seg-card">
+            <div class="seg-name"><span class="seg-dot" style="background:#FF5500"></span>Champions</div>
+            <div class="seg-action">Protect and grow. Assign dedicated CSM, prioritise premium service tier, offer early access to new products. Focus: retention + upsell.</div>
+            <div class="seg-pct" style="color:#FF5500">~20%</div>
+          </div>
+          <div class="seg-card">
+            <div class="seg-name"><span class="seg-dot" style="background:#EF9F27"></span>At-Risk High-Value</div>
+            <div class="seg-action">Immediate intervention. Trigger personalised outreach within 2 weeks of hazard score crossing threshold. Focus: churn prevention.</div>
+            <div class="seg-pct" style="color:#EF9F27">~18%</div>
+          </div>
+          <div class="seg-card">
+            <div class="seg-name"><span class="seg-dot" style="background:#185FA5"></span>Growth Potential</div>
+            <div class="seg-action">Nurture and expand. Recommend next-best service bundle based on cross-sell model. Focus: wallet share expansion.</div>
+            <div class="seg-pct" style="color:#185FA5">~35%</div>
+          </div>
+          <div class="seg-card">
+            <div class="seg-name"><span class="seg-dot" style="background:#aaaaaa"></span>Dormant</div>
+            <div class="seg-action">Low-touch re-engagement. Automated email sequence with usage incentive. Deprioritise CSM time. Focus: reactivation or graceful churn.</div>
+            <div class="seg-pct" style="color:#aaaaaa">~27%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DASHBOARDS ───────────────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#111111;color:#FF5500">&#x25A0;</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Dashboards &amp; Deployed Output</div>
+          <div class="sec-desc">Live Streamlit app and Power BI report — the interfaces end-users actually see</div>
+        </div>
+        <div class="sec-audience">
+          <span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span>
+          <span class="rtag rtag-da" style="font-size:11px;padding:3px 8px">DA</span>
+        </div>
+      </div>
+      <div class="proj-section-body">
+
+        <div class="dash-tabs">
+          <button class="dash-tab active" data-tab="streamlit">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Streamlit Dashboard
+          </button>
+          <button class="dash-tab" data-tab="powerbi">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Power BI Report
+          </button>
+        </div>
+
+        <!-- ── Streamlit panel ── -->
+        <div class="dash-panel active" id="dash-streamlit">
+          <p class="proj-p" style="margin-bottom:16px">Python + Plotly Streamlit app with four interactive pages — served locally via <code style="font-size:11px;background:var(--gray-light);padding:2px 6px;border-radius:4px">streamlit run app.py</code>. Account managers can filter by tier, region, and segment in real time.</p>
+          <div class="screenshot-grid">
+            <div class="screenshot-item">
+              <a href="#" class="lightbox-trigger" data-src="../assets/clv/streamlit_portfolio_health.png" data-label="Portfolio Health — aggregate CLV and churn metrics">
+                <img src="../assets/clv/streamlit_portfolio_health.png" alt="Streamlit Portfolio Health dashboard" loading="lazy" />
+              </a>
+              <div class="screenshot-caption">
+                <div class="screenshot-caption-title">Portfolio Health</div>
+                <div class="screenshot-caption-desc">Aggregate view: total portfolio CLV $208.9M, churn rate 15%, 2,391 high-risk accounts, CLV distribution by tier and segment</div>
+              </div>
+            </div>
+            <div class="screenshot-item">
+              <a href="#" class="lightbox-trigger" data-src="../assets/clv/streamlit_account_explorer.png" data-label="Account Explorer — per-account CLV and churn scores">
+                <img src="../assets/clv/streamlit_account_explorer.png" alt="Streamlit Account Explorer dashboard" loading="lazy" />
+              </a>
+              <div class="screenshot-caption">
+                <div class="screenshot-caption-title">Account Explorer</div>
+                <div class="screenshot-caption-desc">Filterable table of all 5,000 accounts with CLV score, churn probability, segment tag, and recommended next action per row</div>
+              </div>
+            </div>
+            <div class="screenshot-item">
+              <a href="#" class="lightbox-trigger" data-src="../assets/clv/streamlit_segment_map.png" data-label="Client Segment Map — UMAP projection of all accounts">
+                <img src="../assets/clv/streamlit_segment_map.png" alt="Streamlit Segment Map — UMAP scatter" loading="lazy" />
+              </a>
+              <div class="screenshot-caption">
+                <div class="screenshot-caption-title">Client Segment Map</div>
+                <div class="screenshot-caption-desc">Interactive UMAP scatter plot — click any account dot to drill into its CLV score, churn hazard, and cross-sell recommendations</div>
+              </div>
+            </div>
+            <div class="screenshot-item">
+              <a href="#" class="lightbox-trigger" data-src="../assets/clv/streamlit_cross_sell.png" data-label="Cross-Sell Matrix — product propensity heatmap">
+                <img src="../assets/clv/streamlit_cross_sell.png" alt="Streamlit Cross-Sell Matrix heatmap" loading="lazy" />
+              </a>
+              <div class="screenshot-caption">
+                <div class="screenshot-caption-title">Cross-Sell Matrix</div>
+                <div class="screenshot-caption-desc">Product propensity heatmap for the top 50 accounts by CLV — dark red = high adoption probability, used by sales to prioritise outreach calls</div>
+              </div>
+            </div>
+          </div>
+          <p class="enlarge-hint">Click any screenshot to enlarge</p>
+        </div>
+
+        <!-- ── Power BI panel ── -->
+        <div class="dash-panel" id="dash-powerbi">
+          <p class="proj-p" style="margin-bottom:16px">Four-page Power BI report built on the dbt Gold layer in Snowflake. Designed for the commercial leadership team — landing page routes to the correct hub based on role (operations, sales, compliance).</p>
+          <div class="screenshot-grid">
+            <div class="screenshot-item">
+              <a href="#" class="lightbox-trigger" data-src="../assets/clv/pbi_landing.png" data-label="Power BI — Landing Page with alerts ticker">
+                <img src="../assets/clv/pbi_landing.png" alt="Power BI landing page" loading="lazy" />
+              </a>
+              <div class="screenshot-caption">
+                <div class="screenshot-caption-title">Landing Page</div>
+                <div class="screenshot-caption-desc">Executive entry point: total ARR $143.98M, predicted churn-risk ARR $63.32M, live alerts ticker flagging accounts that crossed risk thresholds in the last 30 days</div>
+              </div>
+            </div>
+            <div class="screenshot-item">
+              <a href="#" class="lightbox-trigger" data-src="../assets/clv/pbi_command_center.png" data-label="Power BI — Command Center with ARR trend and high-risk accounts">
+                <img src="../assets/clv/pbi_command_center.png" alt="Power BI Command Center dashboard" loading="lazy" />
+              </a>
+              <div class="screenshot-caption">
+                <div class="screenshot-caption-title">Command Center</div>
+                <div class="screenshot-caption-desc">ARR vs upsell pipeline trend over time, decomposition waterfall by region/industry/tier, and ranked list of the top 20 highest-risk accounts for CSM prioritisation</div>
+              </div>
+            </div>
+            <div class="screenshot-item">
+              <a href="#" class="lightbox-trigger" data-src="../assets/clv/pbi_prescriptive.png" data-label="Power BI — AI Prescriptive Engine with cross-sell recommendations">
+                <img src="../assets/clv/pbi_prescriptive.png" alt="Power BI AI Prescriptive Engine page" loading="lazy" />
+              </a>
+              <div class="screenshot-caption">
+                <div class="screenshot-caption-title">AI Prescriptive Engine</div>
+                <div class="screenshot-caption-desc">Per-account recommended product, Expansion Analytics Studio pipeline value ($98.92M total upsell opportunity), and one-click "Add to Market" CRM action buttons</div>
+              </div>
+            </div>
+            <div class="screenshot-item">
+              <a href="#" class="lightbox-trigger" data-src="../assets/clv/pbi_compliance.png" data-label="Power BI — Compliance Hub showing leakage spend by industry">
+                <img src="../assets/clv/pbi_compliance.png" alt="Power BI Compliance Hub dashboard" loading="lazy" />
+              </a>
+              <div class="screenshot-caption">
+                <div class="screenshot-caption-title">Operations &amp; Compliance Hub</div>
+                <div class="screenshot-caption-desc">Out-of-policy spend tracking: $127.6M total leakage, leakage trend by industry per month, worst-offender account identification for policy enforcement</div>
+              </div>
+            </div>
+          </div>
+          <p class="enlarge-hint">Click any screenshot to enlarge</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── SECTION 7: BUSINESS IMPACT ───────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#EAF3DE;color:#3B6D11">7</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Business Impact</div>
+          <div class="sec-desc">Quantified outcomes tied directly to the original problem</div>
+        </div>
+        <div class="sec-audience">
+          <span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span>
+          <span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span>
+        </div>
+      </div>
+      <div class="proj-section-body">
+        <div class="impact-grid">
+          <div class="impact-card">
+            <div class="impact-val">0.61</div>
+            <div class="impact-label">CLV R² — revenue forecasting accuracy for account planning</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">0.89</div>
+            <div class="impact-label">Churn C-index — survival model discrimination power</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">0.92+</div>
+            <div class="impact-label">Cross-sell AUC — precision targeting for the sales team</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">8–12w</div>
+            <div class="impact-label">Churn lead time — window for proactive CSM intervention</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">4</div>
+            <div class="impact-label">Actionable segments with distinct commercial playbooks</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">AI</div>
+            <div class="impact-label">Personalised outreach at scale via DSPy + GPT-4o pipeline</div>
+          </div>
+        </div>
+        <p class="proj-p" style="font-size:12px;color:var(--gray)">
+          <strong>Note on metrics:</strong> This project uses a synthetic dataset modelled on realistic corporate travel patterns. Model performance metrics reflect held-out test set evaluation. Revenue impact projections would require production A/B testing against a live CRM system, which is a planned next step.
+        </p>
+      </div>
+    </div>
+
+    <!-- ── SECTION 8: REFLECTIONS ────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:var(--gray-light);color:var(--gray)">8</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Reflections &amp; What I'd Do Differently</div>
+          <div class="sec-desc">Honest assessment — the section most junior portfolios omit</div>
+        </div>
+        <div class="sec-audience">
+          <span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span>
+          <span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span>
+        </div>
+      </div>
+      <div class="proj-section-body">
+        <div class="refl-grid">
+          <div class="refl-card good">
+            <div class="refl-card-label">&#x2713; What worked well</div>
+            <div class="refl-item"><div class="refl-dot"></div><div>Choosing Cox Proportional Hazards over a binary churn classifier was the right call — the hazard curve per account gave CSMs a "how soon" signal, not just "yes/no", which is far more actionable in practice.</div></div>
+            <div class="refl-item"><div class="refl-dot"></div><div>The dbt medallion architecture (Bronze → Silver → Gold) made data lineage auditable and the feature store reusable across all four models — this saved significant rework when I iterated on features.</div></div>
+            <div class="refl-item"><div class="refl-dot"></div><div>Separating the modelling problem into four distinct objectives (CLV, churn, segmentation, cross-sell) rather than building one monolithic model made each component testable and explainable independently.</div></div>
+          </div>
+          <div class="refl-card change">
+            <div class="refl-card-label">&#x21BA; What I'd do differently</div>
+            <div class="refl-item"><div class="refl-dot"></div><div>I'd integrate a real CRM (Salesforce or HubSpot) into the outreach module from the start. The DSPy + GPT-4o pipeline generates strong personalised emails, but without CRM write-back it remains a demo rather than a production workflow.</div></div>
+            <div class="refl-item"><div class="refl-dot"></div><div>I'd add macroeconomic signals as external features — corporate travel demand correlates with fuel prices, business confidence indices, and regional travel policy. These would likely improve CLV R² meaningfully.</div></div>
+            <div class="refl-item"><div class="refl-dot"></div><div>I'd build an online learning loop so the models update incrementally as new booking data arrives, rather than requiring a full retrain cycle. MLflow handles versioning, but the trigger logic for retraining is still manual.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Footer nav ────────────────────────────────────────────── -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:40px;padding-top:32px;border-top:1px solid var(--card-border)">
+      <a href="../index.html#projects" class="proj-back">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to all projects
+      </a>
+      <a href="../index.html#contact" style="font-size:13px;font-weight:500;color:var(--orange)">Hire me →</a>
+    </div>
+
+  </div><!-- /.proj-page -->
+
+  <!-- ── Lightbox ─────────────────────────────────────────────── -->
+  <div class="lightbox-backdrop" id="lightbox">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+    <img id="lightbox-img" src="" alt="" />
+    <div class="lightbox-label" id="lightbox-label"></div>
+  </div>
+
+  <script>
+    /* ── Dashboard tab switcher ──────────────────────────────── */
+    document.querySelectorAll('.dash-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.dash-tab').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('dash-' + tab).classList.add('active');
+      });
+    });
+
+    /* ── Lightbox ────────────────────────────────────────────── */
+    const lb      = document.getElementById('lightbox');
+    const lbImg   = document.getElementById('lightbox-img');
+    const lbLabel = document.getElementById('lightbox-label');
+    const lbClose = document.getElementById('lightbox-close');
+
+    function openLightbox(src, label) {
+      lbImg.src = src;
+      lbImg.alt = label;
+      lbLabel.textContent = label;
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lb.classList.remove('open');
+      lbImg.src = '';
+      document.body.style.overflow = '';
+    }
+
+    /* Lightbox triggers — screenshot links */
+    document.querySelectorAll('.lightbox-trigger').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        openLightbox(a.dataset.src, a.dataset.label);
+      });
+    });
+
+    /* Chart image wraps */
+    document.querySelectorAll('.chart-img-wrap[data-lightbox]').forEach(el => {
+      el.addEventListener('click', () => openLightbox(el.dataset.lightbox, el.dataset.label));
+    });
+
+    lbClose.addEventListener('click', closeLightbox);
+    lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && lb.classList.contains('open')) closeLightbox(); });
+  </script>
+
+</body>
+</html>

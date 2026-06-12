@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expense Fraud &amp; Compliance Analytics — Ankit Addya</title>
+  <meta name="description" content="21-signal fraud detection engine, policy compliance monitoring, and AI forensic analyst for 100K+ corporate expense reimbursements." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Bebas+Neue&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .proj-back {
+      display: inline-flex; align-items: center; gap: 8px; font-size: 13px;
+      font-weight: 500; color: var(--gray); padding: 10px 0 0; transition: color 0.2s;
+    }
+    .proj-back:hover { color: var(--black); }
+    .proj-back svg { width: 16px; height: 16px; stroke: currentColor; fill: none; }
+
+    .proj-page { max-width: 820px; margin: 0 auto; padding: 0 32px 120px; }
+
+    .role-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .rtag { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 999px; letter-spacing: 0.02em; }
+    .rtag-da { background: #E6F1FB; color: #0C447C; }
+    .rtag-ba { background: #E1F5EE; color: #085041; }
+    .rtag-ds { background: #EEEDFE; color: #3C3489; }
+
+    .proj-hero { background: #111111; border-radius: 20px; padding: 48px; margin: 32px 0 10px; color: #ffffff; position: relative; overflow: hidden; }
+    .proj-hero::before { content: 'FRAUD'; position: absolute; right: -10px; bottom: -30px; font-family: 'Bebas Neue', sans-serif; font-size: 140px; color: rgba(255,85,0,0.08); line-height: 1; pointer-events: none; user-select: none; }
+    .proj-hero-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--orange); margin-bottom: 14px; }
+    .proj-hero h1 { font-size: clamp(20px, 3.2vw, 34px); font-weight: 700; line-height: 1.2; margin-bottom: 14px; color: #ffffff; }
+    .proj-hero-sub { font-size: 15px; color: #aaaaaa; line-height: 1.65; max-width: 580px; margin-bottom: 28px; }
+    .proj-metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 28px; }
+    .proj-metric { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 14px; text-align: center; }
+    .proj-metric-val { font-size: 22px; font-weight: 700; color: var(--orange); line-height: 1; }
+    .proj-metric-label { font-size: 10px; color: #888888; margin-top: 5px; line-height: 1.4; }
+    .proj-meta-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+    .proj-meta-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: #888888; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 999px; padding: 5px 12px; }
+    .proj-hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-hero-github { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 999px; border: 1.5px solid rgba(255,255,255,0.2); background: transparent; color: #ffffff; font-size: 13px; font-weight: 500; transition: background 0.2s, border-color 0.2s; text-decoration: none; }
+    .btn-hero-github svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
+    .btn-hero-github:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); }
+
+    .proj-section { border: 1.5px solid var(--card-border); border-radius: 16px; background: var(--white); margin-bottom: 10px; overflow: hidden; }
+    .proj-section-header { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--card-border); }
+    .sec-num { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+    .sec-head-text { flex: 1; }
+    .sec-title { font-size: 15px; font-weight: 600; color: var(--black); }
+    .sec-desc { font-size: 12px; color: var(--gray); margin-top: 2px; }
+    .sec-audience { display: flex; gap: 5px; margin-left: auto; flex-shrink: 0; }
+    .proj-section-body { padding: 20px; }
+
+    .proj-p { font-size: 14px; color: #333333; line-height: 1.75; margin-bottom: 12px; }
+    .proj-p:last-child { margin-bottom: 0; }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .info-card { background: var(--gray-light); border-radius: 10px; padding: 14px; }
+    .info-card-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray); margin-bottom: 6px; }
+    .info-card-value { font-size: 13px; color: var(--black); font-weight: 500; line-height: 1.5; }
+
+    .pull-quote { border-left: 3px solid var(--orange); padding: 12px 16px; background: #FFF8F5; border-radius: 0 10px 10px 0; margin-bottom: 14px; }
+    .pull-quote p { font-size: 14px; font-style: italic; color: #333333; line-height: 1.7; }
+
+    .step-list { display: flex; flex-direction: column; }
+    .step-row { display: flex; gap: 14px; align-items: flex-start; padding: 10px 0; }
+    .step-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
+    .step-content { flex: 1; }
+    .step-title { font-size: 14px; font-weight: 600; color: var(--black); margin-bottom: 3px; }
+    .step-body { font-size: 13px; color: var(--gray); line-height: 1.6; }
+    .step-connector { width: 2px; height: 10px; background: var(--card-border); margin-left: 15px; }
+
+    .stack-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+    .stag-proj { font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 6px; background: var(--gray-light); color: #333333; border: 1px solid var(--card-border); }
+
+    /* Architecture diagram */
+    .arch-diagram { background: var(--gray-light); border-radius: 12px; padding: 20px; margin: 14px 0; }
+    .arch-layer { margin-bottom: 12px; }
+    .arch-layer:last-child { margin-bottom: 0; }
+    .arch-layer-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray); margin-bottom: 8px; }
+    .arch-row { display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; }
+    .arch-node { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 14px; background: white; border: 1.5px solid var(--card-border); border-radius: 10px; min-width: 80px; text-align: center; }
+    .arch-node-icon { font-size: 18px; }
+    .arch-node-label { font-size: 10px; font-weight: 600; color: var(--black); }
+    .arch-node-sub { font-size: 9px; color: var(--gray); }
+    .arch-arrow { font-size: 16px; color: var(--gray); flex-shrink: 0; }
+
+    /* Decision / signal tables */
+    .signal-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 10px 0; }
+    .signal-table th { text-align: left; padding: 8px 12px; background: var(--gray-light); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray); border-bottom: 1.5px solid var(--card-border); }
+    .signal-table td { padding: 9px 12px; border-bottom: 1px solid var(--card-border); color: #333333; vertical-align: top; line-height: 1.5; }
+    .signal-table tr:last-child td { border-bottom: none; }
+    .sig-weight { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 11px; font-weight: 700; }
+    .sig-w3 { background: #FEECEC; color: #C0392B; }
+    .sig-w2 { background: #FFF3E0; color: #E65100; }
+    .sig-w1 { background: #E8F5E9; color: #2E7D32; }
+    .sig-group-header td { background: var(--gray-light); font-weight: 600; font-size: 12px; color: var(--black); padding: 8px 12px; }
+
+    /* Insight grid */
+    .insight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+    .insight-card { border: 1.5px solid var(--card-border); border-radius: 10px; padding: 16px; }
+    .insight-num { font-family: 'Bebas Neue', sans-serif; font-size: 32px; line-height: 1; color: var(--orange); margin-bottom: 4px; }
+    .insight-title { font-size: 13px; font-weight: 600; color: var(--black); margin-bottom: 6px; }
+    .insight-body { font-size: 12px; color: var(--gray); line-height: 1.6; }
+
+    /* Impact cards */
+    .impact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+    .impact-card { background: #F5FFF9; border: 1.5px solid #C2EDDA; border-radius: 10px; padding: 16px; text-align: center; }
+    .impact-val { font-size: 26px; font-weight: 700; color: #0F6E56; }
+    .impact-label { font-size: 11px; color: #3B6D55; margin-top: 4px; line-height: 1.4; }
+
+    /* Reflections */
+    .refl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .refl-card { background: var(--gray-light); border-radius: 10px; padding: 16px; }
+    .refl-card-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+    .refl-card.good .refl-card-label { color: #0F6E56; }
+    .refl-card.change .refl-card-label { color: #854F0B; }
+    .refl-item { display: flex; gap: 8px; margin-bottom: 8px; font-size: 13px; color: #333333; line-height: 1.55; }
+    .refl-item:last-child { margin-bottom: 0; }
+    .refl-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+    .refl-card.good .refl-dot { background: #0F6E56; }
+    .refl-card.change .refl-dot { background: #EF9F27; }
+
+    /* Dashboard tabs */
+    .dash-tabs { display: flex; gap: 6px; margin-bottom: 20px; border-bottom: 1.5px solid var(--card-border); padding-bottom: 0; }
+    .dash-tab { padding: 9px 18px; font-size: 13px; font-weight: 500; color: var(--gray); background: none; border: none; cursor: pointer; border-bottom: 2.5px solid transparent; margin-bottom: -1.5px; transition: color 0.15s, border-color 0.15s; display: flex; align-items: center; gap: 7px; }
+    .dash-tab:hover { color: var(--black); }
+    .dash-tab.active { color: var(--black); border-bottom-color: var(--orange); font-weight: 600; }
+    .dash-tab svg { width: 14px; height: 14px; fill: currentColor; }
+    .dash-panel { display: none; }
+    .dash-panel.active { display: block; }
+
+    /* Screenshot gallery */
+    .screenshot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .screenshot-item { border: 1.5px solid var(--card-border); border-radius: 10px; overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s; }
+    .screenshot-item:hover { border-color: #bbbbbb; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    .screenshot-item a { display: block; }
+    .screenshot-item img { width: 100%; display: block; object-fit: cover; }
+    .screenshot-caption { padding: 10px 12px; border-top: 1px solid var(--card-border); background: var(--gray-light); }
+    .screenshot-caption-title { font-size: 12px; font-weight: 600; color: var(--black); margin-bottom: 2px; }
+    .screenshot-caption-desc { font-size: 11px; color: var(--gray); line-height: 1.5; }
+    .enlarge-hint { font-size: 11px; color: var(--gray); margin-top: 12px; text-align: right; }
+
+    /* Lightbox */
+    .lightbox-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 9999; align-items: center; justify-content: center; padding: 24px; cursor: zoom-out; }
+    .lightbox-backdrop.open { display: flex; }
+    .lightbox-backdrop img { max-width: 100%; max-height: 90vh; border-radius: 8px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); object-fit: contain; cursor: default; }
+    .lightbox-close { position: fixed; top: 20px; right: 24px; color: #ffffff; font-size: 32px; background: none; border: none; cursor: pointer; line-height: 1; opacity: 0.7; transition: opacity 0.15s; z-index: 10000; }
+    .lightbox-close:hover { opacity: 1; }
+    .lightbox-label { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); color: #cccccc; font-size: 12px; white-space: nowrap; pointer-events: none; }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .proj-page { padding: 0 20px 80px; }
+      .proj-hero { padding: 28px 24px; border-radius: 14px; }
+      .proj-metrics-row { grid-template-columns: 1fr 1fr; }
+      .two-col, .insight-grid, .refl-grid { grid-template-columns: 1fr; }
+      .impact-grid { grid-template-columns: 1fr 1fr; }
+      .screenshot-grid { grid-template-columns: 1fr; }
+      .proj-hero::before { font-size: 90px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="../index.html#projects" class="nav-link active">← Portfolio</a>
+    </div>
+  </nav>
+
+  <div class="proj-page" style="padding-top: 100px;">
+
+    <!-- ── SECTION 1: HERO ──────────────────────────────────────── -->
+    <div class="proj-hero">
+      <div class="proj-hero-eyebrow">Project Deep-Dive</div>
+      <h1>Employee Reimbursement Fraud &amp;<br>Compliance Analytics</h1>
+      <p class="proj-hero-sub">21-signal weighted fraud scoring engine, 4 anomaly detection methods, and a policy compliance platform for 100K+ corporate expense claims — with a 6-page Power BI executive dashboard and a conversational AI forensic analyst deployed on Google Vertex AI.</p>
+
+      <div class="role-tags" style="margin-bottom:24px">
+        <span class="rtag rtag-da">&#x1F4CA; Data Analyst</span>
+        <span class="rtag rtag-ba">&#x1F4BC; Business Analyst</span>
+        <span class="rtag rtag-ds">&#x1F9E0; Data Scientist</span>
+      </div>
+
+      <div class="proj-metrics-row">
+        <div class="proj-metric">
+          <div class="proj-metric-val">21</div>
+          <div class="proj-metric-label">Fraud signals</div>
+        </div>
+        <div class="proj-metric">
+          <div class="proj-metric-val">100K+</div>
+          <div class="proj-metric-label">Expense records</div>
+        </div>
+        <div class="proj-metric">
+          <div class="proj-metric-val">$12.22M</div>
+          <div class="proj-metric-label">Projected savings</div>
+        </div>
+        <div class="proj-metric">
+          <div class="proj-metric-val">75%</div>
+          <div class="proj-metric-label">Compliance rate</div>
+        </div>
+      </div>
+
+      <div class="proj-meta-pills">
+        <span class="proj-meta-pill">&#x1F3E6; Enterprise Finance / Internal Audit</span>
+        <span class="proj-meta-pill">&#x1F4C5; ~3 months</span>
+        <span class="proj-meta-pill" style="color:#4ade80">&#x2713; Completed</span>
+      </div>
+
+      <div class="proj-hero-actions">
+        <a href="https://github.com/addy9051/Employee-Reimbursement-analytics-and-policy-compliance" class="btn-hero-github" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          View on GitHub
+        </a>
+      </div>
+    </div>
+
+    <!-- ── SECTION 2: BUSINESS CONTEXT ──────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#FAECE7;color:#993C1D">2</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Business Context</div>
+          <div class="sec-desc">What the organisation does, the operating environment, and why this mattered</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span></div>
+      </div>
+      <div class="proj-section-body">
+        <p class="proj-p">GlobalCorp Financial Services is a large enterprise with approximately 3,900 employees across 8 departments — Engineering, Sales, Operations, Finance, HR, IT, Legal, and Marketing. The company reimburses employee expenses across 8 categories (Travel, Meals, Software, Equipment, Communication, Entertainment, Supplies, Training), processing $22.32M+ in annual claims via three payment channels: direct deposit, corporate card, and check.</p>
+        <p class="proj-p">A 50-strong approver pool (department managers) reviews submissions before payment. The internal audit team is responsible for policy enforcement, but with 100K+ annual claims and no automated signal layer, they relied on random sampling and retrospective reviews — a process that structurally missed behavioral fraud patterns invisible at the individual transaction level.</p>
+        <div class="two-col" style="margin-top:14px">
+          <div class="info-card">
+            <div class="info-card-label">Organisation</div>
+            <div class="info-card-value">GlobalCorp Financial Services — ~3,900 employees, 8 departments</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Spend under management</div>
+            <div class="info-card-value">$22.32M annual expense reimbursements across 8 categories</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Approver structure</div>
+            <div class="info-card-value">50 department managers reviewing 100K+ claims per year</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Audit method (before)</div>
+            <div class="info-card-value">Retrospective random sampling — no real-time or behavioral detection</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 3: PROBLEM STATEMENT ─────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#FAEEDA;color:#854F0B">3</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Problem Statement</div>
+          <div class="sec-desc">What was broken, and the cost of leaving it unsolved</div>
+        </div>
+        <div class="sec-audience">
+          <span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span>
+          <span class="rtag rtag-da" style="font-size:11px;padding:3px 8px">DA</span>
+        </div>
+      </div>
+      <div class="proj-section-body">
+        <div class="pull-quote">
+          <p>The internal audit team could see individual claims but had no way to connect them — so expense splitting across three same-day submissions, collusion between an employee and a single approver, and duplicate resubmissions after rejection were completely invisible to the existing review process.</p>
+        </div>
+        <div class="two-col">
+          <div class="info-card">
+            <div class="info-card-label">Stakeholder pain</div>
+            <div class="info-card-value">Audit reviews were retrospective and sampled, missing behavioral fraud that only becomes visible across multiple claims or over time — by the time it was caught, money had already left the business.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Business cost</div>
+            <div class="info-card-value">25% non-compliance rate, $3.21M in anomalous spend, and an estimated $12.22M in savings unrealised due to above-benchmark category spending — all unquantified before this project.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 4: ROOT CAUSE ANALYSIS ───────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#E1F5EE;color:#0F6E56">4</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Root Cause Analysis</div>
+          <div class="sec-desc">Diagnosing why the audit process failed before designing the solution</div>
+        </div>
+        <div class="sec-audience">
+          <span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span>
+          <span class="rtag rtag-da" style="font-size:11px;padding:3px 8px">DA</span>
+        </div>
+      </div>
+      <div class="proj-section-body">
+        <div class="step-list">
+          <div class="step-row">
+            <div class="step-icon" style="background:#E1F5EE">&#x1F50D;</div>
+            <div class="step-content">
+              <div class="step-title">Signal identification</div>
+              <div class="step-body">EDA revealed that 25% of claims were non-compliant, yet 85% were approved — meaning the approval process was not enforcing policy. The compliance rate was uniform across departments in the audit narrative, masking that Engineering's compliance was as low as 51% in some months. Single-transaction audits simply could not see this.</div>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-row">
+            <div class="step-icon" style="background:#FAEEDA">&#x1F9E9;</div>
+            <div class="step-content">
+              <div class="step-title">MECE decomposition of the fraud and leakage problem</div>
+              <div class="step-body">Three separate problems required three separate solutions: (1) <strong>Fraud</strong> — behavioral signals spanning multiple claims or employees, requiring a cross-claim signal engine. (2) <strong>Compliance</strong> — policy violation rates by department and category, requiring a structured rule-checking layer. (3) <strong>Cost leakage</strong> — above-benchmark category spend requiring a statistical benchmarking framework. No existing system addressed any of the three.</div>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-row">
+            <div class="step-icon" style="background:#E6F1FB">&#x1F3AF;</div>
+            <div class="step-content">
+              <div class="step-title">Root cause pinpointed</div>
+              <div class="step-body">The data existed — 100K+ records in a structured schema — but had never been connected into a behavioral signal layer. The fix required a pipeline that could (a) compute cross-claim behavioral signals per employee, (b) score and rank every claim against a composite fraud model, and (c) surface findings to audit leadership in a form they could act on without writing SQL.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 5: TECHNICAL APPROACH ────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#EEEDFE;color:#3C3489">5</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Technical Approach</div>
+          <div class="sec-desc">What I built, how it fits together, and the reasoning behind each design choice</div>
+        </div>
+        <div class="sec-audience">
+          <span class="rtag rtag-da" style="font-size:11px;padding:3px 8px">DA</span>
+          <span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span>
+        </div>
+      </div>
+      <div class="proj-section-body">
+
+        <div class="arch-diagram">
+          <div class="arch-layer">
+            <div class="arch-layer-label">Data Layer</div>
+            <div class="arch-row">
+              <div class="arch-node"><div class="arch-node-icon">&#x1F9EA;</div><div class="arch-node-label">SDV Synthesizer</div><div class="arch-node-sub">100K records</div></div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F418;</div><div class="arch-node-label">PostgreSQL</div><div class="arch-node-sub">Star schema</div></div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F441;</div><div class="arch-node-label">8 SQL Views</div><div class="arch-node-sub">Power BI ready</div></div>
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-label">Analytics Layer</div>
+            <div class="arch-row">
+              <div class="arch-node"><div class="arch-node-icon">&#x26A0;</div><div class="arch-node-label">Fraud Engine</div><div class="arch-node-sub">21 signals</div></div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F4CB;</div><div class="arch-node-label">Compliance</div><div class="arch-node-sub">Policy rules</div></div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F52C;</div><div class="arch-node-label">Anomaly</div><div class="arch-node-sub">4 methods</div></div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F4B0;</div><div class="arch-node-label">Cost Savings</div><div class="arch-node-sub">Benchmarking</div></div>
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-label">Serving Layer</div>
+            <div class="arch-row">
+              <div class="arch-node"><div class="arch-node-icon">&#x1F4CA;</div><div class="arch-node-label">Power BI</div><div class="arch-node-sub">6-page report</div></div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F916;</div><div class="arch-node-label">Gemini + LangGraph</div><div class="arch-node-sub">AI Forensic Agent</div></div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node"><div class="arch-node-icon">&#x2601;</div><div class="arch-node-label">Vertex AI</div><div class="arch-node-sub">GKE + Gradio</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 21-signal table -->
+        <p class="proj-p" style="margin-top:18px;font-weight:600;font-size:13px;color:var(--black)">The 21-signal fraud detection engine</p>
+        <p class="proj-p" style="margin-top:-6px">Signals are grouped into three tiers, each requiring a different data scope. A composite fraud score (0–100) is computed as a weighted sum, normalised against a max raw score of 38. Claims scoring ≥ 30 are flagged.</p>
+
+        <table class="signal-table">
+          <thead>
+            <tr><th>Signal</th><th>Description</th><th>Weight</th></tr>
+          </thead>
+          <tbody>
+            <tr class="sig-group-header"><td colspan="3">Group A — Transaction-Level (12 signals, vectorised per claim)</td></tr>
+            <tr><td>Round-number clustering</td><td>Claim amount is a suspiciously round figure ($500, $1000, etc.)</td><td><span class="sig-weight sig-w3">3</span></td></tr>
+            <tr><td>Just-below-threshold</td><td>Amount is within 5% below a policy approval threshold</td><td><span class="sig-weight sig-w3">3</span></td></tr>
+            <tr><td>Future expense date</td><td>Expense date is in the future relative to submission</td><td><span class="sig-weight sig-w3">3</span></td></tr>
+            <tr><td>No receipt — high value</td><td>Claim above $200 with no receipt attached</td><td><span class="sig-weight sig-w2">2</span></td></tr>
+            <tr><td>Late submission</td><td>Submitted more than 30 days after the expense date</td><td><span class="sig-weight sig-w2">2</span></td></tr>
+            <tr><td>Non-compliant + fully approved</td><td>Claim fails policy but was approved in full — approver collusion signal</td><td><span class="sig-weight sig-w2">2</span></td></tr>
+            <tr><td>Wrong payment method</td><td>Payment method inconsistent with category policy</td><td><span class="sig-weight sig-w2">2</span></td></tr>
+            <tr><td>Same-day approval — high value</td><td>High-value claim approved on the same day as submission</td><td><span class="sig-weight sig-w2">2</span></td></tr>
+            <tr><td>Amount–description mismatch</td><td>High amount for a low-value keyword category (e.g., $450 "coffee")</td><td><span class="sig-weight sig-w2">2</span></td></tr>
+            <tr><td>Weekend expense (non-travel)</td><td>Non-travel claim on a Saturday or Sunday</td><td><span class="sig-weight sig-w1">1</span></td></tr>
+            <tr><td>Weekend approval</td><td>Approval decision made on a weekend</td><td><span class="sig-weight sig-w1">1</span></td></tr>
+            <tr><td>Dept × category Z-score outlier</td><td>Amount is a statistical outlier within its dept/category peer group</td><td><span class="sig-weight sig-w1">1</span></td></tr>
+            <tr class="sig-group-header"><td colspan="3">Group B — Behavioural (7 signals, computed across employee's claim history)</td></tr>
+            <tr><td>Duplicate claim</td><td>Same employee + date + category + amount submitted more than once</td><td><span class="sig-weight sig-w3">3</span></td></tr>
+            <tr><td>Expense splitting</td><td>Employee submits 3+ claims in the same category on the same day</td><td><span class="sig-weight sig-w3">3</span></td></tr>
+            <tr><td>Velocity — frequency spike</td><td>Rolling 30-day claim count exceeds 2× the employee's own average</td><td><span class="sig-weight sig-w2">2</span></td></tr>
+            <tr><td>Velocity — amount spike</td><td>Rolling 30-day average amount exceeds 2× the employee's overall average</td><td><span class="sig-weight sig-w2">2</span></td></tr>
+            <tr><td>Resubmit after rejection</td><td>Rejected claim resubmitted within 7 days</td><td><span class="sig-weight sig-w2">2</span></td></tr>
+            <tr><td>Period-end clustering</td><td>Over 60% of an employee's monthly claims fall in the last 3 days</td><td><span class="sig-weight sig-w1">1</span></td></tr>
+            <tr><td>Foreign currency — no travel</td><td>Foreign currency claim with no corresponding travel category claim</td><td><span class="sig-weight sig-w1">1</span></td></tr>
+            <tr class="sig-group-header"><td colspan="3">Group C — Approver-Level (2 signals, computed across manager's approval history)</td></tr>
+            <tr><td>Approver concentration</td><td>Single manager approves &gt;80% of one employee's claims — collusion risk</td><td><span class="sig-weight sig-w1">1</span></td></tr>
+            <tr><td>Systemic rubber-stamping</td><td>Approver has a &gt;25% non-compliant approval rate across all their reports</td><td><span class="sig-weight sig-w1">1</span></td></tr>
+          </tbody>
+        </table>
+
+        <p class="proj-p" style="margin-top:16px;font-weight:600;font-size:13px;color:var(--black)">Anomaly detection — 4 methods compared</p>
+        <table class="signal-table">
+          <thead><tr><th>Method</th><th>Approach</th><th>Why included</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Z-Score</strong></td><td>Flag claims &gt;3σ from their category mean</td><td>Fast, interpretable baseline — easy for audit teams to explain to management</td></tr>
+            <tr><td><strong>Modified Z-Score (MAD)</strong></td><td>Median Absolute Deviation — robust to skewed distributions</td><td>Expense data is right-skewed; standard Z-score is distorted by high-value outliers</td></tr>
+            <tr><td><strong>Isolation Forest</strong></td><td>Ensemble tree model that isolates anomalies by random feature splits</td><td>Captures multivariate anomalies invisible to univariate Z-score methods</td></tr>
+            <tr><td><strong>DBSCAN</strong></td><td>Density-based clustering; noise points = anomalies</td><td>No need to specify k; naturally handles irregular cluster shapes in amount/frequency space</td></tr>
+          </tbody>
+        </table>
+
+        <p class="proj-p" style="margin-top:10px;font-weight:600;font-size:13px;color:var(--black)">Full stack</p>
+        <div class="stack-row">
+          <span class="stag-proj">Python</span>
+          <span class="stag-proj">PostgreSQL</span>
+          <span class="stag-proj">SQLAlchemy</span>
+          <span class="stag-proj">SDV (GaussianCopula)</span>
+          <span class="stag-proj">Pandas</span>
+          <span class="stag-proj">scikit-learn</span>
+          <span class="stag-proj">scipy</span>
+          <span class="stag-proj">Power BI</span>
+          <span class="stag-proj">DAX</span>
+          <span class="stag-proj">LangGraph</span>
+          <span class="stag-proj">LangChain</span>
+          <span class="stag-proj">Gemini 2.5 Flash</span>
+          <span class="stag-proj">Vertex AI</span>
+          <span class="stag-proj">LangFuse</span>
+          <span class="stag-proj">Gradio</span>
+          <span class="stag-proj">Docker</span>
+          <span class="stag-proj">GKE Autopilot</span>
+          <span class="stag-proj">Pytest</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 6: KEY FINDINGS ───────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#E6F1FB;color:#185FA5">6</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Key Findings &amp; Insights</div>
+          <div class="sec-desc">What the data actually showed across fraud, compliance, and cost</div>
+        </div>
+        <div class="sec-audience">
+          <span class="rtag rtag-da" style="font-size:11px;padding:3px 8px">DA</span>
+          <span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span>
+        </div>
+      </div>
+      <div class="proj-section-body">
+        <div class="insight-grid">
+          <div class="insight-card">
+            <div class="insight-num">1,143</div>
+            <div class="insight-title">Anomalous claims flagged</div>
+            <div class="insight-body">The Z-score method identified 1,143 claims across the portfolio as statistical outliers (avg Z-score 4.8), totalling $3.21M in anomalous spend. Engineering and Finance had the highest anomaly counts by department.</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-num">9,479</div>
+            <div class="insight-title">Rejected claims — not random</div>
+            <div class="insight-body">Rejection rate was not uniform: certain department × category combinations showed rejection rates 3–4× the company average. Missing receipt was the single strongest predictor of rejection, with a statistically significant odds ratio from chi-squared analysis.</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-num">$12.22M</div>
+            <div class="insight-title">Recoverable through policy tightening</div>
+            <div class="insight-body">29% of total spend (26,693 claims) exceeded category market-cap benchmarks. Communication ($3.5M), Entertainment, and Equipment were the top three categories for projected savings — achievable through budget cap enforcement alone.</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-num">74.85%</div>
+            <div class="insight-title">Compliance score — Engineering lowest</div>
+            <div class="insight-body">Engineering was both the top-spending department ($8.99M total, $10.71K per employee) and the lowest compliance scorer. The AI forensic agent classified it as "High Priority Critical" when a compliance threshold of 85% was applied.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DASHBOARDS ───────────────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#111111;color:#FF5500">&#x25A0;</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Dashboards &amp; Deployed Output</div>
+          <div class="sec-desc">6-page Power BI executive report and the AI forensic analyst interface</div>
+        </div>
+        <div class="sec-audience">
+          <span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span>
+          <span class="rtag rtag-da" style="font-size:11px;padding:3px 8px">DA</span>
+        </div>
+      </div>
+      <div class="proj-section-body">
+
+        <div class="dash-tabs">
+          <button class="dash-tab active" data-tab="powerbi">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Power BI Dashboard
+          </button>
+          <button class="dash-tab" data-tab="agent">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            AI Forensic Agent
+          </button>
+        </div>
+
+        <!-- Power BI panel -->
+        <div class="dash-panel active" id="dash-powerbi">
+          <p class="proj-p" style="margin-bottom:16px">Built on PostgreSQL DirectQuery via the 8 analytical views. Designed for CFOs, compliance officers, and department managers — each page targets a distinct decision-making audience.</p>
+          <div class="screenshot-grid">
+            <div class="screenshot-item">
+              <a href="#" class="lightbox-trigger" data-src="../assets/expense-compliance/pbi_executive_overview.png" data-label="Executive Overview — portfolio-level KPIs and monthly trends">
+                <img src="../assets/expense-compliance/pbi_executive_overview.png" alt="Power BI Executive Overview" loading="lazy" />
+              </a>
+              <div class="screenshot-caption">
+                <div class="screenshot-caption-title">Executive Overview</div>
+                <div class="screenshot-caption-desc">Total spend $22.32M, approval rate 85%, compliance 75%, avg monthly claim $429.43, MoM growth 1.40% — with monthly trend, spend by category, and department breakdown</div>
+              </div>
+            </div>
+            <div class="screenshot-item">
+              <a href="#" class="lightbox-trigger" data-src="../assets/expense-compliance/pbi_department_analysis.png" data-label="Department Analysis — per-capita benchmarking and category breakdown">
+                <img src="../assets/expense-compliance/pbi_department_analysis.png" alt="Power BI Department Analysis" loading="lazy" />
+              </a>
+              <div class="screenshot-caption">
+                <div class="screenshot-caption-title">Department Analysis</div>
+                <div class="screenshot-caption-desc">Per-employee spend $10.71K, top-spending dept Engineering, compliance score 74.85% — with per-capita bar chart, dept × category matrix, and total claimed per employee scatter</div>
+              </div>
+            </div>
+            <div class="screenshot-item">
+              <a href="#" class="lightbox-trigger" data-src="../assets/expense-compliance/pbi_policy_compliance.png" data-label="Policy Compliance Monitor — rejection analysis and compliance trend">
+                <img src="../assets/expense-compliance/pbi_policy_compliance.png" alt="Power BI Policy Compliance Monitor" loading="lazy" />
+              </a>
+              <div class="screenshot-caption">
+                <div class="screenshot-caption-title">Policy Compliance Monitor</div>
+                <div class="screenshot-caption-desc">9,479 rejected claims, $25K non-compliant spend, 12K missing receipts — compliance by department bar chart, decision outcome funnel, monthly compliance trend line</div>
+              </div>
+            </div>
+            <div class="screenshot-item">
+              <a href="#" class="lightbox-trigger" data-src="../assets/expense-compliance/pbi_anomaly_detection.png" data-label="Anomaly Detection — 1,143 flagged claims totalling $3.21M">
+                <img src="../assets/expense-compliance/pbi_anomaly_detection.png" alt="Power BI Anomaly Detection dashboard" loading="lazy" />
+              </a>
+              <div class="screenshot-caption">
+                <div class="screenshot-caption-title">Anomaly Detection &amp; Suspicious Claims</div>
+                <div class="screenshot-caption-desc">1,143 anomalies, avg Z-score 4.8, $3.21M anomalous spend — flagged claims detail table, amount vs Z-score scatter, anomaly count by category and department</div>
+              </div>
+            </div>
+            <div class="screenshot-item">
+              <a href="#" class="lightbox-trigger" data-src="../assets/expense-compliance/pbi_cost_savings.png" data-label="Cost Savings Opportunities — $12.22M projected via budget caps">
+                <img src="../assets/expense-compliance/pbi_cost_savings.png" alt="Power BI Cost Savings Opportunities" loading="lazy" />
+              </a>
+              <div class="screenshot-caption">
+                <div class="screenshot-caption-title">Cost Savings Opportunities</div>
+                <div class="screenshot-caption-desc">$12.22M projected savings (29% of spend), 26,693 over-cap claims, Communication the top opportunity at $3.5M — savings by category waterfall, variance bubble chart, department benchmark bars</div>
+              </div>
+            </div>
+            <div class="screenshot-item">
+              <a href="#" class="lightbox-trigger" data-src="../assets/expense-compliance/pbi_payment_timeline.png" data-label="Payment Processing Timeline — approval cycle analysis by department">
+                <img src="../assets/expense-compliance/pbi_payment_timeline.png" alt="Power BI Payment Processing Timeline" loading="lazy" />
+              </a>
+              <div class="screenshot-caption">
+                <div class="screenshot-caption-title">Payment Processing Timeline</div>
+                <div class="screenshot-caption-desc">Avg 12 days to submit, 632 days to approve, 27 days to pay, 668-day total cycle — cycle time by department, category, and payment method to surface processing bottlenecks</div>
+              </div>
+            </div>
+          </div>
+          <p class="enlarge-hint">Click any screenshot to enlarge</p>
+        </div>
+
+        <!-- AI Agent panel -->
+        <div class="dash-panel" id="dash-agent">
+          <p class="proj-p" style="margin-bottom:16px">LangGraph ReAct agent with 11 forensic tools, deployed on Google Vertex AI Reasoning Engine. The agent queries PostgreSQL directly, maintains conversational memory via LangGraph's PostgresSaver checkpointer, and is traced end-to-end in LangFuse. The Gradio frontend is auth-protected and supports natural-language compliance investigations.</p>
+          <div class="screenshot-item" style="max-width:100%">
+            <a href="#" class="lightbox-trigger" data-src="../assets/expense-compliance/gradio_agent.png" data-label="AI Forensic Agent — conversational compliance analysis on Vertex AI">
+              <img src="../assets/expense-compliance/gradio_agent.png" alt="Gradio AI Forensic Agent interface" loading="lazy" />
+            </a>
+            <div class="screenshot-caption">
+              <div class="screenshot-caption-title">AI Forensic Agent — Gradio UI</div>
+              <div class="screenshot-caption-desc">A compliance officer sets a new "High Priority Critical" benchmark at 85% compliance rate. The agent scans all departments, identifies Engineering as falling below the threshold (51–78% observed), and delivers a structured executive insight with recommended intervention actions — all via natural language, no SQL required.</div>
+            </div>
+          </div>
+          <p class="enlarge-hint">Click to enlarge</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── SECTION 7: BUSINESS IMPACT ───────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#EAF3DE;color:#3B6D11">7</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Business Impact</div>
+          <div class="sec-desc">Quantified outcomes tied directly to the original problem</div>
+        </div>
+        <div class="sec-audience">
+          <span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span>
+          <span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span>
+        </div>
+      </div>
+      <div class="proj-section-body">
+        <div class="impact-grid">
+          <div class="impact-card">
+            <div class="impact-val">21</div>
+            <div class="impact-label">Fraud signals across 3 tiers — transaction, behavioural, approver</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">1,143</div>
+            <div class="impact-label">Anomalous claims flagged totalling $3.21M in suspicious spend</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">$12.22M</div>
+            <div class="impact-label">Projected annual savings from budget cap enforcement (29% of spend)</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">9,479</div>
+            <div class="impact-label">Rejected claims with root-cause breakdown by dept, category, and payment method</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">6</div>
+            <div class="impact-label">Power BI dashboard pages covering executive, dept, compliance, anomaly, savings, and timeline views</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">AI</div>
+            <div class="impact-label">Forensic analyst on Vertex AI — natural-language compliance investigation, no SQL required</div>
+          </div>
+        </div>
+        <p class="proj-p" style="font-size:12px;color:var(--gray)">
+          <strong>Note on metrics:</strong> This project uses a synthetic dataset generated via SDV GaussianCopulaSynthesizer, modelled on realistic enterprise expense patterns with 5 injected fraud archetypes. All metrics reflect the analysed dataset. Real-world deployment would require connecting to a live ERP/expense management system and A/B testing against the existing audit process.
+        </p>
+      </div>
+    </div>
+
+    <!-- ── SECTION 8: REFLECTIONS ────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:var(--gray-light);color:var(--gray)">8</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Reflections &amp; What I'd Do Differently</div>
+          <div class="sec-desc">Honest assessment — the section most junior portfolios omit</div>
+        </div>
+        <div class="sec-audience">
+          <span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span>
+          <span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span>
+        </div>
+      </div>
+      <div class="proj-section-body">
+        <div class="refl-grid">
+          <div class="refl-card good">
+            <div class="refl-card-label">&#x2713; What worked well</div>
+            <div class="refl-item"><div class="refl-dot"></div><div>The three-tier signal architecture (transaction → behavioural → approver) was the right design. By separating concerns, each group was independently testable, and the approver-level signals caught collusion patterns that neither transaction nor behavioural analysis alone could surface.</div></div>
+            <div class="refl-item"><div class="refl-dot"></div><div>Running all four anomaly methods in parallel and comparing precision/recall against the ground-truth <code style="font-size:11px;background:#eee;padding:1px 4px;border-radius:3px">is_fraud</code> label gave the audit team a concrete basis for choosing which method to operationalise — not just a black-box recommendation.</div></div>
+            <div class="refl-item"><div class="refl-dot"></div><div>The deadlock-free AI agent design — separate connection pools for the LangGraph checkpointer and the forensic query tools — was a non-obvious but critical architectural detail that would have caused silent failures in production without it.</div></div>
+          </div>
+          <div class="refl-card change">
+            <div class="refl-card-label">&#x21BA; What I'd do differently</div>
+            <div class="refl-item"><div class="refl-dot"></div><div>I'd replace the rule-based fraud engine with a hybrid approach: keep the 21 signals as interpretable features, but train a gradient-boosted classifier on top of them rather than using a fixed weighted sum. The weights were manually calibrated — a learned model would optimise them from labelled data.</div></div>
+            <div class="refl-item"><div class="refl-dot"></div><div>The Power BI report connects to PostgreSQL via DirectQuery. For a production deployment with 100K+ records, I'd pre-aggregate into a dedicated BI semantic layer (dbt + Snowflake or BigQuery) to reduce query latency and decouple the BI layer from the operational database.</div></div>
+            <div class="refl-item"><div class="refl-dot"></div><div>The AI agent currently has read-only forensic tools. I'd add write-back actions — flagging a claim for human review, triggering a Jira ticket for the audit team, or updating a case management system — to close the loop from insight to action.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer nav -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:40px;padding-top:32px;border-top:1px solid var(--card-border)">
+      <a href="../index.html#projects" class="proj-back">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to all projects
+      </a>
+      <a href="../index.html#contact" style="font-size:13px;font-weight:500;color:var(--orange)">Hire me →</a>
+    </div>
+
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox-backdrop" id="lightbox">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+    <img id="lightbox-img" src="" alt="" />
+    <div class="lightbox-label" id="lightbox-label"></div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.dash-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.dash-tab').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('dash-' + tab).classList.add('active');
+      });
+    });
+
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightbox-img');
+    const lbLabel = document.getElementById('lightbox-label');
+    const lbClose = document.getElementById('lightbox-close');
+
+    function openLightbox(src, label) {
+      lbImg.src = src; lbImg.alt = label; lbLabel.textContent = label;
+      lb.classList.add('open'); document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      lb.classList.remove('open'); lbImg.src = ''; document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.lightbox-trigger').forEach(a => {
+      a.addEventListener('click', e => { e.preventDefault(); openLightbox(a.dataset.src, a.dataset.label); });
+    });
+    lbClose.addEventListener('click', closeLightbox);
+    lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && lb.classList.contains('open')) closeLightbox(); });
+  </script>
+
+</body>
+</html>

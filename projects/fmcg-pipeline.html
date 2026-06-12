@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FMCG Retail Lakehouse ETL Pipeline — Ankit Addya</title>
+  <meta name="description" content="Post-acquisition data unification for Atlon and SportsBar Nutrition — Bronze→Silver→Gold Medallion Architecture on Databricks, real-world DQ fixes, Delta UPSERT merges, Databricks Workflow orchestration, Genie AI, and a built-in BI dashboard." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Bebas+Neue&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .proj-back { display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--gray);padding:10px 0 0;transition:color .2s; }
+    .proj-back:hover { color:var(--black); }
+    .proj-back svg { width:16px;height:16px;stroke:currentColor;fill:none; }
+
+    .proj-page { max-width:820px;margin:0 auto;padding:0 32px 120px; }
+
+    .role-tags { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px; }
+    .rtag { display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:4px 12px;border-radius:999px;letter-spacing:.02em; }
+    .rtag-de { background:#FEF3C7;color:#92400E; }
+    .rtag-da { background:#E6F1FB;color:#0C447C; }
+
+    .proj-hero { background:#111111;border-radius:20px;padding:48px;margin:32px 0 10px;color:#fff;position:relative;overflow:hidden; }
+    .proj-hero::before { content:'DELTA';position:absolute;right:-10px;bottom:-30px;font-family:'Bebas Neue',sans-serif;font-size:140px;color:rgba(255,85,0,.08);line-height:1;pointer-events:none;user-select:none; }
+    .proj-hero-eyebrow { font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:14px; }
+    .proj-hero h1 { font-size:clamp(20px,3.2vw,34px);font-weight:700;line-height:1.2;margin-bottom:14px;color:#fff; }
+    .proj-hero-sub { font-size:15px;color:#aaa;line-height:1.65;max-width:580px;margin-bottom:28px; }
+    .proj-metrics-row { display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px; }
+    .proj-metric { background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px;text-align:center; }
+    .proj-metric-val { font-size:22px;font-weight:700;color:var(--orange);line-height:1; }
+    .proj-metric-label { font-size:10px;color:#888;margin-top:5px;line-height:1.4; }
+    .proj-meta-pills { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px; }
+    .proj-meta-pill { display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#888;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:5px 12px; }
+    .proj-hero-actions { display:flex;gap:10px;flex-wrap:wrap; }
+    .btn-hero-github { display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:999px;border:1.5px solid rgba(255,255,255,.2);background:transparent;color:#fff;font-size:13px;font-weight:500;transition:background .2s,border-color .2s;text-decoration:none; }
+    .btn-hero-github svg { width:16px;height:16px;fill:currentColor;flex-shrink:0; }
+    .btn-hero-github:hover { background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.4); }
+
+    .proj-section { border:1.5px solid var(--card-border);border-radius:16px;background:var(--white);margin-bottom:10px;overflow:hidden; }
+    .proj-section-header { display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--card-border); }
+    .sec-num { width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0; }
+    .sec-head-text { flex:1; }
+    .sec-title { font-size:15px;font-weight:600;color:var(--black); }
+    .sec-desc { font-size:12px;color:var(--gray);margin-top:2px; }
+    .sec-audience { display:flex;gap:5px;margin-left:auto;flex-shrink:0; }
+    .proj-section-body { padding:20px; }
+
+    .proj-p { font-size:14px;color:#333;line-height:1.75;margin-bottom:12px; }
+    .proj-p:last-child { margin-bottom:0; }
+
+    .two-col { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+    .info-card { background:var(--gray-light);border-radius:10px;padding:14px; }
+    .info-card-label { font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--gray);margin-bottom:6px; }
+    .info-card-value { font-size:13px;color:var(--black);font-weight:500;line-height:1.5; }
+
+    .pull-quote { border-left:3px solid var(--orange);padding:12px 16px;background:#FFF8F5;border-radius:0 10px 10px 0;margin-bottom:14px; }
+    .pull-quote p { font-size:14px;font-style:italic;color:#333;line-height:1.7; }
+
+    .step-list { display:flex;flex-direction:column; }
+    .step-row { display:flex;gap:14px;align-items:flex-start;padding:10px 0; }
+    .step-icon { width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px; }
+    .step-content { flex:1; }
+    .step-title { font-size:14px;font-weight:600;color:var(--black);margin-bottom:3px; }
+    .step-body { font-size:13px;color:var(--gray);line-height:1.6; }
+    .step-connector { width:2px;height:10px;background:var(--card-border);margin-left:15px; }
+
+    .stack-row { display:flex;gap:6px;flex-wrap:wrap;margin-top:10px; }
+    .stag-proj { font-size:11px;font-weight:500;padding:4px 10px;border-radius:6px;background:var(--gray-light);color:#333;border:1px solid var(--card-border); }
+
+    /* Medallion layer cards */
+    .medallion-row { display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;align-items:center;margin:16px 0; }
+    .med-layer { border-radius:12px;padding:16px;text-align:center; }
+    .med-bronze { background:#FDF4E7;border:1.5px solid #F0C070; }
+    .med-silver { background:#F2F2F2;border:1.5px solid #BBBBBB; }
+    .med-gold { background:#FFFBEA;border:1.5px solid #E8C840; }
+    .med-arrow { font-size:20px;color:var(--gray);text-align:center;padding:0 8px; }
+    .med-icon { font-size:22px;margin-bottom:6px; }
+    .med-name { font-size:13px;font-weight:700;color:var(--black);margin-bottom:4px; }
+    .med-desc { font-size:11px;color:var(--gray);line-height:1.5; }
+    .med-tables { margin-top:8px;display:flex;flex-direction:column;gap:4px; }
+    .med-table-pill { font-size:10px;background:rgba(0,0,0,.06);border-radius:4px;padding:2px 7px;color:#444;font-family:monospace; }
+
+    /* Pipeline table */
+    .pipeline-table { width:100%;border-collapse:collapse;font-size:12px;margin:14px 0; }
+    .pipeline-table th { text-align:left;padding:8px 10px;background:var(--gray-light);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gray);border-bottom:1.5px solid var(--card-border); }
+    .pipeline-table td { padding:9px 10px;border-bottom:1px solid var(--card-border);color:#333;vertical-align:top;line-height:1.5; }
+    .pipeline-table tr:last-child td { border-bottom:none; }
+    .layer-badge { display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600; }
+    .lb-bronze { background:#FDF4E7;color:#92400E; }
+    .lb-silver { background:#F2F2F2;color:#555; }
+    .lb-gold { background:#FFFBEA;color:#856A00; }
+    code.inline { font-size:11px;background:#f0f0f0;padding:1px 5px;border-radius:3px;font-family:monospace;color:#333; }
+
+    /* DQ table */
+    .dq-table { width:100%;border-collapse:collapse;font-size:12px;margin:12px 0; }
+    .dq-table th { text-align:left;padding:8px 10px;background:#111;color:#fff;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em; }
+    .dq-table th:first-child { border-radius:8px 0 0 0; }
+    .dq-table th:last-child { border-radius:0 8px 0 0; }
+    .dq-table td { padding:9px 10px;border-bottom:1px solid var(--card-border);color:#333;vertical-align:top;line-height:1.5; }
+    .dq-table tr:last-child td { border-bottom:none; }
+    .dq-table tr:last-child td:first-child { border-radius:0 0 0 8px; }
+    .dq-table tr:last-child td:last-child { border-radius:0 0 8px 0; }
+    .dq-before { color:#C0392B;font-family:monospace;font-size:11px; }
+    .dq-after  { color:#0F6E56;font-family:monospace;font-size:11px; }
+    .dq-entity { font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--gray); }
+
+    /* Row count metrics */
+    .rowcount-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0; }
+    .rowcount-card { border:1.5px solid var(--card-border);border-radius:10px;padding:14px; }
+    .rowcount-entity { font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--gray);margin-bottom:8px; }
+    .rowcount-flow { display:flex;align-items:center;gap:6px; }
+    .rc-val { font-size:15px;font-weight:700;color:var(--black); }
+    .rc-arrow { font-size:12px;color:var(--gray); }
+    .rc-val.final { color:var(--orange); }
+    .rowcount-label { font-size:10px;color:var(--gray);margin-top:4px; }
+
+    /* Impact cards */
+    .impact-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px; }
+    .impact-card { background:#F5FFF9;border:1.5px solid #C2EDDA;border-radius:10px;padding:16px;text-align:center; }
+    .impact-val { font-size:26px;font-weight:700;color:#0F6E56; }
+    .impact-label { font-size:11px;color:#3B6D55;margin-top:4px;line-height:1.4; }
+
+    /* Reflections */
+    .refl-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px; }
+    .refl-card { background:var(--gray-light);border-radius:10px;padding:16px; }
+    .refl-card-label { font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px; }
+    .refl-card.good .refl-card-label { color:#0F6E56; }
+    .refl-card.change .refl-card-label { color:#854F0B; }
+    .refl-item { display:flex;gap:8px;margin-bottom:8px;font-size:13px;color:#333;line-height:1.55; }
+    .refl-item:last-child { margin-bottom:0; }
+    .refl-dot { width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:6px; }
+    .refl-card.good .refl-dot { background:#0F6E56; }
+    .refl-card.change .refl-dot { background:#EF9F27; }
+
+    /* Architecture image */
+    .arch-img-wrap { border:1.5px solid var(--card-border);border-radius:12px;overflow:hidden;margin:14px 0;cursor:zoom-in;transition:box-shadow .2s; }
+    .arch-img-wrap:hover { box-shadow:0 4px 20px rgba(0,0,0,.1); }
+    .arch-img-wrap img { width:100%;display:block; }
+
+    /* Lightbox */
+    .lightbox-backdrop { display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;align-items:center;justify-content:center;padding:24px;cursor:zoom-out; }
+    .lightbox-backdrop.open { display:flex; }
+    .lightbox-backdrop img { max-width:100%;max-height:90vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.5);object-fit:contain;cursor:default; }
+    .lightbox-close { position:fixed;top:20px;right:24px;color:#fff;font-size:32px;background:none;border:none;cursor:pointer;line-height:1;opacity:.7;transition:opacity .15s;z-index:10000; }
+    .lightbox-close:hover { opacity:1; }
+    .enlarge-hint { font-size:11px;color:var(--gray);margin-top:6px;text-align:right; }
+
+    /* Honest scope callout */
+    .scope-callout { border:1.5px solid #F0C070;border-radius:10px;padding:14px 16px;background:#FFFBEA;margin:14px 0; }
+    .scope-callout-title { font-size:12px;font-weight:600;color:#856A00;margin-bottom:6px; }
+    .scope-callout-body { font-size:13px;color:#555;line-height:1.65; }
+
+    @media (max-width:640px) {
+      .proj-page { padding:0 20px 80px; }
+      .proj-hero { padding:28px 24px;border-radius:14px; }
+      .proj-metrics-row { grid-template-columns:1fr 1fr; }
+      .two-col,.refl-grid { grid-template-columns:1fr; }
+      .medallion-row { grid-template-columns:1fr;gap:4px; }
+      .med-arrow { transform:rotate(90deg); }
+      .rowcount-grid,.impact-grid { grid-template-columns:1fr 1fr; }
+      .proj-hero::before { font-size:90px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="../index.html#projects" class="nav-link active">← Portfolio</a>
+    </div>
+  </nav>
+
+  <div class="proj-page" style="padding-top:100px;">
+
+    <!-- ── SECTION 1: HERO ──────────────────────────────────────── -->
+    <div class="proj-hero">
+      <div class="proj-hero-eyebrow">Project Deep-Dive</div>
+      <h1>FMCG Retail Lakehouse<br>ETL Pipeline</h1>
+      <p class="proj-hero-sub">Post-acquisition data unification for sports equipment manufacturer Atlon and its acquired nutrition startup SportsBar — Bronze→Silver→Gold Medallion Architecture on Databricks, 10+ real-world DQ fixes, Delta UPSERT merges consolidating both companies into a single Gold layer, a 4-task Databricks Workflow running nightly, and a self-service analytics layer built on Databricks Genie and a BI dashboard.</p>
+
+      <div class="role-tags" style="margin-bottom:24px">
+        <span class="rtag rtag-de">&#x2699; Data Engineer</span>
+        <span class="rtag rtag-da">&#x1F4CA; Analytics Engineer</span>
+      </div>
+
+      <div class="proj-metrics-row">
+        <div class="proj-metric">
+          <div class="proj-metric-val">60K+</div>
+          <div class="proj-metric-label">Order records processed</div>
+        </div>
+        <div class="proj-metric">
+          <div class="proj-metric-val">3</div>
+          <div class="proj-metric-label">Medallion layers (Bronze → Silver → Gold)</div>
+        </div>
+        <div class="proj-metric">
+          <div class="proj-metric-val">9</div>
+          <div class="proj-metric-label">City typo variants fixed</div>
+        </div>
+        <div class="proj-metric">
+          <div class="proj-metric-val">4</div>
+          <div class="proj-metric-label">Date formats parsed in one column</div>
+        </div>
+      </div>
+
+      <div class="proj-meta-pills">
+        <span class="proj-meta-pill">&#x1F6D2; FMCG / Retail Data Engineering</span>
+        <span class="proj-meta-pill">&#x1F4C5; ~2 months</span>
+        <span class="proj-meta-pill" style="color:#4ade80">&#x2713; Pipeline complete</span>
+      </div>
+
+      <div class="proj-hero-actions">
+        <a href="https://github.com/addy9051/fmcg_retail_lakehouse_etl_data_eng" class="btn-hero-github" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          View on GitHub
+        </a>
+      </div>
+    </div>
+
+    <!-- ── SECTION 2: BUSINESS CONTEXT ──────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#FAECE7;color:#993C1D">2</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Business Context</div>
+          <div class="sec-desc">What the business does, what data it produces, and why a lakehouse was the right foundation</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-de" style="font-size:11px;padding:3px 8px">DE</span></div>
+      </div>
+      <div class="proj-section-body">
+        <p class="proj-p"><strong>Atlon</strong> is a large manufacturer of sports equipment (cricket bats, badminton rackets, volleyballs, etc.) operating across several countries. For years their analytics ran on a mature Databricks platform — Bronze→Silver→Gold Delta layers feeding BI dashboards. Then Atlon acquired <strong>SportsBar Nutrition</strong>, a fast-growing startup in energy bars and athletic nutrition. Atlon's leadership chose to retain SportsBar's culture, teams, and processes — a respectful but risky decision.</p>
+        <p class="proj-p">The consequences became clear quickly. SportsBar's data was everywhere: spreadsheets, cloud drives, and hastily built APIs. Data formats didn't match. Reporting cycles didn't align. Some months of SportsBar's order data were simply missing — lost during their hyper-growth phase. As Atlon prepared to unify supply chain forecasting and inventory planning across both companies, the data chaos became a bottleneck. Metrics were inconsistent. Sales numbers conflicted. Nothing tied together.</p>
+        <div class="pull-quote">
+          <p>"Give us a reliable data layer for both companies — something we can use until we fix this mess." — Bruce, COO, Atlon</p>
+        </div>
+        <p class="proj-p">Bruce, the COO, commissioned the data engineering team — led by Tony Sharma and executed by data engineer Peter — to solve the problem. Three success criteria were defined: unified and reliable analytics for both companies in a single dashboard; a low learning curve so newly hired analysts could pick it up quickly; and a scalable long-term architecture that could survive if the migration took two or three years instead of one.</p>
+        <div class="two-col" style="margin-top:14px">
+          <div class="info-card">
+            <div class="info-card-label">Parent company (Atlon)</div>
+            <div class="info-card-value">Established B2B sports equipment manufacturer. Gold layer in Databricks already existed — populated from historical CSVs (Jan 2024 – Nov 2025). Products: cricket, badminton, volleyball, etc. across a star schema. 93K+ transaction records.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Child company (SportsBar)</div>
+            <div class="info-card-value">18 SKUs across 6 categories (Energy Bars, Protein Bars, Granola &amp; Cereals, Recovery Dairy, Healthy Snacks, Electrolyte Mix). 35 B2B retail accounts across Bengaluru, Hyderabad, and New Delhi. Data in messy CSVs on S3.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Order data — SportsBar</div>
+            <div class="info-card-value">51,810 rows (full load, Jul–Nov 2025) + 8,834 rows (incremental, Dec 2025). Daily grain in source → aggregated to monthly grain in Gold for consistency with Atlon's existing schema.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Data destination</div>
+            <div class="info-card-value">Databricks Unity Catalog — <code class="inline">fmcg</code> catalog, 3 schemas: <code class="inline">bronze</code>, <code class="inline">silver</code>, <code class="inline">gold</code>. SportsBar data flows through all three layers; Atlon's data lives directly in Gold. All tables are Delta with Change Data Feed.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 3: PROBLEM STATEMENT ─────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#FAEEDA;color:#854F0B">3</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Problem Statement</div>
+          <div class="sec-desc">Why querying raw CSVs directly is not a data strategy</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-de" style="font-size:11px;padding:3px 8px">DE</span></div>
+      </div>
+      <div class="proj-section-body">
+        <div class="pull-quote">
+          <p>SportsBar's data was everywhere — spreadsheets, cloud drives, CSV dumps — with no schema contract. Four date formats in the same column, city names spelled nine different ways, a product name misspelled consistently across every protein record, negative prices, and non-numeric IDs. Meanwhile, Atlon's leadership needed a single dashboard showing unified metrics across both companies by end of November 2025.</p>
+        </div>
+        <div class="two-col">
+          <div class="info-card">
+            <div class="info-card-label">No schema enforcement</div>
+            <div class="info-card-value">S3 CSVs land with no validation. Date column contained <code class="inline">yyyy/MM/dd</code>, <code class="inline">dd/MM/yyyy</code>, <code class="inline">yyyy-MM-dd</code>, and <code class="inline">dd-MM-yyyy</code> — all in the same column across different batches.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">No separation of raw vs clean</div>
+            <div class="info-card-value">Without a Bronze layer preserving raw state and a Silver layer enforcing quality, there is no audit trail and no safe surface for analysts to query — every ad hoc query hits raw, unvalidated data.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">No incremental strategy</div>
+            <div class="info-card-value">Without an incremental load pattern, adding new data means re-processing the entire dataset. For growing order history this becomes prohibitively slow and expensive.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">No surrogate keys</div>
+            <div class="info-card-value">Raw IDs are not guaranteed numeric. <code class="inline">customer_id</code> and <code class="inline">product_id</code> both had non-numeric values in source. No consistent join key existed across tables.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 4: ROOT CAUSE ANALYSIS ───────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#E1F5EE;color:#0F6E56">4</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Root Cause Analysis</div>
+          <div class="sec-desc">Where the data quality issues actually came from</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-de" style="font-size:11px;padding:3px 8px">DE</span></div>
+      </div>
+      <div class="proj-section-body">
+        <div class="step-list">
+          <div class="step-row">
+            <div class="step-icon" style="background:#FAEEDA">&#x1F4E4;</div>
+            <div class="step-content">
+              <div class="step-title">ERP exports have no format contract</div>
+              <div class="step-body">Different export configurations or ERP upgrades over time produced inconsistent date formats. The same date column carries <code class="inline">yyyy/MM/dd</code>, <code class="inline">dd/MM/yyyy</code>, <code class="inline">yyyy-MM-dd</code>, and <code class="inline">dd-MM-yyyy</code> depending on when the batch was exported. There is no enforced output schema at the source.</div>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-row">
+            <div class="step-icon" style="background:#FEF3C7">&#x270F;</div>
+            <div class="step-content">
+              <div class="step-title">Free-text fields with no validation</div>
+              <div class="step-body">City and product name fields are free-text in the source system. Human data entry produced 9 variants of 3 city names (Bengalore, Bengaluruu, Hyderbad, Hyderabadd, NewDelhi, NewDheli, NewDelhee, etc.) and a persistent "Protien" misspelling across all protein product records. These go undetected without a cleaning layer.</div>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-row">
+            <div class="step-icon" style="background:#E6F1FB">&#x1F3AF;</div>
+            <div class="step-content">
+              <div class="step-title">No data platform layer between source and consumers</div>
+              <div class="step-body">The fix required a Medallion Architecture: Bronze preserves the raw source state exactly as received (with file metadata), Silver enforces schema, applies quality rules, and produces a validated dataset, and Gold applies business aggregations (daily → monthly grain) ready for reporting. Without this separation, every consumer builds their own cleaning logic — inconsistently.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 5: TECHNICAL APPROACH ────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#EEEDFE;color:#3C3489">5</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Technical Approach</div>
+          <div class="sec-desc">The Medallion Architecture, pipeline-by-pipeline logic, and key engineering decisions</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-de" style="font-size:11px;padding:3px 8px">DE</span></div>
+      </div>
+      <div class="proj-section-body">
+
+        <!-- Architecture image -->
+        <div class="arch-img-wrap lightbox-trigger" data-src="../assets/fmcg-pipeline/project_architecture.png" data-label="FMCG Retail Lakehouse — project architecture diagram">
+          <img src="../assets/fmcg-pipeline/project_architecture.png" alt="FMCG Retail Lakehouse project architecture" />
+        </div>
+        <p class="enlarge-hint" style="margin-bottom:16px">Click to enlarge</p>
+
+        <!-- Medallion layers -->
+        <div class="medallion-row">
+          <div class="med-layer med-bronze">
+            <div class="med-icon">&#x1F7E4;</div>
+            <div class="med-name">Bronze</div>
+            <div class="med-desc">Raw ingestion — exact copy of source CSVs with file metadata appended (<code class="inline">read_timestamp</code>, <code class="inline">file_name</code>, <code class="inline">file_size</code>). No transformations. Change Data Feed enabled.</div>
+            <div class="med-tables">
+              <span class="med-table-pill">bronze.customers</span>
+              <span class="med-table-pill">bronze.products</span>
+              <span class="med-table-pill">bronze.gross_price</span>
+              <span class="med-table-pill">bronze.orders</span>
+            </div>
+          </div>
+          <div class="med-arrow">→</div>
+          <div class="med-layer med-silver">
+            <div class="med-icon">&#x26AA;</div>
+            <div class="med-name">Silver</div>
+            <div class="med-desc">Validated &amp; cleaned — deduplication, typo fixes, format normalisation, null patching, type casts. Safe to join across tables.</div>
+            <div class="med-tables">
+              <span class="med-table-pill">silver.customers</span>
+              <span class="med-table-pill">silver.products</span>
+              <span class="med-table-pill">silver.gross_price</span>
+              <span class="med-table-pill">silver.orders</span>
+            </div>
+          </div>
+          <div class="med-arrow">→</div>
+          <div class="med-layer med-gold">
+            <div class="med-icon">&#x1F7E1;</div>
+            <div class="med-name">Gold</div>
+            <div class="med-desc">SportsBar staging tables merged into Atlon's consolidated Gold via Delta UPSERT. Both companies' data unified in a single schema.</div>
+            <div class="med-tables">
+              <span class="med-table-pill">gold.dim_date</span>
+              <span class="med-table-pill">gold.dim_customers ★</span>
+              <span class="med-table-pill">gold.dim_products ★</span>
+              <span class="med-table-pill">gold.dim_gross_price ★</span>
+              <span class="med-table-pill">gold.fact_orders ★</span>
+              <span class="med-table-pill">gold.vw_order_analysis</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pipeline breakdown table -->
+        <p class="proj-p" style="margin-top:18px;font-weight:600;font-size:13px;color:var(--black)">What each pipeline actually does</p>
+        <table class="pipeline-table">
+          <thead><tr><th>Pipeline</th><th>Bronze → Silver transformations</th><th>Silver → Gold</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Customers</strong><br><span class="dq-entity">35 records</span></td>
+              <td>Deduplicate on <code class="inline">customer_id</code> (39→35) · Trim whitespace · Fix 9 city typos · Patch 4 null cities from hardcoded map · Title-case names via <code class="inline">F.initcap()</code> · Cast <code class="inline">customer_id</code> to string · Add static cols: <code class="inline">market="India"</code>, <code class="inline">platform="Sports Bar"</code>, <code class="inline">channel="Acquisition"</code></td>
+              <td>Select 7 columns · Delta UPSERT merge on <code class="inline">customer_code</code></td>
+            </tr>
+            <tr>
+              <td><strong>Products</strong><br><span class="dq-entity">18 records</span></td>
+              <td>Deduplicate on <code class="inline">product_id</code> (20→18) · Title-case category · Regex-replace "Protien"→"Protein" (case-insensitive) · Map 6 categories → 6 divisions · Extract size/flavour variant via regex <code class="inline">\((.*?)\)</code> · Validate <code class="inline">product_id</code> numeric (else "999999") · Generate <code class="inline">product_code</code> as SHA2-256 hash of product name</td>
+              <td>Delta UPSERT merge on <code class="inline">product_code</code></td>
+            </tr>
+            <tr>
+              <td><strong>Gross Price</strong><br><span class="dq-entity">6 months</span></td>
+              <td>Parse month field with 4 date patterns → normalise to <code class="inline">yyyy-MM-dd</code> · Replace negative prices with <code class="inline">F.abs()</code> · Non-numeric prices → 0 · Inner join to products to resolve <code class="inline">product_code</code></td>
+              <td>Window function (<code class="inline">partitionBy(product_code, year).orderBy(is_zero, month.desc())</code>) selects latest non-zero price per product per year · Delta UPSERT merge on <code class="inline">product_code</code></td>
+            </tr>
+            <tr>
+              <td><strong>Fact Orders (Full)</strong><br><span class="dq-entity">51,810 rows</span></td>
+              <td>Filter <code class="inline">order_qty IS NOT NULL</code> · Clean non-numeric <code class="inline">customer_id</code> → "999999" · Strip weekday prefix from date string (e.g. "Tuesday, July 01, 2025" → "July 01, 2025") · Parse date with 4 formats · Deduplicate on <code class="inline">(order_id, date, customer_id, product_id, qty)</code> · Join to products silver for <code class="inline">product_code</code> · Move landing CSVs → processed/</td>
+              <td>Aggregate daily → monthly grain: <code class="inline">GROUP BY month_start, product_code, customer_code, SUM(sold_quantity)</code> · 51,810 → 3,060 monthly rows · Delta UPSERT merge on <code class="inline">(date, product_code, customer_code)</code></td>
+            </tr>
+            <tr>
+              <td><strong>Fact Orders (Incremental)</strong><br><span class="dq-entity">8,834 new rows</span></td>
+              <td>Same 5 Silver transformations applied to Dec 2025 batch only · Load into staging table</td>
+              <td>Identify affected months via temp view · Filter parent fact table to those months only (7,736 rows) · Re-aggregate to monthly grain (612 rows) · Delta UPSERT merge back · Drop staging tables on completion</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Key engineering decisions -->
+        <p class="proj-p" style="margin-top:16px;font-weight:600;font-size:13px;color:var(--black)">Two key engineering decisions worth explaining</p>
+        <div class="two-col">
+          <div class="info-card">
+            <div class="info-card-label">SHA2-256 surrogate keys for products</div>
+            <div class="info-card-value">Raw <code class="inline">product_id</code> values are unreliable (non-numeric values fallback to "999999"). Instead of using the raw ID as a join key, a deterministic SHA2-256 hash of the product name is used as <code class="inline">product_code</code>. This is stable across data sources, survives ID changes in the ERP, and is collision-resistant for a 18-product catalogue.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Incremental load re-aggregates affected months</div>
+            <div class="info-card-value">The incremental pattern doesn't just append new rows. It identifies which calendar months are touched by the new batch, extracts those months from the parent fact table, re-aggregates them including the new data, then merges back. This ensures monthly aggregates stay correct even if the new batch corrects earlier records.</div>
+          </div>
+        </div>
+
+        <!-- Orchestration -->
+        <p class="proj-p" style="margin-top:20px;font-weight:600;font-size:13px;color:var(--black)">Orchestration — Databricks Workflow</p>
+        <p class="proj-p">A 4-task Databricks Job was set up to run the incremental pipeline automatically. Tasks run in dependency order: Customers → Products → Pricing → Fact Orders (incremental). The job is scheduled at 11 PM daily (after business close) so each day's new order file is picked up from S3 landing, processed through Silver, and merged into the consolidated Gold tables overnight. Email alerts were configured for failure and success. Widgets on each notebook allow environment variables (catalog name, bucket path) to be passed at runtime without touching code.</p>
+        <div class="two-col" style="margin-bottom:14px">
+          <div class="info-card">
+            <div class="info-card-label">Job structure (4 tasks)</div>
+            <div class="info-card-value">1. Customer data processing → 2. Products data processing → 3. Gross price processing → 4. Fact orders (incremental load). Sequential dependency; task 2 depends on 1, etc.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Daily file pattern</div>
+            <div class="info-card-value">New order CSV lands in S3 <code class="inline">landing/</code> each night. Pipeline processes it, appends to Bronze, cleans into Silver staging, merges to Gold, then moves file to <code class="inline">processed/</code> — preventing reprocessing on the next run.</div>
+          </div>
+        </div>
+
+        <!-- Analytics layer -->
+        <p class="proj-p" style="font-weight:600;font-size:13px;color:var(--black)">Analytics Layer — Unified View, Genie &amp; Dashboard</p>
+        <p class="proj-p">Above the Gold tables, a denormalized view (<code class="inline">gold.vw_order_analysis</code>) was created by joining all five Gold tables — fact orders with date, product, customer, and price dimensions. This single flat table exposes all columns analysts need (quarter, channel, category, total revenue = sold_quantity × gross_price INR, etc.) without requiring joins at query time.</p>
+        <div class="two-col" style="margin-bottom:14px">
+          <div class="info-card">
+            <div class="info-card-label">Databricks Genie</div>
+            <div class="info-card-value">Genie was configured against the unified view. Natural language queries such as "top 5 customers by sold quantity" or "total revenue by quarter" are converted to SQL automatically. Results render with auto-generated charts — no manual SQL needed for ad hoc analysis.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Databricks BI Dashboard</div>
+            <div class="info-card-value">A dashboard was built with: KPI counters (total revenue, total quantity), interactive filters (year, quarter, month, channel, category), a top-10 products bar chart by revenue with tooltip for sold quantity, and a revenue share by channel pie chart. Filters refresh all visuals in place.</div>
+          </div>
+        </div>
+
+        <p class="proj-p" style="font-weight:600;font-size:13px;color:var(--black)">Stack</p>
+        <div class="stack-row">
+          <span class="stag-proj">Databricks (Free Edition)</span>
+          <span class="stag-proj">Apache Spark / PySpark</span>
+          <span class="stag-proj">Delta Lake</span>
+          <span class="stag-proj">Unity Catalog</span>
+          <span class="stag-proj">Amazon S3</span>
+          <span class="stag-proj">SQL (%sql cells)</span>
+          <span class="stag-proj">dbutils (fs + widgets)</span>
+          <span class="stag-proj">pyspark.sql.functions</span>
+          <span class="stag-proj">pyspark.sql.window.Window</span>
+          <span class="stag-proj">delta.tables.DeltaTable</span>
+          <span class="stag-proj">Databricks Jobs / Workflows</span>
+          <span class="stag-proj">Databricks Genie</span>
+          <span class="stag-proj">Databricks Dashboard</span>
+          <span class="stag-proj">Python 3</span>
+        </div>
+
+        <div class="scope-callout" style="margin-top:16px">
+          <div class="scope-callout-title">&#x2139;&#xFE0F; Scope clarification: what was and wasn't built</div>
+          <div class="scope-callout-body"><strong>Built in full:</strong> the SportsBar (child company) Bronze→Silver→Gold pipeline, Delta UPSERT merges into Atlon's consolidated Gold tables, a Databricks Workflow for daily orchestration, a denormalized unified view, Databricks Genie setup, and a BI dashboard. <strong>Atlon's pipeline</strong> was not built (it's treated as pre-existing) — Atlon's Gold tables were seeded from CSV files using Databricks' data ingestion UI, representing the established infrastructure that would already exist in a real enterprise. The focus of this project is the SportsBar pipeline and the cross-company consolidation layer.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 6: KEY FINDINGS ───────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#E6F1FB;color:#185FA5">6</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Data Quality Evidence</div>
+          <div class="sec-desc">Every issue found in the source data and exactly how it was handled</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-de" style="font-size:11px;padding:3px 8px">DE</span></div>
+      </div>
+      <div class="proj-section-body">
+
+        <p class="proj-p" style="margin-bottom:12px">These aren't invented examples — they're the exact issues found in the raw CSVs and fixed by the Silver transformation logic.</p>
+
+        <table class="dq-table">
+          <thead><tr><th>Entity</th><th>Issue found in source</th><th>Before</th><th>After</th><th>How fixed</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="dq-entity">Customers</span></td>
+              <td>Duplicate records</td>
+              <td><span class="dq-before">39 rows</span></td>
+              <td><span class="dq-after">35 rows</span></td>
+              <td><code class="inline">.dropDuplicates(['customer_id'])</code></td>
+            </tr>
+            <tr>
+              <td><span class="dq-entity">Customers</span></td>
+              <td>City name typos — 9 variants of 3 real cities</td>
+              <td><span class="dq-before">Bengalore, Bengaluruu, Hyderbad, Hyderabadd, NewDelhi, NewDheli, NewDelhee…</span></td>
+              <td><span class="dq-after">Bengaluru, Hyderabad, New Delhi</span></td>
+              <td><code class="inline">F.when(F.col().isin([...]), correct)</code> — mapping all 9 variants</td>
+            </tr>
+            <tr>
+              <td><span class="dq-entity">Customers</span></td>
+              <td>Null city values for 4 specific customers</td>
+              <td><span class="dq-before">NULL (IDs: 789403, 789420, 789521, 789603)</span></td>
+              <td><span class="dq-after">New Delhi, Bengaluru, Hyderabad, Hyderabad</span></td>
+              <td>Hardcoded fix dict — business-confirmed values</td>
+            </tr>
+            <tr>
+              <td><span class="dq-entity">Products</span></td>
+              <td>Duplicate records</td>
+              <td><span class="dq-before">20 rows</span></td>
+              <td><span class="dq-after">18 rows</span></td>
+              <td><code class="inline">.dropDuplicates(['product_id'])</code></td>
+            </tr>
+            <tr>
+              <td><span class="dq-entity">Products</span></td>
+              <td>Consistent misspelling in all protein product names</td>
+              <td><span class="dq-before">"Protien Bar", "Protien Shake"…</span></td>
+              <td><span class="dq-after">"Protein Bar", "Protein Shake"…</span></td>
+              <td>Regex replace <code class="inline">(?i)Protien</code> → <code class="inline">Protein</code></td>
+            </tr>
+            <tr>
+              <td><span class="dq-entity">Products</span></td>
+              <td>Non-numeric product IDs in source</td>
+              <td><span class="dq-before">e.g. "PD-042", "N/A"</span></td>
+              <td><span class="dq-after">"999999" (sentinel value)</span></td>
+              <td>Regex match <code class="inline">^[0-9]+$</code>, else fallback</td>
+            </tr>
+            <tr>
+              <td><span class="dq-entity">Gross Price</span></td>
+              <td>Negative price values</td>
+              <td><span class="dq-before">e.g. -299.00</span></td>
+              <td><span class="dq-after">299.00</span></td>
+              <td><code class="inline">F.abs(F.col('gross_price'))</code></td>
+            </tr>
+            <tr>
+              <td><span class="dq-entity">Gross Price</span></td>
+              <td>4 different date formats in same month column</td>
+              <td><span class="dq-before">2025/07/01, 01/07/2025, 2025-07-01, 01-07-2025</span></td>
+              <td><span class="dq-after">2025-07-01</span></td>
+              <td><code class="inline">F.coalesce(to_date(f1), to_date(f2), …)</code> with 4 format patterns</td>
+            </tr>
+            <tr>
+              <td><span class="dq-entity">Orders</span></td>
+              <td>Weekday prefix in date string</td>
+              <td><span class="dq-before">"Tuesday, July 01, 2025"</span></td>
+              <td><span class="dq-after">"July 01, 2025" → 2025-07-01</span></td>
+              <td>Regex strip weekday + coalesce 4 date formats</td>
+            </tr>
+            <tr>
+              <td><span class="dq-entity">Orders</span></td>
+              <td>Non-numeric customer IDs</td>
+              <td><span class="dq-before">e.g. "CUST-789", "unknown"</span></td>
+              <td><span class="dq-after">"999999"</span></td>
+              <td>Regex numeric check, fallback sentinel</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="proj-p" style="margin-top:16px;font-weight:600;font-size:13px;color:var(--black)">Row count: source → final output</p>
+        <div class="rowcount-grid">
+          <div class="rowcount-card">
+            <div class="rowcount-entity">Customers</div>
+            <div class="rowcount-flow">
+              <span class="rc-val">39</span>
+              <span class="rc-arrow">→ dedup →</span>
+              <span class="rc-val">35</span>
+              <span class="rc-arrow">→ gold</span>
+              <span class="rc-val final">35</span>
+            </div>
+            <div class="rowcount-label">Bronze → Silver → Gold</div>
+          </div>
+          <div class="rowcount-card">
+            <div class="rowcount-entity">Products</div>
+            <div class="rowcount-flow">
+              <span class="rc-val">20</span>
+              <span class="rc-arrow">→ dedup →</span>
+              <span class="rc-val">18</span>
+              <span class="rc-arrow">→ gold</span>
+              <span class="rc-val final">18</span>
+            </div>
+            <div class="rowcount-label">Bronze → Silver → Gold</div>
+          </div>
+          <div class="rowcount-card">
+            <div class="rowcount-entity">Fact Orders (Full)</div>
+            <div class="rowcount-flow">
+              <span class="rc-val">51,810</span>
+              <span class="rc-arrow">→ agg →</span>
+              <span class="rc-val final">3,060</span>
+            </div>
+            <div class="rowcount-label">Daily rows → Monthly grain</div>
+          </div>
+          <div class="rowcount-card">
+            <div class="rowcount-entity">Fact Orders (Incremental)</div>
+            <div class="rowcount-flow">
+              <span class="rc-val">8,834</span>
+              <span class="rc-arrow">→ agg →</span>
+              <span class="rc-val final">612</span>
+            </div>
+            <div class="rowcount-label">Dec 2025 daily → Monthly grain</div>
+          </div>
+          <div class="rowcount-card">
+            <div class="rowcount-entity">Date Dimension</div>
+            <div class="rowcount-flow">
+              <span class="rc-val final">24</span>
+            </div>
+            <div class="rowcount-label">Monthly rows, Jan 2024 – Dec 2025</div>
+          </div>
+          <div class="rowcount-card">
+            <div class="rowcount-entity">Price Months</div>
+            <div class="rowcount-flow">
+              <span class="rc-val final">6</span>
+            </div>
+            <div class="rowcount-label">Jul – Dec 2025 (normalised from 4 formats)</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── SECTION 7: BUSINESS IMPACT ───────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#EAF3DE;color:#3B6D11">7</div>
+        <div class="sec-head-text">
+          <div class="sec-title">What This Enables</div>
+          <div class="sec-desc">The data layer this pipeline produces and what it unblocks</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-de" style="font-size:11px;padding:3px 8px">DE</span></div>
+      </div>
+      <div class="proj-section-body">
+        <div class="impact-grid">
+          <div class="impact-card">
+            <div class="impact-val">2</div>
+            <div class="impact-label">Companies unified — Atlon + SportsBar in a single Gold schema, queryable together</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">&#x1F7E1;</div>
+            <div class="impact-label">Change Data Feed on all Delta tables — full audit trail of every row change across both sources</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">2×</div>
+            <div class="impact-label">Load strategies — historical backfill (Jul–Nov 2025) + nightly incremental for ongoing operations</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">0</div>
+            <div class="impact-label">DQ issues in Gold — all 10 issue types caught and remediated in Silver before consolidation</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">4</div>
+            <div class="impact-label">Orchestrated tasks in Databricks Workflow — scheduled nightly, email alerts on failure</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">AI</div>
+            <div class="impact-label">Databricks Genie on the unified view — natural language queries auto-convert to SQL with charts</div>
+          </div>
+        </div>
+        <p class="proj-p" style="font-size:13px;color:#555;margin-top:4px">The three success criteria set by Bruce (COO) were met: a single reliable analytics layer for both companies, a platform with a manageable learning curve, and a scalable Medallion Architecture that can accommodate further companies or grow with the business over multiple years.</p>
+      </div>
+    </div>
+
+    <!-- ── SECTION 8: REFLECTIONS ────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:var(--gray-light);color:var(--gray)">8</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Reflections &amp; What I'd Do Next</div>
+          <div class="sec-desc">Honest assessment of what's solid and what the pipeline needs to reach production</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-de" style="font-size:11px;padding:3px 8px">DE</span></div>
+      </div>
+      <div class="proj-section-body">
+        <div class="refl-grid">
+          <div class="refl-card good">
+            <div class="refl-card-label">&#x2713; What works well</div>
+            <div class="refl-item"><div class="refl-dot"></div><div>The incremental load design is the most technically sound part of the project. Re-aggregating only affected months — rather than appending raw rows — means the monthly fact table stays correct even when an incremental batch corrects earlier records. This is the right approach for a monthly-grain analytical table.</div></div>
+            <div class="refl-item"><div class="refl-dot"></div><div>Using SHA2-256 as the product surrogate key rather than the raw ERP ID was the right call. It's deterministic (same input always produces the same key), collision-resistant at this scale, and survives ERP ID changes without breaking joins downstream.</div></div>
+            <div class="refl-item"><div class="refl-dot"></div><div>Bronze preserving the raw state exactly as received — including file metadata — means there is always an audit trail to diagnose quality issues. If a future Silver rule produces unexpected output, you can re-derive it from Bronze without going back to S3.</div></div>
+          </div>
+          <div class="refl-card change">
+            <div class="refl-card-label">&#x21BA; What I'd strengthen</div>
+            <div class="refl-item"><div class="refl-dot"></div><div>The data quality fixes are embedded in notebook cells with no automated validation. I'd add <strong>dbt tests</strong> (not-null, accepted values, unique, referential integrity) so that every Silver rule has a corresponding test that fails loudly at run time — rather than producing silent bad data that only surfaces in the dashboard.</div></div>
+            <div class="refl-item"><div class="refl-dot"></div><div>The Databricks Workflow runs dimension tasks sequentially. Customers, Products, and Pricing are independent and could run in parallel — cutting the daily processing window roughly in half. This is a straightforward DAG change that would matter as data volumes grow.</div></div>
+            <div class="refl-item"><div class="refl-dot"></div><div>Atlon's Gold tables were seeded from CSV files manually — there's no Bronze or Silver layer for the parent company. A production system would have Atlon's full pipeline too, feeding into the same consolidated Gold schema, rather than treating the parent data as a static starting point.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer nav -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:40px;padding-top:32px;border-top:1px solid var(--card-border)">
+      <a href="../index.html#projects" class="proj-back">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to all projects
+      </a>
+      <a href="../index.html#contact" style="font-size:13px;font-weight:500;color:var(--orange)">Hire me →</a>
+    </div>
+
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox-backdrop" id="lightbox">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+    <img id="lightbox-img" src="" alt="" />
+  </div>
+
+  <script>
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightbox-img');
+    const lbClose = document.getElementById('lightbox-close');
+
+    function openLightbox(src, label) {
+      lbImg.src = src; lbImg.alt = label;
+      lb.classList.add('open'); document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      lb.classList.remove('open'); lbImg.src = ''; document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.lightbox-trigger').forEach(el => {
+      el.addEventListener('click', e => { e.preventDefault(); openLightbox(el.dataset.src, el.dataset.label); });
+    });
+    lbClose.addEventListener('click', closeLightbox);
+    lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && lb.classList.contains('open')) closeLightbox(); });
+  </script>
+
+</body>
+</html>
