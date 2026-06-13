@@ -820,6 +820,12 @@
         <!-- Architecture -->
         <div class="arch-diagram">
           <div class="arch-layer">
+            <div class="arch-layer-label">Orchestration</div>
+            <div class="arch-row">
+              <div class="arch-node" style="min-width:260px"><div class="arch-node-icon">&#x1F504;</div><div class="arch-node-label">Apache Airflow</div><div class="arch-node-sub">data_ingestion · feature_engineering · model_training</div></div>
+            </div>
+          </div>
+          <div class="arch-layer">
             <div class="arch-layer-label">Data Layer</div>
             <div class="arch-row">
               <div class="arch-node"><div class="arch-node-icon">&#x2744;</div><div class="arch-node-label">Snowflake</div><div class="arch-node-sub">Raw + Bronze</div></div>
@@ -827,24 +833,37 @@
               <div class="arch-node"><div class="arch-node-icon">&#x1F9F1;</div><div class="arch-node-label">dbt</div><div class="arch-node-sub">Silver + Gold</div></div>
               <div class="arch-arrow">→</div>
               <div class="arch-node"><div class="arch-node-icon">&#x1F4CA;</div><div class="arch-node-label">Feature store</div><div class="arch-node-sub">180+ features</div></div>
+              <div class="arch-arrow">+</div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F537;</div><div class="arch-node-label">Databricks</div><div class="arch-node-sub">Feature Eng</div></div>
             </div>
           </div>
           <div class="arch-layer">
             <div class="arch-layer-label">Modelling Layer</div>
             <div class="arch-row">
-              <div class="arch-node"><div class="arch-node-icon">&#x1F4C8;</div><div class="arch-node-label">XGBoost</div><div class="arch-node-sub">CLV Regression</div></div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F4C8;</div><div class="arch-node-label">LightGBM</div><div class="arch-node-sub">CLV Regression</div></div>
               <div class="arch-node"><div class="arch-node-icon">&#x23F3;</div><div class="arch-node-label">Cox PH</div><div class="arch-node-sub">Churn Survival</div></div>
               <div class="arch-node"><div class="arch-node-icon">&#x1F52C;</div><div class="arch-node-label">UMAP + HDBSCAN</div><div class="arch-node-sub">Segmentation</div></div>
               <div class="arch-node"><div class="arch-node-icon">&#x1F3AF;</div><div class="arch-node-label">XGBoost</div><div class="arch-node-sub">Cross-Sell Clf</div></div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F4E6;</div><div class="arch-node-label">MLflow</div><div class="arch-node-sub">Model Registry</div></div>
             </div>
           </div>
           <div class="arch-layer">
             <div class="arch-layer-label">Serving + Output Layer</div>
             <div class="arch-row">
-              <div class="arch-node"><div class="arch-node-icon">&#x26A1;</div><div class="arch-node-label">FastAPI</div><div class="arch-node-sub">REST API</div></div>
+              <div class="arch-node"><div class="arch-node-icon">&#x26A1;</div><div class="arch-node-label">FastAPI</div><div class="arch-node-sub">/predict /generate</div></div>
               <div class="arch-arrow">→</div>
               <div class="arch-node"><div class="arch-node-icon">&#x1F4CA;</div><div class="arch-node-label">Power BI</div><div class="arch-node-sub">Exec Dashboard</div></div>
               <div class="arch-node"><div class="arch-node-icon">&#x1F916;</div><div class="arch-node-label">DSPy + GPT-4o</div><div class="arch-node-sub">AI Outreach</div></div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F9F0;</div><div class="arch-node-label">n8n</div><div class="arch-node-sub">Slack / CRM</div></div>
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-label">Monitoring</div>
+            <div class="arch-row">
+              <div class="arch-node"><div class="arch-node-icon">&#x1F4F6;</div><div class="arch-node-label">Prometheus</div><div class="arch-node-sub">API metrics</div></div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F4C9;</div><div class="arch-node-label">Grafana</div><div class="arch-node-sub">Drift dashboard</div></div>
             </div>
           </div>
         </div>
@@ -862,8 +881,8 @@
           <tbody>
             <tr>
               <td>12-month revenue prediction (CLV)</td>
-              <td class="chosen">XGBoost Regressor</td>
-              <td>Linear regression underfits the non-linear interaction between firmographic tier and booking behaviour. Neural nets would overfit on 5K accounts without more data.</td>
+              <td class="chosen">LightGBM Regressor</td>
+              <td>XGBoost was evaluated alongside LightGBM — both are gradient-boosted tree ensembles. LightGBM was selected for its GPU-accelerated training speed, intrinsic null handling (no separate imputation step), and sharper SHAP feature-importance mapping. Final: R²=0.61, MAE=$14.8K on held-out test set.</td>
             </tr>
             <tr>
               <td>Churn risk scoring</td>
@@ -902,6 +921,51 @@
           <span class="stag-proj">Azure OpenAI GPT-4o</span>
           <span class="stag-proj">Pandas</span>
           <span class="stag-proj">Pytest</span>
+          <span class="stag-proj">LightGBM</span>
+          <span class="stag-proj">Apache Airflow</span>
+          <span class="stag-proj">Databricks</span>
+          <span class="stag-proj">n8n</span>
+          <span class="stag-proj">Prometheus</span>
+          <span class="stag-proj">Grafana</span>
+          <span class="stag-proj">joblib</span>
+        </div>
+
+        <p class="proj-p" style="margin-top:18px;font-weight:600;font-size:13px;color:var(--black)">Pipeline implementation details</p>
+        <div class="two-col">
+          <div class="info-card">
+            <div class="info-card-label">FastAPI endpoints</div>
+            <div class="info-card-value" style="font-size:12px;line-height:1.8">
+              <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">POST /predict/clv</code><br>
+              <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">POST /predict/churn</code><br>
+              <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">POST /predict/cross-sell</code><br>
+              <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">POST /generate/outreach</code><br>
+              <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">GET /accounts/{account_id}</code><br>
+              <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">GET /segments/summary</code><br>
+              All three models loaded from Databricks MLflow Registry at startup.
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">dbt star schema (Gold layer)</div>
+            <div class="info-card-value" style="font-size:12px;line-height:1.8">
+              <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">dim_accounts</code> — COALESCE zero-null hardening on all numeric measures<br>
+              <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">fact_bookings</code><br>
+              <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">fact_ml_churn</code> — integrates support ticket counts<br>
+              <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">fact_ml_cross_sell</code> — unpivots top-2 product recommendations per account
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">DSPy agentic outreach</div>
+            <div class="info-card-value" style="font-size:12px;line-height:1.7">
+              <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">OutreachSignature(dspy.Signature)</code> with 8 ML-derived input fields (CLV score, churn hazard, top cross-sell product, segment, spend data). Uses <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">dspy.ChainOfThought</code> to ground reasoning in predictions before generating email subject + body. <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">max_tokens=2048</code> via Azure OpenAI GPT-4o.
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">n8n automation + monitoring</div>
+            <div class="info-card-value" style="font-size:12px;line-height:1.7">
+              Hourly schedule trigger → Snowflake query for high-risk + high-CLV accounts → <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">POST /generate/outreach</code> → Slack alert to account manager.<br><br>
+              Prometheus scrapes <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">/metrics</code> every 15 s via <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">prometheus_fastapi_instrumentator</code>; Grafana dashboard on port 3000 for API drift monitoring.
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -949,7 +1013,7 @@
 
         <div class="chart-block">
           <div class="chart-img-wrap" data-lightbox="../assets/clv/shap_importance.png" data-label="SHAP Feature Importance — CLV Model">
-            <img src="../assets/clv/shap_importance.png" alt="SHAP feature importance bar chart for the CLV XGBoost model" loading="lazy" />
+            <img src="../assets/clv/shap_importance.png" alt="SHAP feature importance bar chart for the CLV LightGBM model" loading="lazy" />
           </div>
           <div class="chart-caption">
             <div class="chart-caption-dot"></div>

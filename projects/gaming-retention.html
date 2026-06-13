@@ -400,7 +400,7 @@
             <div class="arch-row">
               <div class="arch-node"><div class="arch-node-icon">&#x1F4E4;</div><div class="arch-node-label">CRM Export</div><div class="arch-node-sub">5–6K flagged daily</div></div>
               <div class="arch-arrow">→</div>
-              <div class="arch-node"><div class="arch-node-icon">&#x26A1;</div><div class="arch-node-label">FastAPI</div><div class="arch-node-sub">Real-time /predict</div></div>
+              <div class="arch-node"><div class="arch-node-icon">&#x26A1;</div><div class="arch-node-label">FastAPI</div><div class="arch-node-sub">X-API-Key · /predict</div></div>
               <div class="arch-arrow">→</div>
               <div class="arch-node"><div class="arch-node-icon">&#x1F433;</div><div class="arch-node-label">Docker</div><div class="arch-node-sub">Containerised service</div></div>
             </div>
@@ -518,6 +518,22 @@
           <span class="stag-proj">Docker</span>
           <span class="stag-proj">joblib</span>
           <span class="stag-proj">Jupyter + PySpark</span>
+        </div>
+
+        <p class="proj-p" style="margin-top:18px;font-weight:600;font-size:13px;color:var(--black)">Implementation details</p>
+        <div class="two-col">
+          <div class="info-card">
+            <div class="info-card-label">FastAPI serving + telemetry</div>
+            <div class="info-card-value" style="font-size:12px;line-height:1.7">
+              <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">X-API-Key</code> header required on all endpoints. <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">POST /predict</code> returns churn probability + persona label per player. Each request logged as telemetry (player_id, churn_prob, persona, timestamp) — output feeds back into the campaign performance loop for model drift monitoring.
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Model serialization + versioning</div>
+            <div class="info-card-value" style="font-size:12px;line-height:1.7">
+              <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">category_mappings.pkl</code> (StringIndexer) persisted alongside XGBoost — maps Genre, Region, and EngagementLevel to integer codes at training time and reloaded at inference to prevent training–serving skew. Artifacts saved with <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">YYYYMMDD_HHMMSS</code> timestamp + <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">model_latest</code> alias for zero-downtime rollback. <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">MODEL_PATH</code> and <code style="font-size:11px;background:#e8e8e8;padding:1px 5px;border-radius:3px">MAPPINGS_PATH</code> env vars control which version the API loads without code changes.
+            </div>
+          </div>
         </div>
       </div>
     </div>
