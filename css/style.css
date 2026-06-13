@@ -789,6 +789,11 @@ img { display: block; max-width: 100%; }
   color: var(--gray);
 }
 
+.project-tag-industry {
+  background: #1e293b;
+  color: #ffffff;
+}
+
 .project-org {
   font-size: 13px;
   font-weight: 500;
