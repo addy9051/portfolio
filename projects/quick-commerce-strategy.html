@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Commerce Strategy: Swiggy Instamart vs. Blinkit — Ankit Addya</title>
+  <meta name="description"
+    content="Competitive strategy case study diagnosing why Swiggy Instamart's path to profitability lags Blinkit's — a 7-branch MECE issue tree, 22 hypotheses tested against real public disclosures, plus three strategy simulations (reinforcement learning, uplift modeling, and system dynamics) that stress-test each recommendation." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Bebas+Neue&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+  <style>
+    .proj-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray);
+      padding: 10px 0 0;
+      transition: color .2s;
+    }
+
+    .proj-back:hover {
+      color: var(--black);
+    }
+
+    .proj-back svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      fill: none;
+    }
+
+    .proj-page {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0 32px 120px;
+    }
+
+    .role-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .rtag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 999px;
+      letter-spacing: .02em;
+    }
+
+    .rtag-ba {
+      background: #E1F5EE;
+      color: #085041;
+    }
+
+    .rtag-ds {
+      background: #EEEDFE;
+      color: #3C3489;
+    }
+
+    .proj-hero {
+      background: #111111;
+      border-radius: 20px;
+      padding: 48px;
+      margin: 32px 0 10px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .proj-hero::before {
+      content: 'IOCC';
+      position: absolute;
+      right: -10px;
+      bottom: -30px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 140px;
+      color: rgba(255, 85, 0, .08);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .proj-hero-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 14px;
+    }
+
+    .proj-hero h1 {
+      font-size: clamp(20px, 3.2vw, 34px);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 14px;
+      color: #fff;
+    }
+
+    .proj-hero-sub {
+      font-size: 15px;
+      color: #aaa;
+      line-height: 1.65;
+      max-width: 580px;
+      margin-bottom: 28px;
+    }
+
+    .proj-metrics-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .proj-metric {
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .proj-metric-val {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--orange);
+      line-height: 1;
+    }
+
+    .proj-metric-label {
+      font-size: 10px;
+      color: #888;
+      margin-top: 5px;
+      line-height: 1.4;
+    }
+
+    .proj-meta-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .proj-meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #888;
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 999px;
+      padding: 5px 12px;
+    }
+
+    .proj-hero-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-hero-github {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(255, 255, 255, .2);
+      background: transparent;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background .2s, border-color .2s;
+      text-decoration: none;
+    }
+
+    .btn-hero-github svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+
+    .btn-hero-github:hover {
+      background: rgba(255, 255, 255, .08);
+      border-color: rgba(255, 255, 255, .4);
+    }
+
+    .btn-hero-deck {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 999px;
+      border: 1.5px solid transparent;
+      background: var(--orange);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      transition: background .2s;
+      text-decoration: none;
+    }
+
+    .btn-hero-deck:hover {
+      background: var(--orange-hover);
+    }
+
+    .proj-section {
+      border: 1.5px solid var(--card-border);
+      border-radius: 16px;
+      background: var(--white);
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .proj-section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .sec-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .sec-head-text {
+      flex: 1;
+    }
+
+    .sec-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--black);
+    }
+
+    .sec-desc {
+      font-size: 12px;
+      color: var(--gray);
+      margin-top: 2px;
+    }
+
+    .sec-audience {
+      display: flex;
+      gap: 5px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .proj-section-body {
+      padding: 20px;
+    }
+
+    .proj-p {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.75;
+      margin-bottom: 12px;
+    }
+
+    .proj-p:last-child {
+      margin-bottom: 0;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .info-card {
+      background: var(--gray-light);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .info-card-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--gray);
+      margin-bottom: 6px;
+    }
+
+    .info-card-value {
+      font-size: 13px;
+      color: var(--black);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .pull-quote {
+      border-left: 3px solid var(--orange);
+      padding: 12px 16px;
+      background: #FFF8F5;
+      border-radius: 0 10px 10px 0;
+      margin-bottom: 14px;
+    }
+
+    .pull-quote p {
+      font-size: 14px;
+      font-style: italic;
+      color: #333;
+      line-height: 1.7;
+    }
+
+    .pull-quote-attr {
+      font-size: 11px;
+      color: var(--gray);
+      margin-top: 6px;
+      font-style: normal;
+    }
+
+    .step-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .step-row {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 10px 0;
+    }
+
+    .step-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 16px;
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 3px;
+    }
+
+    .step-body {
+      font-size: 13px;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    .step-connector {
+      width: 2px;
+      height: 10px;
+      background: var(--card-border);
+      margin-left: 15px;
+    }
+
+    .stack-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .stag-proj {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--gray-light);
+      color: #333;
+      border: 1px solid var(--card-border);
+    }
+
+    /* Strategy simulation blocks */
+    .sim-block {
+      border: 1.5px solid var(--card-border);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 12px;
+      background: var(--white);
+    }
+
+    .sim-method {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+      letter-spacing: .02em;
+    }
+
+    .sim-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--black);
+      line-height: 1.35;
+      margin-bottom: 8px;
+    }
+
+    /* Row count flow (reused for the order-share trend) */
+    .rowcount-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .rowcount-card {
+      border: 1.5px solid var(--card-border);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .rowcount-entity {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--gray);
+      margin-bottom: 8px;
+    }
+
+    .rowcount-flow {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .rc-val {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--black);
+    }
+
+    .rc-arrow {
+      font-size: 12px;
+      color: var(--gray);
+    }
+
+    .rc-val.final {
+      color: var(--orange);
+    }
+
+    .rowcount-label {
+      font-size: 10px;
+      color: var(--gray);
+      margin-top: 4px;
+    }
+
+    /* MECE branch tree */
+    .branch-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .branch-card {
+      flex: 1 1 140px;
+      border-radius: 10px;
+      padding: 14px 12px;
+      text-align: center;
+    }
+
+    .branch-card.tested {
+      background: #1B2A4A;
+      color: #fff;
+    }
+
+    .branch-card.context {
+      background: #fff;
+      border: 1.5px solid #1B2A4A;
+      color: #1B2A4A;
+    }
+
+    .branch-num {
+      font-size: 10px;
+      opacity: .65;
+      margin-bottom: 4px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .branch-label {
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .branch-status {
+      font-size: 10px;
+      font-style: italic;
+      margin-top: 6px;
+      opacity: .75;
+    }
+
+    .branch-legend {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+      font-size: 12px;
+      color: #444;
+    }
+
+    .branch-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .branch-legend-swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    /* Impact / rigor cards */
+    .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .impact-card {
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .impact-card.rigor {
+      background: #F0FAF8;
+      border: 1.5px solid #BFE6DD;
+    }
+
+    .impact-val {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .impact-card.rigor .impact-val {
+      color: #0F6E56;
+    }
+
+    .impact-label {
+      font-size: 11px;
+      margin-top: 6px;
+      line-height: 1.45;
+    }
+
+    .impact-card.rigor .impact-label {
+      color: #1F4D40;
+    }
+
+    /* Highlight stat card (IOCC vote) */
+    .highlight-card {
+      background: #1B2A4A;
+      color: #fff;
+      border-radius: 14px;
+      padding: 24px;
+      margin: 14px 0;
+    }
+
+    .highlight-big {
+      font-size: 40px;
+      font-weight: 700;
+      color: var(--orange);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .highlight-sub {
+      font-size: 13px;
+      color: #CADCFC;
+      margin-bottom: 10px;
+    }
+
+    .highlight-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, .2);
+      margin: 10px 0;
+    }
+
+    .highlight-foot {
+      font-size: 12.5px;
+      color: #fff;
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    /* Reflections */
+    .refl-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .refl-card {
+      background: var(--gray-light);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .refl-card-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 10px;
+    }
+
+    .refl-card.good .refl-card-label {
+      color: #0F6E56;
+    }
+
+    .refl-card.change .refl-card-label {
+      color: #854F0B;
+    }
+
+    .refl-item {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: #333;
+      line-height: 1.55;
+    }
+
+    .refl-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .refl-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+
+    .refl-card.good .refl-dot {
+      background: #0F6E56;
+    }
+
+    .refl-card.change .refl-dot {
+      background: #EF9F27;
+    }
+
+    /* Verdict sample table */
+    .dq-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin: 12px 0;
+    }
+
+    .dq-table th {
+      text-align: left;
+      padding: 8px 10px;
+      background: #111;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .dq-table th:first-child {
+      border-radius: 8px 0 0 0;
+    }
+
+    .dq-table th:last-child {
+      border-radius: 0 8px 0 0;
+    }
+
+    .dq-table td {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--card-border);
+      color: #333;
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    .dq-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .dq-table tr:last-child td:first-child {
+      border-radius: 0 0 0 8px;
+    }
+
+    .dq-table tr:last-child td:last-child {
+      border-radius: 0 0 8px 0;
+    }
+
+    .verdict-pill {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 5px;
+    }
+
+    .verdict-supported {
+      background: #E1F5EE;
+      color: #0F6E56;
+    }
+
+    .verdict-weak {
+      background: #FEF3C7;
+      color: #92400E;
+    }
+
+    .verdict-not {
+      background: #FBE3E3;
+      color: #A12C2C;
+    }
+
+    /* Honest scope callout */
+    .scope-callout {
+      border: 1.5px solid #F0C070;
+      border-radius: 10px;
+      padding: 14px 16px;
+      background: #FFFBEA;
+      margin: 14px 0;
+    }
+
+    .scope-callout-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #856A00;
+      margin-bottom: 6px;
+    }
+
+    .scope-callout-body {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.65;
+    }
+
+    .source-note {
+      font-size: 12px;
+      color: var(--gray);
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+
+    /* Collapsible formula block */
+    .formula-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+      margin-top: 20px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: var(--gray-light);
+      border: 1.5px solid var(--card-border);
+      transition: background .15s;
+    }
+
+    .formula-toggle:hover {
+      background: #EEEDFE;
+    }
+
+    .formula-toggle-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #3C3489;
+      flex: 1;
+    }
+
+    .formula-toggle-hint {
+      font-size: 11px;
+      color: var(--gray);
+    }
+
+    .formula-chevron {
+      font-size: 11px;
+      color: #3C3489;
+      transition: transform .25s;
+    }
+
+    .formula-body {
+      display: none;
+      margin-top: 8px;
+      border: 1.5px solid #EEEDFE;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .formula-body.open {
+      display: block;
+    }
+
+    .formula-chevron.open {
+      transform: rotate(180deg);
+    }
+
+    .formula-row {
+      padding: 16px 20px;
+      border-bottom: 1px solid #EEEDFE;
+    }
+
+    .formula-row:last-child {
+      border-bottom: none;
+    }
+
+    .formula-name {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: #3C3489;
+      margin-bottom: 6px;
+    }
+
+    .formula-eq {
+      margin: 8px 0;
+      overflow-x: auto;
+    }
+
+    .formula-gloss {
+      font-size: 12px;
+      color: #555;
+      line-height: 1.65;
+      margin-top: 6px;
+    }
+
+    @media (max-width:640px) {
+      .proj-page {
+        padding: 0 20px 80px;
+      }
+
+      .proj-hero {
+        padding: 28px 24px;
+        border-radius: 14px;
+      }
+
+      .proj-metrics-row {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .two-col,
+      .refl-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .rowcount-grid,
+      .impact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .proj-hero::before {
+        font-size: 90px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="../index.html#projects" class="nav-link active">← Portfolio</a>
+    </div>
+  </nav>
+
+  <div class="proj-page" style="padding-top:100px;">
+
+    <!-- ── SECTION 1: HERO ──────────────────────────────────────── -->
+    <div class="proj-hero">
+      <div class="proj-hero-eyebrow">Strategy Case Study</div>
+      <h1>Why Swiggy Instamart's Path to<br>Profitability Lags Blinkit</h1>
+      <p class="proj-hero-sub">A competitive strategy case study for Swiggy Instamart — a 7-branch MECE issue tree, 22
+        falsifiable hypotheses tested against real public disclosures from Swiggy, Blinkit, and Zepto, and a
+        deliberately honest treatment of every weak or simulated result.</p>
+
+      <div class="role-tags" style="margin-bottom:24px">
+        <span class="rtag rtag-ba">&#x1F4BC; Business Analyst</span>
+        <span class="rtag rtag-ds">&#x1F4C8; Data Scientist</span>
+      </div>
+
+      <div class="proj-metrics-row">
+        <div class="proj-metric">
+          <div class="proj-metric-val">34.3%→20.9%</div>
+          <div class="proj-metric-label">Instamart's order share among Zepto, Blinkit and Instamart (top 3), FY24→FY26
+          </div>
+        </div>
+        <div class="proj-metric">
+          <div class="proj-metric-val">22</div>
+          <div class="proj-metric-label">Falsifiable hypotheses tested across 4 branches</div>
+        </div>
+        <div class="proj-metric">
+          <div class="proj-metric-val">72.35%</div>
+          <div class="proj-metric-label">Shareholder vote in favor —> 75% needed to pass</div>
+        </div>
+        <div class="proj-metric">
+          <div class="proj-metric-val">R&sup2;=0.03</div>
+          <div class="proj-metric-label">Cross-player regression, reported honestly as weak</div>
+        </div>
+      </div>
+
+      <div class="proj-meta-pills">
+        <span class="proj-meta-pill">&#x1F6D2; Quick Commerce &middot; India</span>
+        <span class="proj-meta-pill">&#x1F4CA; Equity-research style analysis</span>
+        <span class="proj-meta-pill" style="color:#4ade80">&#x2713; Analysis &amp; deck complete &middot; 3 strategy
+          simulations added &middot; Tableau dashboard in progress</span>
+      </div>
+
+      <div class="proj-hero-actions">
+        <a href="https://github.com/addy9051/swiggy_instamart_quick_commerce_strategy" class="btn-hero-github"
+          target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+          </svg>
+          View on GitHub
+        </a>
+      </div>
+    </div>
+
+    <!-- ── SECTION 2: EXECUTIVE SUMMARY ─────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#E6E9F2;color:#1B2A4A">2</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Executive Summary</div>
+          <div class="sec-desc">The answer first, then the back by evidence</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span></div>
+      </div>
+      <div class="proj-section-body">
+        <div class="pull-quote">
+          <p>Instamart's gap to Blinkit isn't one big problem — it's three solvable gaps. The simulations settle the
+            order: <strong>density is the dominant, cheapest lever</strong>; cross-selling the 18.3M-strong
+            food-delivery base is the controllable accelerator; and the much-discussed inventory-model vote is a real
+            but <strong>secondary, conditional</strong> bet — the dramatic number, not the economic one.</p>
+        </div>
+        <div class="about-stats" style="margin:16px 0 18px">
+          <div class="stat-card"><span class="stat-num">20.9%</span><span class="stat-label">Order share of the top 3
+              players, down from 34.3% two years ago</span></div>
+          <div class="stat-card"><span class="stat-num">55%</span><span class="stat-label">Of Instamart's own stated
+              2,000+ orders/store/day capacity ceiling (1,093/day, Q4 FY26)</span></div>
+          <div class="stat-card"><span class="stat-num">&#x20B9;85 vs &#x20B9;3</span><span class="stat-label">Per-order
+              loss vs. Blinkit's, at roughly double the density</span></div>
+          <div class="stat-card"><span class="stat-num">72.35%</span><span class="stat-label">Shareholder vote in favor
+              of the inventory model — 75% was needed</span></div>
+        </div>
+        <p class="proj-p"><strong>Recommendation (sequenced):</strong> grow <strong>density</strong> first — the
+          dominant margin lever, needing no new capex and no vote. Use a <strong>cross-sell</strong> of Swiggy's 18.3M
+          food-delivery base as the capex-light accelerator, gated on a small A/B pilot. Treat the
+          <strong>inventory-model transition</strong> as a conditional, secondary bet — pursue the blocked vote only if
+          a real transition-cost quote clears the hurdle, since the simulations rate it roughly one-sixth the size of
+          the density lever. And keep one option on the table the "catch Blinkit" framing hides: with a ₹700 AOV inside
+          a super-app, Swiggy may win more by owning the <strong>high-value basket</strong> than by matching Blinkit's
+          order frequency.</p>
+      </div>
+    </div>
+
+    <!-- ── DECK EMBED ────────────────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#1B2A4A;color:#fff">&#x1F4CA;</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Strategy Deck &mdash; 20 slides</div>
+          <div class="sec-desc">Full MBB-style deck: situation, methodology, evidence, recommendations, risks, appendix
+          </div>
+        </div>
+        <div class="sec-audience">
+          <a href="../assets/quick-commerce-strategy/Swiggy_Instamart_Strategy_Case_Study_v2.pdf" download
+            style="font-size:11px;font-weight:600;color:var(--orange);text-decoration:none;padding:4px 10px;border:1.5px solid var(--orange);border-radius:999px;white-space:nowrap">&#x2193;
+            Download PDF</a>
+        </div>
+      </div>
+      <div class="proj-section-body" style="padding:0">
+        <iframe src="../assets/quick-commerce-strategy/Swiggy_Instamart_Strategy_Case_Study_v2.pdf" width="100%"
+          height="520" style="display:block;border:none;border-radius:0 0 16px 16px"
+          title="Swiggy Instamart Strategy Case Study deck">
+          <p style="padding:20px;font-size:13px;color:#555">Your browser doesn't support inline PDFs. <a
+              href="../assets/quick-commerce-strategy/Swiggy_Instamart_Strategy_Case_Study_v2.pdf"
+              style="color:var(--orange)">Download the deck instead.</a></p>
+        </iframe>
+      </div>
+    </div>
+
+    <!-- ── SECTION 3: BUSINESS CONTEXT ──────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#FAECE7;color:#993C1D">3</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Business Context</div>
+          <div class="sec-desc">A four-way race in India's fastest-growing retail format</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span></div>
+      </div>
+      <div class="proj-section-body">
+        <p class="proj-p">India's quick-commerce market crossed into a genuine four-way contest by early 2026: Blinkit
+          (Eternal) holds the largest share at 46%, Swiggy Instamart sits second at 24%, Zepto holds 22%, and a
+          fragmented "Others" bucket — including fast-growing new entrants — accounts for the remaining 8%. All three
+          incumbents are well-funded and actively expanding, and two more large players (Amazon Now and Flipkart
+          Minutes) are scaling aggressively from a smaller base.</p>
+        <p class="proj-p">Instamart's headline growth looks strong in isolation: Q4 FY26 GOV grew 68.8% YoY to
+          &#x20B9;7,881cr. The question this case study answers is why that growth hasn't translated into market
+          position or profitability relative to Blinkit, which just turned adjusted EBITDA-positive for the first time.
+        </p>
+        <div class="two-col" style="margin-top:14px">
+          <div class="info-card">
+            <div class="info-card-label">Blinkit (Eternal)</div>
+            <div class="info-card-value">Inventory-led model. 46% market share. 2,243 dark stores. Adjusted EBITDA
+              turned positive (&#x20B9;37cr) in Q4 FY26 for the first time.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Zepto</div>
+            <div class="info-card-value">IPO-bound. 22% market share. Leads on order frequency (~2,045 orders/store/day,
+              derived from UDRHP) and discloses ad revenue of &#x20B9;1,636cr.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Swiggy Instamart</div>
+            <div class="info-card-value">Marketplace-led model. 24% market share. 1,143 dark stores. Explicitly
+              prioritizing margin over growth since Q3 FY26.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Emerging entrants</div>
+            <div class="info-card-value">Flipkart Minutes: ~800 stores, adding ~100/month. Amazon Now: targeting 100
+              cities and 1,000+ micro-fulfilment centres (stated plan, not yet operating at scale).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 4: PROBLEM STATEMENT ─────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#FAEEDA;color:#854F0B">4</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Problem Statement</div>
+          <div class="sec-desc">Why GOV growth isn't the same thing as winning</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span></div>
+      </div>
+      <div class="proj-section-body">
+        <p class="proj-p">Look past the GOV headline and a different story appears. Instamart's share of the top three
+          players' <em>combined</em> order volume — Instamart, Blinkit, and Zepto treated as their own closed universe —
+          has fallen for two straight years, even as the overall market keeps growing.</p>
+        <div class="rowcount-grid" style="grid-template-columns:1fr">
+          <div class="rowcount-card">
+            <div class="rowcount-entity">Instamart's order share of the top 3 (FY24 → FY26)</div>
+            <div class="rowcount-flow">
+              <span class="rc-val">34.3%</span>
+              <span class="rc-arrow">→</span>
+              <span class="rc-val">24.5%</span>
+              <span class="rc-arrow">→</span>
+              <span class="rc-val final">20.9%</span>
+            </div>
+            <div class="rowcount-label">A loss of 13.4 percentage points — more than a third of Instamart's FY24
+              position. Source: Zepto's IPO prospectus (UDRHP).</div>
+          </div>
+        </div>
+        <div class="pull-quote">
+          <p>Industry coverage of the Q4 FY26 results frames Instamart's slower growth as a deliberate trade-off —
+            choosing margin discipline over chasing volume — rather than a sign the model itself is failing.</p>
+          <p class="pull-quote-attr">— paraphrased from trade-press coverage of Swiggy's Q3–Q4 FY26 commentary
+            (Storyboard18, Whalesbook); not a direct quotation</p>
+        </div>
+        <p class="proj-p">That framing is plausible, but it's also exactly the kind of claim a structured analysis
+          should test rather than accept — which is the point of the issue tree in the next section.</p>
+      </div>
+    </div>
+
+    <!-- ── SECTION 5: METHODOLOGY ───────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#EEEDFE;color:#3C3489">5</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Methodology — A MECE Issue Tree</div>
+          <div class="sec-desc">Hypothesis-driven from the start, not a story fitted to the data afterward</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span><span
+            class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span></div>
+      </div>
+      <div class="proj-section-body">
+        <p class="proj-p">Before pulling a single number, the root-cause question — <strong>"why does Instamart's path
+            to profitability lag Blinkit's?"</strong> — was broken into seven mutually exclusive, collectively
+          exhaustive branches. Five had enough public data to test quantitatively with falsifiable hypotheses; two were
+          judged context-only because no public data could independently test them.</p>
+
+        <div class="branch-grid">
+          <div class="branch-card tested">
+            <div class="branch-num">Branch 1</div>
+            <div class="branch-label">Unit Economics &amp; Density</div>
+            <div class="branch-status">Tested</div>
+          </div>
+          <div class="branch-card tested">
+            <div class="branch-num">Branch 2</div>
+            <div class="branch-label">Customer Behavior</div>
+            <div class="branch-status">Tested</div>
+          </div>
+          <div class="branch-card tested">
+            <div class="branch-num">Branch 3</div>
+            <div class="branch-label">Competitive Dynamics</div>
+            <div class="branch-status">Tested</div>
+          </div>
+          <div class="branch-card tested">
+            <div class="branch-num">Branch 4</div>
+            <div class="branch-label">Logistics &amp; Fulfillment</div>
+            <div class="branch-status">Tested</div>
+          </div>
+          <div class="branch-card tested">
+            <div class="branch-num">Branch 5</div>
+            <div class="branch-label">Monetization</div>
+            <div class="branch-status">Tested</div>
+          </div>
+          <div class="branch-card context">
+            <div class="branch-num">Branch 6</div>
+            <div class="branch-label">Capital Allocation</div>
+            <div class="branch-status">Context only</div>
+          </div>
+          <div class="branch-card context">
+            <div class="branch-num">Branch 7</div>
+            <div class="branch-label">Regulatory &amp; Policy</div>
+            <div class="branch-status">Context only</div>
+          </div>
+        </div>
+        <div class="branch-legend">
+          <span class="branch-legend-item"><span class="branch-legend-swatch" style="background:#1B2A4A"></span>Tested
+            with disclosed/estimated data</span>
+          <span class="branch-legend-item"><span class="branch-legend-swatch"
+              style="background:#fff;border:1.5px solid #1B2A4A"></span>Context only — no public data to test
+            independently</span>
+        </div>
+
+        <p class="proj-p" style="margin-top:16px">Each tested branch carried 3–4 falsifiable sub-hypotheses (e.g.
+          <em>"H1.1: Instamart's network-average density is materially below the breakeven density mature Blinkit/Zepto
+            stores achieve"</em>), each given an explicit verdict — supported, not supported, or not testable with
+          available data — rather than folded into a narrative after the fact. Branches 2 and 5 were tested jointly in
+          one notebook since customer behavior and monetization shared the same underlying disclosures.</p>
+
+        <p class="proj-p" style="font-weight:600;font-size:13px;color:var(--black);margin-top:16px">Stack</p>
+        <div class="stack-row">
+          <span class="stag-proj">Python</span>
+          <span class="stag-proj">pandas</span>
+          <span class="stag-proj">NumPy</span>
+          <span class="stag-proj">SciPy (stats)</span>
+          <span class="stag-proj">matplotlib</span>
+          <span class="stag-proj">Jupyter Notebook</span>
+          <span class="stag-proj">pptxgenjs (Node.js)</span>
+        </div>
+
+        <!-- ── COLLAPSIBLE FORMULA BLOCK ── -->
+        <div class="formula-toggle" onclick="toggleFormulas(this)" role="button" aria-expanded="false">
+          <span class="formula-toggle-label">&#x3C3; Key formulas — for the technically curious</span>
+          <span class="formula-toggle-hint">4 equations underlying the simulations</span>
+          <span class="formula-chevron">&#x25BC;</span>
+        </div>
+        <div class="formula-body" id="formula-body">
+
+          <!-- 1. Density → margin -->
+          <div class="formula-row">
+            <div class="formula-name">1 &mdash; Density &rarr; contribution margin (the dominant lever)</div>
+            <div class="formula-eq">
+              $$\text{CM}(d) = \text{CM}_0 + \alpha\,(d - d_0)$$
+            </div>
+            <div class="formula-gloss">
+              $d$ = orders / store / day &nbsp;&middot;&nbsp;
+              $\text{CM}_0 = -1.8\%$ (Instamart Q4 FY26, disclosed) &nbsp;&middot;&nbsp;
+              $d_0 = 1{,}025$ (current network average) &nbsp;&middot;&nbsp;
+              $\alpha \approx 8.7 \times 10^{-5}$ pp per order &mdash; the slope anchored so margin = 0 at the ~1,300
+              breakeven (Redseer's mature-metro band is ~1,225).
+              The lever is large because $\alpha$ is steep and the gap $(d^* - d_0)$ is wide.
+            </div>
+          </div>
+
+          <!-- 2. Breakeven density -->
+          <div class="formula-row">
+            <div class="formula-name">2 &mdash; Breakeven density (where holding wins)</div>
+            <div class="formula-eq">
+              $$d^{\,*} = d_0 - \frac{\text{CM}_0}{\alpha} \approx 1{,}552 \text{ orders / store / day}$$
+            </div>
+            <div class="formula-gloss">
+              Derived by setting $\text{CM}(d^*) = 0$ and solving for $d^*$.
+              Instamart runs at $1{,}093$ (Q4 FY26) &mdash; only <strong>~16% below breakeven</strong> &mdash; far
+              closer than the earlier 1,552 figure implied, consistent with its near-zero disclosed margin.
+              The system-dynamics model (06c) sweeps $\alpha$ from $2\!\times\!10^{-5}$ to $8\!\times\!10^{-5}$ across
+              2,000 scenarios
+              because this single parameter drives the outcome more than any other ($\text{importance} \approx 0.67$).
+            </div>
+          </div>
+
+          <!-- 3. X-Learner CATE -->
+          <div class="formula-row">
+            <div class="formula-name">3 &mdash; X-Learner CATE: who is genuinely moved by a nudge (06b)</div>
+            <div class="formula-eq">
+              $$\tilde{\tau}_i =
+              \begin{cases}
+              Y_i - \hat{\mu}_0(X_i) & i \in \text{treated} \\
+              \hat{\mu}_1(X_i) - Y_i & i \in \text{control}
+              \end{cases}
+              \qquad
+              \hat{\tau}(x) = g(x)\,\hat{\tau}_0(x) + \bigl(1 - g(x)\bigr)\hat{\tau}_1(x)$$
+            </div>
+            <div class="formula-gloss">
+              $\hat{\mu}_1, \hat{\mu}_0$ = outcome models on treated / control &nbsp;&middot;&nbsp;
+              $\tilde{\tau}_i$ = pseudo-outcome (imputed individual treatment effect) &nbsp;&middot;&nbsp;
+              $g(x)$ = propensity score (treatment probability given features) &nbsp;&middot;&nbsp;
+              $\hat{\tau}(x)$ = estimated CATE &mdash; the uplift for user $x$.
+              Standard response models rank by $P(\text{convert})$; X-Learner ranks by $\hat{\tau}$ &mdash;
+              finding users genuinely <em>moved</em> by the nudge, not just those likely to convert anyway.
+              Validated at Spearman $\rho = 0.88$ vs ground truth.
+            </div>
+          </div>
+
+          <!-- 4. PPO reward -->
+          <div class="formula-row">
+            <div class="formula-name">4 &mdash; PPO reward function: what the RL agent optimises (06a)</div>
+            <div class="formula-eq">
+              $$r_t = w_m\,\Delta\text{CM}_t \;-\; w_c\,C_t \;+\; w_s\,\Delta\text{share}_t$$
+            </div>
+            <div class="formula-gloss">
+              $\Delta\text{CM}_t$ = contribution-margin improvement in quarter $t$ &nbsp;&middot;&nbsp;
+              $C_t$ = transition capex incurred &nbsp;&middot;&nbsp;
+              $\Delta\text{share}_t$ = change in market share &nbsp;&middot;&nbsp;
+              $w_m, w_c, w_s$ = reward weights (swept in a sensitivity analysis &mdash; the optimal policy is robust to
+              $w_m$
+              but flips from &ldquo;transition&rdquo; to &ldquo;don&rsquo;t&rdquo; when $w_c$ is high or $w_s$
+              dominates).
+              Distilled to a 3-rule decision tree at 100% fidelity: <em>capex&thinsp;&le;&thinsp;₹1,341cr → Hold;
+                Q&thinsp;&le;&thinsp;5 → Aggressive; else → Slow</em>.
+            </div>
+          </div>
+
+        </div><!-- /.formula-body -->
+
+      </div>
+    </div>
+
+    <!-- ── SECTION 6: FINDINGS ──────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#E6F1FB;color:#185FA5">6</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Findings</div>
+          <div class="sec-desc">What each tested branch actually showed</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span></div>
+      </div>
+      <div class="proj-section-body">
+
+        <p class="proj-p" style="font-weight:600;font-size:14px;color:var(--black)">Branch 1 — Density is real, but not
+          sufficient on its own</p>
+        <div class="rowcount-grid">
+          <div class="rowcount-card">
+            <div class="rowcount-entity">Swiggy Instamart</div>
+            <div class="rowcount-flow"><span class="rc-val final">1,093</span></div>
+            <div class="rowcount-label">orders/store/day (Q4 FY26) — 55% of stated 2,000+ ceiling</div>
+          </div>
+          <div class="rowcount-card">
+            <div class="rowcount-entity">Blinkit</div>
+            <div class="rowcount-flow"><span class="rc-val final">1,425</span></div>
+            <div class="rowcount-label">orders/store/day (Q4 derived)</div>
+          </div>
+          <div class="rowcount-card">
+            <div class="rowcount-entity">Zepto</div>
+            <div class="rowcount-flow"><span class="rc-val final">2,045</span></div>
+            <div class="rowcount-label">orders/store/day (derived)</div>
+          </div>
+        </div>
+        <p class="proj-p">If density alone explained the margin gap, Zepto — the highest-density player — should show
+          the best per-order economics. It doesn't: Zepto's per-order loss (&#x20B9;78.75) is nearly as bad as
+          Instamart's (&#x20B9;85.18), while mid-density Blinkit posts by far the best per-order loss (&#x20B9;3.02).
+          Density matters, but business model evidently matters more.</p>
+
+        <p class="proj-p" style="font-weight:600;font-size:14px;color:var(--black);margin-top:18px">Branch 4 — The real
+          structural edge, and the vote that's blocking it</p>
+        <p class="proj-p">90% of Blinkit's net order value runs through its inventory-led model, worth roughly
+          <strong>~100bps of EBITDA accretion (plus ~300bps gross margin)</strong> on Eternal's own CFO commentary.
+          Swiggy's board put a resolution to shareholders to move Instamart toward the same model — so this is Blinkit's
+          <em>observed</em> benefit, a proxy for what Instamart could gain (Swiggy itself never transitioned, since the
+          vote failed).</p>
+        <div class="highlight-card">
+          <div class="highlight-big">72.35%</div>
+          <div class="highlight-sub">of shareholder votes in favor — 75% was required to pass</div>
+          <div class="highlight-divider"></div>
+          <div class="highlight-foot">Failed by 2.65 percentage points. The highest-leverage fix in this entire analysis
+            is blocked by a governance threshold, not by unresolved unit economics.</div>
+        </div>
+
+        <p class="proj-p" style="font-weight:600;font-size:14px;color:var(--black);margin-top:18px">Branches 2 &amp; 5 —
+          Wins on ticket size, loses on frequency and monetization</p>
+        <div class="two-col">
+          <div class="info-card">
+            <div class="info-card-label">Average order value</div>
+            <div class="info-card-value">Instamart &#x20B9;700 (gross) vs. Blinkit &#x20B9;525 (net) vs. Zepto
+              &#x20B9;387 — a clear, durable basket lead. On a like-for-like net basis the gap narrows (Instamart net
+              ~&#x20B9;485 vs ~&#x20B9;525), so it's a gross-basket advantage, not a net-revenue-per-order one.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Monthly transacting users</div>
+            <div class="info-card-value">Instamart 13.3M vs. Blinkit's 27.2M (both now disclosed). Swiggy's own
+              food-delivery business already reaches 18.3M MTU — 1.4x Instamart's base, inside the same company.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Take rate</div>
+            <div class="info-card-value">Softened from 21.1% to ~19.2%, then stabilised at ~19.5% (Q4 FY26, JM
+              Financial) — flat-to-down, not the rise an ads-led growth story would predict.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Advertising revenue</div>
+            <div class="info-card-value">Only Zepto discloses a figure (&#x20B9;1,636cr); Blinkit's absolute ad revenue
+              isn't broken out either, and Instamart's not at all — that only one of three quantifies it is itself
+              informative.</div>
+          </div>
+        </div>
+        <p class="proj-p" style="margin-top:10px">The more controllable lever may not be winning new users away from
+          Blinkit and Zepto at all — it's cross-selling Swiggy's existing, larger food-delivery base into Instamart.</p>
+
+        <p class="proj-p" style="font-weight:600;font-size:14px;color:var(--black);margin-top:18px">Branch 3 — The
+          competitive window is closing, not stabilizing</p>
+        <p class="proj-p">Flipkart Minutes is adding roughly 100 dark stores a month from an ~800-store base — at that
+          pace it could overtake Zepto's entire current footprint within about three months. Amazon Now has stated a
+          target of 100 cities and 1,000+ micro-fulfilment centres, though it isn't yet operating at that scale.
+          Instamart isn't just behind two incumbents; it's racing against new entrants scaling faster than it's
+          recovering share.</p>
+      </div>
+    </div>
+
+    <!-- ── SECTION 7: ANALYTICAL RIGOR ───────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#E1F5EE;color:#0F6E56">7</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Analytical Rigor</div>
+          <div class="sec-desc">Where the numbers were uncertain, the analysis said so instead of dressing them up</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span></div>
+      </div>
+      <div class="proj-section-body">
+        <p class="proj-p">Three deliberate methodology choices prioritized honesty over a cleaner-looking story — the
+          kind of judgment a recruiter assessing analytical maturity, not just chart-making, should want to see.</p>
+        <div class="impact-grid">
+          <div class="impact-card rigor">
+            <div class="impact-val">R&sup2;=0.03</div>
+            <div class="impact-label">Reported a weak regression honestly. The cross-player density-vs-loss fit on n=3
+              was weak, and the writeup says so plainly rather than overselling it.</div>
+          </div>
+          <div class="impact-card rigor">
+            <div class="impact-val">n=1,143</div>
+            <div class="impact-label">Built a calibrated simulation, and labeled it one. A synthetic store-level dataset
+              (R&sup2;=0.41, calibrated to real disclosed aggregates) demonstrates the method at a scale real data
+              doesn't allow — clearly flagged as a methodology exhibit, never as evidence.</div>
+          </div>
+          <div class="impact-card rigor">
+            <div class="impact-val">3 tiers</div>
+            <div class="impact-label">Tagged every figure by confidence level — disclosed, analyst-estimated, or derived
+              — across roughly 100 underlying data points, so every claim's strength is visible, not implied.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 8: RECOMMENDATIONS ────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#EAF3DE;color:#3B6D11">8</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Recommendations</div>
+          <div class="sec-desc">A sequenced, capital-allocated plan — cheapest dominant lever first, each move with a
+            kill criterion</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span></div>
+      </div>
+      <div class="proj-section-body">
+        <div class="step-list">
+          <div class="step-row">
+            <div class="step-icon" style="background:#E1F5EE">&#x1F3EA;</div>
+            <div class="step-content">
+              <div class="step-title">1. Grow density first — the dominant, cheapest lever</div>
+              <div class="step-body">At ~55% of stated capacity, the network can grow volume substantially with no new
+                store capex — and density is the largest margin lever, roughly 4× the inventory model. Stop dilution and
+                densify existing stores before adding any.
+                <div style="font-size:12px;color:#A12C2C;margin-top:6px"><strong>Kill if:</strong> network density is
+                  flat for two quarters at a constant store count — the ceiling is lower than 2,000; re-cut the plan by
+                  city cohort instead of pushing a single dial.</div>
+              </div>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-row">
+            <div class="step-icon" style="background:#FAECE7">&#x1F504;</div>
+            <div class="step-content">
+              <div class="step-title">2. Cross-sell the food-delivery base — gated on a pilot</div>
+              <div class="step-body">18.3M monthly food-delivery users already trust Swiggy. Converting a slice is a far
+                more controllable lever than fighting Blinkit and Zepto for net-new users — and it feeds the density
+                loop.
+                <div style="font-size:12px;color:#A12C2C;margin-top:6px"><strong>Kill if:</strong> the ~1,800-user A/B
+                  pilot shows under a +3pp conversion lift over the 4% organic baseline — don't fund it at scale.</div>
+              </div>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-row">
+            <div class="step-icon" style="background:#E6E9F2">&#x2696;&#xFE0F;</div>
+            <div class="step-content">
+              <div class="step-title">3. Inventory-model transition — a conditional, secondary bet</div>
+              <div class="step-body">Proven by Blinkit and blocked by a 2.65pp vote shortfall — but worth ~100bps
+                (Blinkit's observed benefit, since Swiggy never transitioned), still ~4× smaller than density, and the
+                RL simulation flips it to "don't transition" under plausible costs or a share-over-margin priority.
+                Pursue the vote only after the preconditions clear.
+                <div style="font-size:12px;color:#A12C2C;margin-top:6px"><strong>Kill if:</strong> a real
+                  transition-cost quote exceeds the hurdle, or share is prioritised over margin — redeploy that capital
+                  to density.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 9: STRATEGY SIMULATIONS ──────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#EEEDFE;color:#3C3489">9</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Strategy Simulations</div>
+          <div class="sec-desc">Each recommendation stress-tested with the method best suited to its question — not a
+            forecast, but a map of when each strategy works and what it's worth</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span></div>
+      </div>
+      <div class="proj-section-body">
+        <p class="proj-p">The diagnosis named three levers. Rather than leave them as bullet-point advice, each was
+          modelled with the technique its question actually calls for — sequential decision-making under a budget
+          constraint, causal targeting, and feedback-driven dynamics under deep uncertainty. Every model is calibrated
+          to the same disclosed figures and is explicit about which coefficients are estimates.</p>
+
+        <!-- Strategy 1 — RL -->
+        <div class="sim-block">
+          <div class="sim-method" style="background:#EEEDFE;color:#3C3489">Strategy 1 &middot; Reinforcement Learning
+            (PPO)</div>
+          <div class="sim-title">How fast should Instamart transition to Blinkit's inventory-led model?</div>
+          <p class="proj-p">Framed as a budget-constrained Markov Decision Process and solved with PPO: the agent learns
+            the optimal quarter-by-quarter transition pace, trading the ~100bps inventory benefit (Blinkit's observed
+            figure, the proxy for Instamart's potential) against the capex that same war chest needs for densification.
+          </p>
+          <div class="rowcount-grid">
+            <div class="rowcount-card">
+              <div class="rowcount-entity">Optimal policy</div>
+              <div class="rowcount-flow"><span class="rc-val final">Front-load, then hold</span></div>
+              <div class="rowcount-label">Aggressive for ~6 quarters, then stop — distils to a 3-rule decision tree at
+                100% fidelity, and beats both naive baselines <em>and</em> a smart hand-written rule</div>
+            </div>
+            <div class="rowcount-card">
+              <div class="rowcount-entity">Outcome</div>
+              <div class="rowcount-flow"><span class="rc-val final">~&#x20B9;500cr</span></div>
+              <div class="rowcount-label">cumulative contribution vs do-nothing; reaches +5% margin and pulls breakeven
+                forward to Q4 in 100% of episodes</div>
+            </div>
+            <div class="rowcount-card">
+              <div class="rowcount-entity">Honest caveat</div>
+              <div class="rowcount-flow"><span class="rc-val">Contingent</span></div>
+              <div class="rowcount-label">The +5% outcome is robust, but the <em>decision</em> to transition flips to
+                "don't" if the transition cost is high or market share is prioritised over margin</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Strategy 2 — Uplift + Monte Carlo -->
+        <div class="sim-block">
+          <div class="sim-method" style="background:#E1F5EE;color:#085041">Strategy 2 &middot; Uplift Modeling
+            (X-Learner) + Monte Carlo</div>
+          <div class="sim-title">Which food-delivery users should Instamart cross-sell, and what's the prize?</div>
+          <p class="proj-p">An X-Learner ranks which of Swiggy's 18.3M food-delivery users are genuinely <em>moved</em>
+            by a nudge — not just likely to convert anyway — validated at Spearman 0.88 against ground truth. A Monte
+            Carlo then sizes the prize with honest uncertainty bands.</p>
+          <div class="rowcount-grid">
+            <div class="rowcount-card">
+              <div class="rowcount-entity">Ideal target (CRM-ready)</div>
+              <div class="rowcount-flow"><span class="rc-val final">Swiggy One &middot; metro</span></div>
+              <div class="rowcount-label">High-frequency, grocery-affinity members — derivable from existing CRM fields,
+                no new data collection</div>
+            </div>
+            <div class="rowcount-card">
+              <div class="rowcount-entity">Prize (P50) &amp; economics</div>
+              <div class="rowcount-flow"><span class="rc-val final">+&#x20B9;1,255cr GOV</span></div>
+              <div class="rowcount-label">~0.37M incremental MTU/yr; revenue-positive in 100% of simulations at
+                ~25&times; revenue-to-cost (it's a cross-sell — no top-of-funnel cost)</div>
+            </div>
+            <div class="rowcount-card">
+              <div class="rowcount-entity">Value of the model</div>
+              <div class="rowcount-flow"><span class="rc-val final">+27%</span></div>
+              <div class="rowcount-label">incremental revenue vs a random mass campaign of identical cost; gating next
+                step is a ~1,800-user A/B pilot to pin down conversion</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Strategy 3 — System Dynamics + deep uncertainty -->
+        <div class="sim-block">
+          <div class="sim-method" style="background:#FAECE7;color:#993C1D">Strategy 3 &middot; System Dynamics + Deep
+            Uncertainty (PRIM)</div>
+          <div class="sim-title">Should Swiggy hold store expansion and grow density first?</div>
+          <p class="proj-p">A stock-and-flow model of the density &rarr; margin &rarr; capex feedback loops, swept
+            across 2,000 plausible futures with Latin-hypercube sampling, then mined with PRIM scenario discovery to
+            find <em>where</em> holding actually wins.</p>
+          <div class="rowcount-grid">
+            <div class="rowcount-card">
+              <div class="rowcount-entity">The decision, across futures</div>
+              <div class="rowcount-flow"><span class="rc-val final">Hold wins 97%</span></div>
+              <div class="rowcount-label">Holding reaches breakeven sooner than expansion in 97% of 2,000 futures; with
+                ~&#x20B9;1cr stores aggressive expansion now breaks even in 40% (was doomed at 19%) but stays fragile
+              </div>
+            </div>
+            <div class="rowcount-card">
+              <div class="rowcount-entity">Worth</div>
+              <div class="rowcount-flow"><span class="rc-val final">~&#x20B9;600cr</span></div>
+              <div class="rowcount-label">extra cumulative contribution, plus ~&#x20B9;190cr/quarter of expansion capex
+                freed to fund densification instead of dilution</div>
+            </div>
+            <div class="rowcount-card">
+              <div class="rowcount-entity">When it wins <em>fast</em></div>
+              <div class="rowcount-flow"><span class="rc-val">Conditional</span></div>
+              <div class="rowcount-label">Reliably fast only when the density&rarr;margin slope is strong and stores
+                mature quickly — a success region PRIM and a random forest independently confirm</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Synthesis — 06d -->
+        <div class="sim-block" style="border-color:#1B2A4A;background:#F7F9FC">
+          <div class="sim-method" style="background:#1B2A4A;color:#fff">Synthesis &middot; 06d &middot; The Decision
+          </div>
+          <div class="sim-title">From three analyses to one sequenced, falsifiable recommendation — and it overrules the
+            deck where the evidence demands</div>
+          <p class="proj-p">A synthesis is only worth running if it can <em>change</em> the answer, not just confirm it.
+            This one did, in three ways:</p>
+          <div class="rowcount-grid">
+            <div class="rowcount-card">
+              <div class="rowcount-entity">Re-ranked the levers</div>
+              <div class="rowcount-flow"><span class="rc-val final">Density &raquo; inventory</span></div>
+              <div class="rowcount-label">The simulations rate the inventory model ~1/4 the density lever (~100bps vs
+                several pp) — demoting the much-discussed vote from "the big unlock" to a conditional, secondary bet
+              </div>
+            </div>
+            <div class="rowcount-card">
+              <div class="rowcount-entity">Stress-tested the fixed assumption</div>
+              <div class="rowcount-flow"><span class="rc-val">97% → 72%</span></div>
+              <div class="rowcount-label">"Hold wins in 97% of futures" with rivals frozen; competitor demand-capture
+                erodes that to ~72% even at heavy capture — it bends the edge but doesn't break it, so "hold <em>and
+                  defend catchments</em>" stays prudent</div>
+            </div>
+            <div class="rowcount-card">
+              <div class="rowcount-entity">Named the real next step</div>
+              <div class="rowcount-flow"><span class="rc-val final">Data, not models</span></div>
+              <div class="rowcount-label">A value-of-information plan ranks the four pieces of internal data that would
+                collapse the biggest uncertainty bands — the highest-return move, not another simulation</div>
+            </div>
+          </div>
+        </div>
+
+        <p class="source-note">All three are simulations calibrated to disclosed aggregates — they demonstrate the
+          methodology for finding the optimal pace, targeting, and timing, not point forecasts of Swiggy's actual
+          results. Each notebook stress-tests its own assumptions (reward weights, conversion rates, structural
+          coefficients) and reports the conditions under which its recommendation holds.</p>
+
+        <p class="proj-p" style="font-weight:600;font-size:13px;color:var(--black);margin-top:16px">Simulation stack</p>
+        <div class="stack-row">
+          <span class="stag-proj">Stable-Baselines3 (PPO)</span>
+          <span class="stag-proj">Gymnasium</span>
+          <span class="stag-proj">CausalML (X-Learner)</span>
+          <span class="stag-proj">scikit-learn</span>
+          <span class="stag-proj">BPTK-Py</span>
+          <span class="stag-proj">EMA Workbench (PRIM)</span>
+          <span class="stag-proj">SciPy</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 10: REFLECTIONS & LIMITATIONS ─────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:var(--gray-light);color:var(--gray)">10</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Reflections &amp; Limitations</div>
+          <div class="sec-desc">Honest assessment of what's solid and where this analysis could still be wrong</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span><span
+            class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span></div>
+      </div>
+      <div class="proj-section-body">
+        <div class="refl-grid">
+          <div class="refl-card good">
+            <div class="refl-card-label">&#x2713; What's well-supported</div>
+            <div class="refl-item">
+              <div class="refl-dot"></div>
+              <div>The order-share erosion (34.3%→20.9%) is the strongest finding — disclosed, consistent with the
+                GOV/margin trade-off Swiggy itself describes, and large enough that data noise can't explain it away.
+              </div>
+            </div>
+            <div class="refl-item">
+              <div class="refl-dot"></div>
+              <div>The governance finding is a hard disclosed fact, not an estimate: the IOCC vote share and the 75%
+                threshold are both publicly reported numbers, not analyst inference.</div>
+            </div>
+            <div class="refl-item">
+              <div class="refl-dot"></div>
+              <div>Instamart's AOV advantage is clearly disclosed by all three companies and has held directionally
+                across periods — a genuinely durable structural edge.</div>
+            </div>
+          </div>
+          <div class="refl-card change">
+            <div class="refl-card-label">&#x21BA; Where I'd push back on myself</div>
+            <div class="refl-item">
+              <div class="refl-dot"></div>
+              <div>Several figures — Blinkit's and Zepto's density, Blinkit's MTU, all three players' per-order loss —
+                are analyst estimates, not company filings, even with confidence explicitly tagged.</div>
+            </div>
+            <div class="refl-item">
+              <div class="refl-dot"></div>
+              <div>The order-share series itself comes from Zepto's IPO prospectus — a competitor with an incentive to
+                frame the field favorably. Worth cross-checking against an independent source if one becomes available.
+              </div>
+            </div>
+            <div class="refl-item">
+              <div class="refl-dot"></div>
+              <div>Most series are only 2–4 data points deep (order share has 3 annual points, take rate has 2 quarters)
+                — directionally informative, not enough to make strong claims about the slope of a trend.</div>
+            </div>
+            <div class="refl-item">
+              <div class="refl-dot"></div>
+              <div>Some disclosures blend food-delivery and quick-commerce monetization in the same paragraph;
+                disambiguating which take-rate figure was quick-commerce-specific took care and isn't always unambiguous
+                across sources.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="scope-callout">
+          <div class="scope-callout-title">&#x2139;&#xFE0F; Scope clarification: what's real evidence vs. a methodology
+            demonstration</div>
+          <div class="scope-callout-body">The 22-hypothesis verdict log above is built entirely on disclosed figures,
+            analyst estimates, and figures derived from disclosed ones. The one exception — a 1,143-store synthetic
+            dataset used to demonstrate a within-network density-margin regression (R&sup2;=0.41) — is calibrated to
+            match real disclosed aggregates but is <strong>not real store data</strong>. It was kept out of the main
+            findings and is referenced only as a methodology exhibit, never as evidence about Instamart's actual stores.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SECTION 11: METHODOLOGY NOTES & SOURCES ──────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#F1F5F9;color:#475569">11</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Methodology Notes &amp; Sources</div>
+          <div class="sec-desc">A sample of the full hypothesis verdict log, and how every figure is traced</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span></div>
+      </div>
+      <div class="proj-section-body">
+        <p class="proj-p">Every one of the 22 hypotheses tested was logged with an explicit verdict — supported, not
+          supported, weak/inconclusive, or not independently testable — rather than only the ones that confirmed the
+          thesis. A representative sample:</p>
+        <table class="dq-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Hypothesis</th>
+              <th>Verdict</th>
+              <th>Evidence</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>H3.1</td>
+              <td>Instamart losing share of incremental category growth</td>
+              <td><span class="verdict-pill verdict-supported">Strongly supported</span></td>
+              <td>Order share 34.3%→24.5%→20.9%, FY24–FY26</td>
+            </tr>
+            <tr>
+              <td>Cross-player (n=3)</td>
+              <td>Density alone explains the margin gap across firms</td>
+              <td><span class="verdict-pill verdict-weak">Weak/inconclusive</span></td>
+              <td>R&sup2;=0.03; Blinkit beats Zepto despite lower density</td>
+            </tr>
+            <tr>
+              <td>H5.1</td>
+              <td>Advertising is currently driving take-rate expansion</td>
+              <td><span class="verdict-pill verdict-not">Not supported</span></td>
+              <td>Take rate softened 21.1%→~19.5%, not rising (JM Financial)</td>
+            </tr>
+            <tr>
+              <td>H4.3</td>
+              <td>Marketplace model blocks Instamart's replenishment efficiency</td>
+              <td><span class="verdict-pill verdict-supported">Supported</span></td>
+              <td>90% Blinkit inventory-led NOV; IOCC vote fell 2.65pp short of 75%</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="source-note">The full log of all 22 hypotheses across 4 tested branches, the complete 25-source
+          citation list (primary disclosures and secondary press/analyst coverage clearly distinguished), and the
+          confidence-tagging methodology are documented in the companion strategy deck and the project's Jupyter
+          notebooks — five diagnostic notebooks (Branches 1–5) plus the strategy-simulation notebooks (reinforcement
+          learning, uplift modeling, and system dynamics) — in the GitHub repository linked above.</p>
+      </div>
+    </div>
+
+    <!-- Footer nav -->
+    <div
+      style="display:flex;justify-content:space-between;align-items:center;margin-top:40px;padding-top:32px;border-top:1px solid var(--card-border)">
+      <a href="../index.html#projects" class="proj-back">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        Back to all projects
+      </a>
+      <a href="../index.html#contact" style="font-size:13px;font-weight:500;color:var(--orange)">Hire me →</a>
+    </div>
+
+  </div>
+
+  <script>
+    function toggleFormulas(toggle) {
+      const body = document.getElementById("formula-body");
+      const chevron = toggle.querySelector(".formula-chevron");
+      const open = body.classList.toggle("open");
+      chevron.classList.toggle("open", open);
+      toggle.setAttribute("aria-expanded", open);
+    }
+  </script>
+</body>
+
+</html>
