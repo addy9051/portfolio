@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quick Commerce Strategy: Swiggy Instamart vs. Blinkit — Ankit Addya</title>
   <meta name="description"
-    content="Competitive strategy case study diagnosing why Swiggy Instamart's path to profitability lags Blinkit's — a 7-branch MECE issue tree, 22 hypotheses tested against real public disclosures, plus three strategy simulations (reinforcement learning, uplift modeling, and system dynamics) that stress-test each recommendation." />
+    content="Competitive strategy case study diagnosing why Swiggy Instamart's path to profitability lags Blinkit's — a 7-branch MECE issue tree, 20 falsifiable hypotheses tested against real public disclosures, plus three strategy simulations (reinforcement learning, uplift modeling, and system dynamics) that stress-test each recommendation." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Bebas+Neue&display=swap"
@@ -479,31 +479,91 @@
       margin-top: 4px;
     }
 
-    /* MECE branch tree */
-    .branch-grid {
+    /* MECE issue tree (left-to-right: root → 7 branches) */
+    .mece-tree {
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 16px 0;
+      align-items: center;
+      margin: 18px 0;
+      overflow-x: auto;
     }
 
-    .branch-card {
-      flex: 1 1 140px;
-      border-radius: 10px;
-      padding: 14px 12px;
-      text-align: center;
-    }
-
-    .branch-card.tested {
-      background: #1B2A4A;
+    .mece-root {
+      flex: 0 0 auto;
+      width: 190px;
+      padding: 16px;
+      border-radius: 12px;
+      background: #0F1E3D;
       color: #fff;
+      font-size: 13.5px;
+      font-weight: 700;
+      line-height: 1.4;
+      position: relative;
     }
 
-    .branch-card.context {
-      background: #fff;
-      border: 1.5px solid #1B2A4A;
-      color: #1B2A4A;
+    .mece-root-kicker {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      opacity: .6;
+      margin-bottom: 6px;
     }
+
+    /* horizontal connector from the root to the spine */
+    .mece-root::after {
+      content: '';
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      width: 36px;
+      height: 2px;
+      background: #9AA6BC;
+    }
+
+    .mece-branches {
+      flex: 1 1 auto;
+      min-width: 240px;
+      margin-left: 36px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .mece-branch {
+      position: relative;
+      padding: 5px 0 5px 34px;
+    }
+
+    /* continuous vertical spine (row padding fills the gaps between nodes) */
+    .mece-branch::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 2px;
+      background: #9AA6BC;
+    }
+    .mece-branch:first-child::before { top: 50%; height: 50%; }
+    .mece-branch:last-child::before  { top: 0;   height: 50%; }
+
+    /* horizontal tick from the spine into each branch node */
+    .mece-branch::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 34px;
+      height: 2px;
+      background: #9AA6BC;
+    }
+
+    .mece-node {
+      border-radius: 10px;
+      padding: 10px 14px;
+    }
+    .mece-node.tested  { background: #1B2A4A; color: #fff; }
+    .mece-node.context { background: #fff; border: 1.5px solid #1B2A4A; color: #1B2A4A; }
 
     .branch-num {
       font-size: 10px;
@@ -908,7 +968,7 @@
     <div class="proj-hero">
       <div class="proj-hero-eyebrow">Strategy Case Study</div>
       <h1>Why Swiggy Instamart's Path to<br>Profitability Lags Blinkit</h1>
-      <p class="proj-hero-sub">A competitive strategy case study for Swiggy Instamart — a 7-branch MECE issue tree, 22
+      <p class="proj-hero-sub">A competitive strategy case study for Swiggy Instamart — a 7-branch MECE issue tree, 20
         falsifiable hypotheses tested against real public disclosures from Swiggy, Blinkit, and Zepto, and a
         deliberately honest treatment of every weak or simulated result.</p>
 
@@ -924,8 +984,8 @@
           </div>
         </div>
         <div class="proj-metric">
-          <div class="proj-metric-val">22</div>
-          <div class="proj-metric-label">Falsifiable hypotheses tested across 4 branches</div>
+          <div class="proj-metric-val">20</div>
+          <div class="proj-metric-label">Falsifiable hypotheses tested across 5 branches</div>
         </div>
         <div class="proj-metric">
           <div class="proj-metric-val">72.35%</div>
@@ -1121,41 +1181,61 @@
           exhaustive branches. Five had enough public data to test quantitatively with falsifiable hypotheses; two were
           judged context-only because no public data could independently test them.</p>
 
-        <div class="branch-grid">
-          <div class="branch-card tested">
-            <div class="branch-num">Branch 1</div>
-            <div class="branch-label">Unit Economics &amp; Density</div>
-            <div class="branch-status">Tested</div>
+        <div class="mece-tree">
+          <div class="mece-root">
+            <div class="mece-root-kicker">Root question</div>
+            Why does Instamart's path to profitability lag Blinkit's?
           </div>
-          <div class="branch-card tested">
-            <div class="branch-num">Branch 2</div>
-            <div class="branch-label">Customer Behavior</div>
-            <div class="branch-status">Tested</div>
-          </div>
-          <div class="branch-card tested">
-            <div class="branch-num">Branch 3</div>
-            <div class="branch-label">Competitive Dynamics</div>
-            <div class="branch-status">Tested</div>
-          </div>
-          <div class="branch-card tested">
-            <div class="branch-num">Branch 4</div>
-            <div class="branch-label">Logistics &amp; Fulfillment</div>
-            <div class="branch-status">Tested</div>
-          </div>
-          <div class="branch-card tested">
-            <div class="branch-num">Branch 5</div>
-            <div class="branch-label">Monetization</div>
-            <div class="branch-status">Tested</div>
-          </div>
-          <div class="branch-card context">
-            <div class="branch-num">Branch 6</div>
-            <div class="branch-label">Capital Allocation</div>
-            <div class="branch-status">Context only</div>
-          </div>
-          <div class="branch-card context">
-            <div class="branch-num">Branch 7</div>
-            <div class="branch-label">Regulatory &amp; Policy</div>
-            <div class="branch-status">Context only</div>
+          <div class="mece-branches">
+            <div class="mece-branch">
+              <div class="mece-node tested">
+                <div class="branch-num">Branch 1</div>
+                <div class="branch-label">Unit Economics &amp; Density</div>
+                <div class="branch-status">Tested &middot; 4 hypotheses</div>
+              </div>
+            </div>
+            <div class="mece-branch">
+              <div class="mece-node tested">
+                <div class="branch-num">Branch 2</div>
+                <div class="branch-label">Customer Behavior</div>
+                <div class="branch-status">Tested &middot; 4 hypotheses</div>
+              </div>
+            </div>
+            <div class="mece-branch">
+              <div class="mece-node tested">
+                <div class="branch-num">Branch 3</div>
+                <div class="branch-label">Competitive Dynamics</div>
+                <div class="branch-status">Tested &middot; 4 hypotheses</div>
+              </div>
+            </div>
+            <div class="mece-branch">
+              <div class="mece-node tested">
+                <div class="branch-num">Branch 4</div>
+                <div class="branch-label">Logistics &amp; Fulfillment</div>
+                <div class="branch-status">Tested &middot; 4 hypotheses</div>
+              </div>
+            </div>
+            <div class="mece-branch">
+              <div class="mece-node tested">
+                <div class="branch-num">Branch 5</div>
+                <div class="branch-label">Monetization</div>
+                <div class="branch-status">Tested &middot; 4 hypotheses</div>
+              </div>
+            </div>
+            <div class="mece-branch">
+              <div class="mece-node context">
+                <div class="branch-num">Branch 6</div>
+                <div class="branch-label">Capital Allocation</div>
+                <div class="branch-status">Context only</div>
+              </div>
+            </div>
+            <div class="mece-branch">
+              <div class="mece-node context">
+                <div class="branch-num">Branch 7</div>
+                <div class="branch-label">Regulatory &amp; Policy</div>
+                <div class="branch-status">Context only</div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="branch-legend">
@@ -1350,6 +1430,23 @@
               isn't broken out either, and Instamart's not at all — that only one of three quantifies it is itself
               informative.</div>
           </div>
+        </div>
+        <!-- Advertising as an explicit margin lever (Section 3.3) -->
+        <div style="border:1px solid #D9E6E1;border-left:4px solid #0F6E56;border-radius:10px;background:#F4FAF8;padding:14px 18px;margin:16px 0 4px">
+          <div style="font-weight:700;font-size:13.5px;color:#0F6E56;margin-bottom:8px">Advertising &mdash; the unrealized margin lever</div>
+          <p class="proj-p" style="margin:0 0 8px">Today the lever is largely <strong>unrealized</strong>: Instamart discloses
+            no ad revenue (analyst inference puts it in a ~&#x20B9;300&ndash;500cr range), and its take rate is flat-to-down
+            at ~19.5% &mdash; consistent with a business that hasn't yet switched ads on at scale. But <strong>Zepto shows
+            the ceiling</strong>: &#x20B9;1,636cr in FY26 (+151% YoY), ~8% of net revenue, across 2,468 brand partners &mdash;
+            the most advanced ad engine in quick commerce.</p>
+          <p class="proj-p" style="margin:0">The upside matters because ad revenue is <strong>near-pure margin</strong>.
+            Monetizing at Zepto's intensity (~8%) on Instamart's &#x20B9;5,675cr NOV would be <strong>~&#x20B9;450cr</strong>
+            &mdash; illustratively equivalent to ~8 percentage points of effective take rate, at minimal incremental cost
+            once the QIP-funded store expansion delivers the reach.
+            <span style="color:#6A6F73;font-style:italic">Illustrative, not a forecast: the &#x20B9;300&ndash;500cr Instamart
+            figure is analyst inference (not disclosed), applying a %-of-net-revenue rate to NOV mixes bases, and Zepto's
+            2,468-partner engine took years to build &mdash; treat this as a multi-year structural opportunity, not a
+            near-term number.</span></p>
         </div>
         <p class="proj-p" style="margin-top:10px">The more controllable lever may not be winning new users away from
           Blinkit and Zepto at all — it's cross-selling Swiggy's existing, larger food-delivery base into Instamart.</p>
@@ -1715,7 +1812,7 @@
         <div class="scope-callout">
           <div class="scope-callout-title">&#x2139;&#xFE0F; Scope clarification: what's real evidence vs. a methodology
             demonstration</div>
-          <div class="scope-callout-body">The 22-hypothesis verdict log above is built entirely on disclosed figures,
+          <div class="scope-callout-body">The verdict log above is built entirely on disclosed figures,
             analyst estimates, and figures derived from disclosed ones. The one exception — a 1,143-store synthetic
             dataset used to demonstrate a within-network density-margin regression (R&sup2;=0.41) — is calibrated to
             match real disclosed aggregates but is <strong>not real store data</strong>. It was kept out of the main
@@ -1736,7 +1833,7 @@
         <div class="sec-audience"><span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span></div>
       </div>
       <div class="proj-section-body">
-        <p class="proj-p">Every one of the 22 hypotheses tested was logged with an explicit verdict — supported, not
+        <p class="proj-p">Every one of the 20 hypotheses tested was logged with an explicit verdict — supported, not
           supported, weak/inconclusive, or not independently testable — rather than only the ones that confirmed the
           thesis. A representative sample:</p>
         <table class="dq-table">
@@ -1775,7 +1872,7 @@
             </tr>
           </tbody>
         </table>
-        <p class="source-note">The full log of all 22 hypotheses across 4 tested branches, the complete 25-source
+        <p class="source-note">The full log of all 20 hypotheses (plus 2 supplementary regressions) across 5 tested branches, the complete 25-source
           citation list (primary disclosures and secondary press/analyst coverage clearly distinguished), and the
           confidence-tagging methodology are documented in the companion strategy deck and the project's Jupyter
           notebooks — five diagnostic notebooks (Branches 1–5) plus the strategy-simulation notebooks (reinforcement
