@@ -992,7 +992,7 @@
           <div class="proj-metric-label">Vote for Indian-owned (IOCC) status —> 75% needed; the FDI gate on inventory-led</div>
         </div>
         <div class="proj-metric">
-          <div class="proj-metric-val">R&sup2;=0.03</div>
+          <div class="proj-metric-val">R&sup2;=0.04</div>
           <div class="proj-metric-label">Cross-player regression, reported honestly as weak</div>
         </div>
       </div>
@@ -1108,7 +1108,7 @@
           </div>
           <div class="info-card">
             <div class="info-card-label">Zepto</div>
-            <div class="info-card-value">IPO-bound. 22% market share. Leads on order frequency (~2,045 orders/store/day,
+            <div class="info-card-value">IPO-bound. 22% market share. Leads on order frequency (~2,140 orders/store/day,
               derived from UDRHP) and discloses ad revenue of &#x20B9;1,636cr.</div>
           </div>
           <div class="info-card">
@@ -1361,7 +1361,7 @@
             <div class="formula-gloss">
               Derived by setting $\text{CM}(d^*) = 0$ and solving for $d^*$.
               Instamart runs at $1{,}093$ (Q4 FY26) &mdash; only <strong>~16% below breakeven</strong> &mdash; far
-              closer than the earlier 1,552 figure implied, consistent with its near-zero disclosed margin.
+              closer than the model's 1,619 x-intercept implied, consistent with its near-zero disclosed margin.
               The system-dynamics model (06c) sweeps $\alpha$ from $2\!\times\!10^{-5}$ to $8\!\times\!10^{-5}$ across
               2,000 scenarios
               because this single parameter drives the outcome more than any other ($\text{importance} \approx 0.67$).
@@ -1437,15 +1437,20 @@
           </div>
           <div class="rowcount-card">
             <div class="rowcount-entity">Blinkit</div>
-            <div class="rowcount-flow"><span class="rc-val final">1,425</span></div>
-            <div class="rowcount-label">orders/store/day (Q4 derived)</div>
+            <div class="rowcount-flow"><span class="rc-val final">1,357</span></div>
+            <div class="rowcount-label">orders/store/day (Q4, reported — closing basis)</div>
           </div>
           <div class="rowcount-card">
             <div class="rowcount-entity">Zepto</div>
-            <div class="rowcount-flow"><span class="rc-val final">2,045</span></div>
-            <div class="rowcount-label">orders/store/day (derived)</div>
+            <div class="rowcount-flow"><span class="rc-val final">2,140</span></div>
+            <div class="rowcount-label">orders/store/day (Q4, active-store basis)</div>
           </div>
         </div>
+        <p class="proj-p" style="font-size:12.5px;color:#6A6F73;font-style:italic;margin-top:8px">A comparability caveat (the
+          "ramping gap"): these are each player's headline figure, but on different bases. Blinkit reports on full
+          closing-store capacity (conservative — ~1,425 on an active-store basis); Zepto reports on active-store-days
+          (peak — ~2,045 on a closing basis). Instamart's network was flat in Q4 (+7 net stores), so its 1,093 is the same
+          either way. Read the three as directional, not strictly comparable.</p>
         <p class="proj-p">If density alone explained the margin gap, Zepto — the highest-density player — should show
           the best per-order economics. It doesn't: Zepto's per-order loss (&#x20B9;78.75) is nearly as bad as
           Instamart's (&#x20B9;85.18), while mid-density Blinkit posts by far the best per-order loss (&#x20B9;3.02).
@@ -1541,14 +1546,14 @@
           kind of judgment a recruiter assessing analytical maturity, not just chart-making, should want to see.</p>
         <div class="impact-grid">
           <div class="impact-card rigor">
-            <div class="impact-val">R&sup2;=0.03</div>
+            <div class="impact-val">R&sup2;=0.04</div>
             <div class="impact-label">Reported a weak regression honestly. The cross-player density-vs-loss fit on n=3
               was weak, and the writeup says so plainly rather than overselling it.</div>
           </div>
           <div class="impact-card rigor">
             <div class="impact-val">n=1,143</div>
             <div class="impact-label">Built a calibrated simulation, and labeled it one. A synthetic store-level dataset
-              (R&sup2;=0.41, calibrated to real disclosed aggregates) demonstrates the method at a scale real data
+              (R&sup2;=0.42, calibrated to real disclosed aggregates) demonstrates the method at a scale real data
               doesn't allow — clearly flagged as a methodology exhibit, never as evidence.</div>
           </div>
           <div class="impact-card rigor">
@@ -1879,7 +1884,7 @@
             demonstration</div>
           <div class="scope-callout-body">The verdict log above is built entirely on disclosed figures,
             analyst estimates, and figures derived from disclosed ones. The one exception — a 1,143-store synthetic
-            dataset used to demonstrate a within-network density-margin regression (R&sup2;=0.41) — is calibrated to
+            dataset used to demonstrate a within-network density-margin regression (R&sup2;=0.42) — is calibrated to
             match real disclosed aggregates but is <strong>not real store data</strong>. It was kept out of the main
             findings and is referenced only as a methodology exhibit, never as evidence about Instamart's actual stores.
           </div>
@@ -1921,7 +1926,7 @@
               <td>Cross-player (n=3)</td>
               <td>Density alone explains the margin gap across firms</td>
               <td><span class="verdict-pill verdict-weak">Weak/inconclusive</span></td>
-              <td>R&sup2;=0.03; Blinkit beats Zepto despite lower density</td>
+              <td>R&sup2;=0.04; Blinkit beats Zepto despite lower density</td>
             </tr>
             <tr>
               <td>H5.1</td>
