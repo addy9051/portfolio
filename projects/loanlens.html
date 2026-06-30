@@ -367,6 +367,18 @@
 
         <p class="proj-p" style="font-weight:600;font-size:13px;color:var(--black);margin-top:18px">The ship decision</p>
         <p class="proj-p">The recommendation gates on three conditions at once: completion improves <strong>and</strong> the default-rate guardrail holds <strong>and</strong> the fairness guardrail holds. All three pass → <strong>SHIP</strong>. Supporting rigor — Sample-Ratio-Mismatch χ² (fires on an injected bad split), an A/A simulation (false-positive rate ≈ 5%, uniform p-values), Benjamini-Hochberg multiple-testing correction, and a CUSUM monitor that catches an injected latency regression in 1 day — all run in the analysis layer and surface on the dashboard.</p>
+
+        <p class="proj-p" style="font-weight:600;font-size:13px;color:var(--black);margin-top:20px">Why ship both? (the PM's challenge)</p>
+        <p class="proj-p">Fair pushback: <em>"a progress bar is a 2-day front-end change with zero underwriting risk — why take on the engineering debt of an LLM router?"</em> The honest answer: ship the progress bar <strong>first</strong> — but it is not enough on its own.</p>
+        <table class="decision-table">
+          <thead><tr><th>Intervention</th><th>Lift</th><th>What it actually fixes</th><th>Risk / ceiling</th></tr></thead>
+          <tbody>
+            <tr><td>Progress bar (UX)</td><td class="chosen">+3.3pp</td><td><em>Perceived</em> wait — users tolerate uncertainty better</td><td>Doesn't reduce <strong>actual</strong> latency; the &gt;8s cohort still completes at only <strong>43.3%</strong></td></tr>
+            <tr><td>Fallback router (MLOps)</td><td class="chosen">+8.5pp</td><td><strong>Actual</strong> latency on slow sessions + <strong>4.8×</strong> lower cost / conversion</td><td>Needs router ops + a model-quality guardrail</td></tr>
+            <tr><td>Both (sub-additive)</td><td class="chosen">+9.2pp</td><td>Complementary — UX for mid-range waits, router for the tail</td><td>Interaction −1.5pp: overlapping, not redundant</td></tr>
+          </tbody>
+        </table>
+        <p class="proj-p">The progress bar recovers only ~⅓ of the lost cohort and <strong>cannot move the &gt;8s tail</strong> — the users actually driving the drop-off. They need real speed, not animation; and the 4.8× cost saving is a second-order win a progress bar can't deliver. <strong>Verdict: ship the progress bar for the quick, zero-risk win, and the router because it's the only thing that fixes the tail.</strong></p>
       </div>
     </div>
 
@@ -468,6 +480,21 @@
             <div class="refl-item"><div class="refl-dot"></div><div>Wire the fairness audit to true protected-class attributes (with consented data + a maturation window on defaults) rather than a credit-score proxy.</div></div>
           </div>
         </div>
+
+        <p class="proj-p" style="font-weight:600;font-size:13px;color:var(--black);margin-top:18px">Who maintains this? (operational lifecycle)</p>
+        <p class="proj-p">A fix is only as good as its upkeep — the router isn't free to own. Acknowledging the full lifecycle is the difference between a clever demo and a production-ready recommendation:</p>
+        <table class="decision-table">
+          <thead><tr><th>Component</th><th>Owner</th><th>Failure mode</th><th>Mitigation</th></tr></thead>
+          <tbody>
+            <tr><td>LiteLLM router</td><td>MLOps / backend</td><td>Ollama down, timeout storms</td><td>Health check + circuit-breaker; degrade to human review</td></tr>
+            <tr><td>Ollama models</td><td>Platform</td><td>Cold start, single-model lock</td><td><code>warmup()</code>; provisioned throughput / sidecar in prod</td></tr>
+            <tr><td>Langfuse tracing</td><td>MLOps</td><td>OTEL export lag</td><td><code>flush()</code> + trace sampling</td></tr>
+            <tr><td>dbt marts</td><td>Analytics eng</td><td>Bad upstream data</td><td>Data-contract validation gate before load</td></tr>
+            <tr><td>CUSUM / drift alerts</td><td>On-call analytics</td><td>False positives</td><td>Tune threshold <code>h</code>; alert runbook</td></tr>
+            <tr><td>Streamlit dashboard</td><td>Analytics / PM</td><td>Stale snapshots</td><td>Rebuild snapshots in CI on data change</td></tr>
+          </tbody>
+        </table>
+        <p class="proj-p" style="font-size:12px;color:var(--gray)"><strong>Runbook snippet:</strong> if the fallback-trigger rate exceeds 15% for two days, the <em>primary</em> model is the bottleneck — fix the infrastructure, don't just lean harder on the smaller model.</p>
       </div>
     </div>
 
