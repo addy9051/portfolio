@@ -250,7 +250,24 @@ img { display: block; max-width: 100%; }
   margin-bottom: 18px;
 }
 
-.about-text p:last-child { margin-bottom: 0; }
+.about-text ul {
+  padding-left: 20px;
+  margin-top: -10px;
+  margin-bottom: 16px;
+}
+
+.about-text li {
+  margin-bottom: 10px;
+}
+
+.about-text li:last-child {
+  margin-bottom: 0;
+}
+
+.about-text p:last-child {
+  margin-bottom: 0;
+  line-height: 1.4;
+}
 
 .about-text strong { color: var(--black); font-weight: 600; }
 
