@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LoanLens — Fixing a 32% AI-Analysis Drop-off — Ankit Addya</title>
+  <meta name="description" content="LLM-ops + analytics-engineering case study: diagnosing a latency-driven 32% drop-off in an LLM micro-loan funnel, fixing it with a fallback router, and validating with a 2x2 experiment, non-inferiority + fairness guardrails, and a back-door causal estimate — on a $0 local stack with a live Streamlit dashboard." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Bebas+Neue&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    /* ── Accent for this page ──────────────────────────────────── */
+    .proj-page { --acc: #6366F1; --acc-soft: #EEF0FE; --acc-deep: #3730A3; }
+
+    .proj-back { display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:500; color:var(--gray); padding:10px 0 0; transition:color .2s; }
+    .proj-back:hover { color:var(--black); }
+    .proj-back svg { width:16px; height:16px; stroke:currentColor; fill:none; }
+
+    .proj-page { max-width:820px; margin:0 auto; padding:0 32px 120px; }
+
+    /* role tags */
+    .role-tags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+    .rtag { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:500; padding:4px 12px; border-radius:999px; letter-spacing:.02em; }
+    .rtag-da { background:#E6F1FB; color:#0C447C; }
+    .rtag-ba { background:#E1F5EE; color:#085041; }
+    .rtag-ds { background:#EEEDFE; color:#3C3489; }
+
+    /* hero */
+    .proj-hero { background:#0f172a; border-radius:20px; padding:48px; margin:32px 0 10px; color:#fff; position:relative; overflow:hidden; }
+    .proj-hero::before { content:'AI'; position:absolute; right:6px; bottom:-34px; font-family:'Bebas Neue',sans-serif; font-size:170px; color:rgba(99,102,241,0.14); line-height:1; pointer-events:none; user-select:none; }
+    .proj-hero-eyebrow { font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:#818cf8; margin-bottom:14px; }
+    .proj-hero h1 { font-size:clamp(22px,3.5vw,36px); font-weight:700; line-height:1.2; margin-bottom:14px; color:#fff; }
+    .proj-hero-sub { font-size:15px; color:#a8b3c7; line-height:1.65; max-width:600px; margin-bottom:28px; }
+    .proj-metrics-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:28px; }
+    .proj-metric { background:rgba(255,255,255,.06); border:1px solid rgba(129,140,248,.18); border-radius:12px; padding:14px; text-align:center; }
+    .proj-metric-val { font-size:22px; font-weight:700; color:#818cf8; line-height:1; }
+    .proj-metric-label { font-size:10px; color:#8b97ad; margin-top:5px; line-height:1.4; }
+    .proj-meta-pills { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:28px; }
+    .proj-meta-pill { display:inline-flex; align-items:center; gap:6px; font-size:11px; color:#8b97ad; background:rgba(255,255,255,.06); border:1px solid rgba(129,140,248,.18); border-radius:999px; padding:5px 12px; }
+    .proj-hero-actions { display:flex; gap:10px; flex-wrap:wrap; }
+    .btn-hero-live { display:inline-flex; align-items:center; gap:8px; padding:11px 22px; border-radius:999px; background:#6366F1; color:#fff; font-size:13px; font-weight:600; text-decoration:none; transition:background .2s,transform .15s; }
+    .btn-hero-live:hover { background:#818cf8; transform:translateY(-1px); }
+    .btn-hero-github { display:inline-flex; align-items:center; gap:8px; padding:10px 20px; border-radius:999px; border:1.5px solid rgba(255,255,255,.2); background:transparent; color:#fff; font-size:13px; font-weight:500; transition:background .2s,border-color .2s; text-decoration:none; }
+    .btn-hero-github svg { width:16px; height:16px; fill:currentColor; flex-shrink:0; }
+    .btn-hero-github:hover { background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.4); }
+
+    /* section cards */
+    .proj-section { border:1.5px solid var(--card-border); border-radius:16px; background:var(--white); margin-bottom:10px; overflow:hidden; }
+    .proj-section-header { display:flex; align-items:center; gap:12px; padding:14px 20px; border-bottom:1px solid var(--card-border); }
+    .sec-num { width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; flex-shrink:0; }
+    .sec-head-text { flex:1; }
+    .sec-title { font-size:15px; font-weight:600; color:var(--black); }
+    .sec-desc { font-size:12px; color:var(--gray); margin-top:2px; }
+    .sec-audience { display:flex; gap:5px; margin-left:auto; flex-shrink:0; }
+    .proj-section-body { padding:20px; }
+
+    .proj-p { font-size:14px; color:#333; line-height:1.75; margin-bottom:12px; }
+    .proj-p:last-child { margin-bottom:0; }
+    .proj-p code, .info-card-value code { font-size:11px; background:#eef0fe; color:#3730A3; padding:1px 6px; border-radius:4px; }
+
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .info-card { background:var(--gray-light); border-radius:10px; padding:14px; }
+    .info-card-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--gray); margin-bottom:6px; }
+    .info-card-value { font-size:13px; color:var(--black); font-weight:500; line-height:1.5; }
+
+    .pull-quote { border-left:3px solid var(--acc); padding:12px 16px; background:var(--acc-soft); border-radius:0 10px 10px 0; margin-bottom:14px; }
+    .pull-quote p { font-size:14px; font-style:italic; color:#333; line-height:1.7; }
+
+    .step-list { display:flex; flex-direction:column; gap:0; }
+    .step-row { display:flex; gap:14px; align-items:flex-start; padding:10px 0; }
+    .step-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:16px; }
+    .step-content { flex:1; }
+    .step-title { font-size:14px; font-weight:600; color:var(--black); margin-bottom:3px; }
+    .step-body { font-size:13px; color:var(--gray); line-height:1.6; }
+    .step-connector { width:2px; height:10px; background:var(--card-border); margin-left:15px; }
+
+    .stack-row { display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
+    .stag-proj { font-size:11px; font-weight:500; padding:4px 10px; border-radius:6px; background:var(--gray-light); color:#333; border:1px solid var(--card-border); }
+
+    .arch-diagram { background:var(--gray-light); border-radius:12px; padding:20px; margin:14px 0; }
+    .arch-row { display:flex; gap:8px; align-items:center; justify-content:center; flex-wrap:wrap; }
+    .arch-node { display:flex; flex-direction:column; align-items:center; gap:4px; padding:10px 14px; background:#fff; border:1.5px solid var(--card-border); border-radius:10px; min-width:84px; text-align:center; }
+    .arch-node-icon { font-size:18px; }
+    .arch-node-label { font-size:10px; font-weight:600; color:var(--black); }
+    .arch-node-sub { font-size:9px; color:var(--gray); }
+    .arch-arrow { font-size:16px; color:var(--gray); flex-shrink:0; }
+    .arch-layer-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--gray); margin-bottom:8px; }
+    .arch-layer { margin-bottom:12px; }
+    .arch-layer:last-child { margin-bottom:0; }
+
+    .decision-table { width:100%; border-collapse:collapse; margin:14px 0; font-size:13px; }
+    .decision-table th { text-align:left; padding:8px 12px; background:var(--gray-light); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--gray); border-bottom:1.5px solid var(--card-border); }
+    .decision-table td { padding:10px 12px; border-bottom:1px solid var(--card-border); color:#333; vertical-align:top; line-height:1.5; }
+    .decision-table tr:last-child td { border-bottom:none; }
+    .decision-table .chosen { font-weight:600; color:var(--acc-deep); }
+
+    .insight-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0; }
+    .insight-card { border:1.5px solid var(--card-border); border-radius:10px; padding:16px; }
+    .insight-num { font-family:'Bebas Neue',sans-serif; font-size:32px; line-height:1; color:var(--acc); margin-bottom:4px; }
+    .insight-title { font-size:13px; font-weight:600; color:var(--black); margin-bottom:6px; }
+    .insight-body { font-size:12px; color:var(--gray); line-height:1.6; }
+
+    .impact-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }
+    .impact-card { background:#F5FFF9; border:1.5px solid #C2EDDA; border-radius:10px; padding:16px; text-align:center; }
+    .impact-val { font-size:26px; font-weight:700; color:#0F6E56; }
+    .impact-label { font-size:11px; color:#3B6D55; margin-top:4px; line-height:1.4; }
+
+    .refl-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+    .refl-card { background:var(--gray-light); border-radius:10px; padding:16px; }
+    .refl-card-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px; }
+    .refl-card.good .refl-card-label { color:#0F6E56; }
+    .refl-card.change .refl-card-label { color:#854F0B; }
+    .refl-item { display:flex; gap:8px; margin-bottom:8px; font-size:13px; color:#333; line-height:1.55; }
+    .refl-item:last-child { margin-bottom:0; }
+    .refl-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; margin-top:6px; }
+    .refl-card.good .refl-dot { background:#0F6E56; }
+    .refl-card.change .refl-dot { background:#EF9F27; }
+
+    /* live embed */
+    .live-embed { border:1.5px solid var(--card-border); border-radius:12px; overflow:hidden; background:#0f172a; margin:14px 0; }
+    .live-embed iframe { width:100%; height:620px; border:0; display:block; }
+    .live-note { font-size:11px; color:var(--gray); margin-top:8px; }
+    .tab-pills { display:flex; gap:6px; flex-wrap:wrap; margin:6px 0 16px; }
+    .tab-pill { font-size:11px; font-weight:600; padding:5px 12px; border-radius:999px; background:var(--acc-soft); color:var(--acc-deep); border:1px solid #d7dafb; }
+
+    @media (max-width:640px) {
+      .proj-page { padding:0 20px 80px; }
+      .proj-hero { padding:28px 24px; border-radius:14px; }
+      .proj-metrics-row { grid-template-columns:1fr 1fr; }
+      .two-col, .insight-grid, .refl-grid { grid-template-columns:1fr; }
+      .impact-grid { grid-template-columns:1fr 1fr; }
+      .proj-hero::before { font-size:110px; }
+      .live-embed iframe { height:520px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="../index.html#projects" class="nav-link active">← Portfolio</a>
+    </div>
+  </nav>
+
+  <div class="proj-page" style="padding-top:100px;">
+
+    <!-- ── HERO ─────────────────────────────────────────────────── -->
+    <div class="proj-hero">
+      <div class="proj-hero-eyebrow">Project Deep-Dive · LLM-Ops</div>
+      <h1>LoanLens — Fixing a 32%<br>AI-Analysis Drop-off</h1>
+      <p class="proj-hero-sub">An LLM micro-loan platform loses a third of users at the AI bank-statement-analysis step. This project proves the drop-off is <strong>latency-driven</strong>, fixes it with a latency-fallback router, and validates the fix with a 2&times;2 experiment, a default-rate <strong>and</strong> a fair-lending guardrail, and a back-door causal estimate — built entirely on a <strong>$0 local stack</strong> with a live, deployed dashboard.</p>
+
+      <div class="role-tags" style="margin-bottom:24px">
+        <span class="rtag rtag-da">&#x1F4CA; Data / Analytics Engineer</span>
+        <span class="rtag rtag-ba">&#x1F4BC; Product Analyst</span>
+        <span class="rtag rtag-ds">&#x1F9E0; LLM-Ops / DS</span>
+      </div>
+
+      <div class="proj-metrics-row">
+        <div class="proj-metric"><div class="proj-metric-val">32.8%</div><div class="proj-metric-label">AI-analysis drop-off diagnosed</div></div>
+        <div class="proj-metric"><div class="proj-metric-val">+9.2pp</div><div class="proj-metric-label">completion lift (both fixes)</div></div>
+        <div class="proj-metric"><div class="proj-metric-val">4.8&times;</div><div class="proj-metric-label">cheaper / conversion on fast model</div></div>
+        <div class="proj-metric"><div class="proj-metric-val">1 day</div><div class="proj-metric-label">latency-drift detection (CUSUM)</div></div>
+      </div>
+
+      <div class="proj-meta-pills">
+        <span class="proj-meta-pill">&#x1F3E6; FinTech · LLM micro-lending</span>
+        <span class="proj-meta-pill">&#x1F4B0; $0 / fully-local stack</span>
+        <span class="proj-meta-pill" style="color:#4ade80">&#x1F7E2; Live dashboard deployed</span>
+        <span class="proj-meta-pill" style="color:#4ade80">&#x2713; Completed</span>
+      </div>
+
+      <div class="proj-hero-actions">
+        <a href="https://fintechai-analytics-project-ankitaddya.streamlit.app/" class="btn-hero-live" target="_blank" rel="noopener noreferrer">
+          &#x1F50D; Open Live Dashboard &#x2197;
+        </a>
+        <a href="https://github.com/addy9051/FinTechAI-product-analytics-project" class="btn-hero-github" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          View on GitHub
+        </a>
+      </div>
+    </div>
+
+    <!-- ── 2 · BUSINESS CONTEXT ─────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#EEF0FE;color:#3730A3">2</div>
+        <div class="sec-head-text"><div class="sec-title">Business Context</div><div class="sec-desc">The platform, the funnel, and why a single step mattered so much</div></div>
+        <div class="sec-audience"><span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span></div>
+      </div>
+      <div class="proj-section-body">
+        <p class="proj-p">An online micro-loan platform underwrites small consumer loans by running an applicant's bank statement through an LLM that summarises income, outflows, and risk signals before an offer is made. Revenue comes from the margin on funded loans, so every applicant who starts but never finishes the AI analysis is lost acquisition spend with nothing to show for it.</p>
+        <p class="proj-p">The funnel is six steps: <code>sign_up → bank_link → ai_analysis_initiated → ai_analysis_completed → loan_terms_offered → loan_accepted</code>. Product flagged that roughly <strong>a third of users vanish between <em>analysis initiated</em> and <em>completed</em></strong> — the single largest leak in the funnel, and the one nobody could explain.</p>
+        <div class="two-col" style="margin-top:14px">
+          <div class="info-card"><div class="info-card-label">Sector</div><div class="info-card-value">FinTech consumer micro-lending (LLM-assisted underwriting)</div></div>
+          <div class="info-card"><div class="info-card-label">Revenue model</div><div class="info-card-value">Net margin on funded loans (~12% on ~$2.3K avg loan)</div></div>
+          <div class="info-card"><div class="info-card-label">The leak</div><div class="info-card-value">~33% drop between AI-analysis initiated → completed</div></div>
+          <div class="info-card"><div class="info-card-label">Headline skill</div><div class="info-card-value">LLM-ops + AI cost, experimentation, causal honesty</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 3 · PROBLEM STATEMENT ────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#FAEEDA;color:#854F0B">3</div>
+        <div class="sec-head-text"><div class="sec-title">Problem Statement</div><div class="sec-desc">What was broken, and what it cost to leave it alone</div></div>
+        <div class="sec-audience"><span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span><span class="rtag rtag-da" style="font-size:11px;padding:3px 8px">DA</span></div>
+      </div>
+      <div class="proj-section-body">
+        <div class="pull-quote"><p>The AI-analysis step lost ~33% of users, but the team had no idea why — was it a UX problem, a model-quality problem, or an infrastructure problem? Without a diagnosis, every proposed fix was a guess, and any "fix" risked speeding things up at the expense of credit quality.</p></div>
+        <div class="two-col">
+          <div class="info-card"><div class="info-card-label">Ambiguity</div><div class="info-card-value">No one could attribute the drop to a cause, so prioritisation stalled — UX, ML, and infra each blamed the others.</div></div>
+          <div class="info-card"><div class="info-card-label">The trap</div><div class="info-card-value">Any speed fix could silently raise the loan-default rate — unacceptable in a regulated lending context. The fix needed a hard credit-quality guardrail.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 4 · ROOT CAUSE ───────────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#E1F5EE;color:#0F6E56">4</div>
+        <div class="sec-head-text"><div class="sec-title">Root Cause Analysis</div><div class="sec-desc">Diagnosing the drop honestly — including the confounder that biases the naïve answer</div></div>
+        <div class="sec-audience"><span class="rtag rtag-da" style="font-size:11px;padding:3px 8px">DA</span><span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span></div>
+      </div>
+      <div class="proj-section-body">
+        <div class="step-list">
+          <div class="step-row">
+            <div class="step-icon" style="background:#EEF0FE">&#x1F50D;</div>
+            <div class="step-content"><div class="step-title">Latency cohorts surface the signal</div><div class="step-body">Bucketing AI-analysis sessions by LLM latency, completion craters monotonically: <strong>86.4% (&lt;3s) → 78.9% (3–5s) → 63.1% (5–8s) → 43.3% (&gt;8s)</strong>. The &gt;8s cohort completes at roughly <em>half</em> the rate of the fast cohort. The drop-off is latency-driven, not random impatience.</div></div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-row">
+            <div class="step-icon" style="background:#FAEEDA">&#x26A0;</div>
+            <div class="step-content"><div class="step-title">…but the naïve estimate is confounded</div><div class="step-body">A naïve "latency → completion" regression is biased: <code>requested_amount</code> is a common cause. Bigger loans → richer bank statements → more tokens → higher latency, <em>and</em> bigger asks → more committed applicants → higher completion. So high-latency requests come from more-committed users, masking latency's true harm.</div></div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-row">
+            <div class="step-icon" style="background:#E1F5EE">&#x1F3AF;</div>
+            <div class="step-content"><div class="step-title">Back-door adjustment recovers the true effect</div><div class="step-body">Adjusting for <code>requested_amount</code> (the back-door criterion) moves the latency coefficient from <strong>−0.264 (naïve) → −0.298 (+12.8% stronger)</strong> — confirming the naïve number <em>understates</em> the damage. The synthetic data was deliberately built with this confounder so the adjustment does real work rather than recovering a baked-in number.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 5 · TECHNICAL APPROACH ───────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#EEEDFE;color:#3C3489">5</div>
+        <div class="sec-head-text"><div class="sec-title">Technical Approach</div><div class="sec-desc">The $0 local stack, the fallback router, and the enterprise blueprint it mirrors</div></div>
+        <div class="sec-audience"><span class="rtag rtag-da" style="font-size:11px;padding:3px 8px">DA</span><span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span></div>
+      </div>
+      <div class="proj-section-body">
+
+        <div class="arch-diagram">
+          <div class="arch-layer">
+            <div class="arch-layer-label">Synthetic data → warehouse</div>
+            <div class="arch-row">
+              <div class="arch-node"><div class="arch-node-icon">&#x1F3B2;</div><div class="arch-node-label">SDV / Faker</div><div class="arch-node-sub">20k users, seeded</div></div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F986;</div><div class="arch-node-label">DuckDB</div><div class="arch-node-sub">local warehouse</div></div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F9F1;</div><div class="arch-node-label">dbt-duckdb</div><div class="arch-node-sub">stg → int → fct marts</div></div>
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-label">LLM path (the headline)</div>
+            <div class="arch-row">
+              <div class="arch-node"><div class="arch-node-icon">&#x1F500;</div><div class="arch-node-label">LiteLLM</div><div class="arch-node-sub">gateway + router</div></div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F999;</div><div class="arch-node-label">Ollama</div><div class="arch-node-sub">llama3.2 → :1b on &gt;4s</div></div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F50E;</div><div class="arch-node-label">Langfuse</div><div class="arch-node-sub">OTel traces + cost</div></div>
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-label">Experiment + causal</div>
+            <div class="arch-row">
+              <div class="arch-node" style="min-width:300px"><div class="arch-node-icon">&#x1F4D0;</div><div class="arch-node-label">statsmodels / scipy</div><div class="arch-node-sub">2×2 + interaction · non-inferiority guardrails · A/A · SRM · BH · back-door</div></div>
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-label">Decision layer</div>
+            <div class="arch-row">
+              <div class="arch-node"><div class="arch-node-icon">&#x1F4C8;</div><div class="arch-node-label">CUSUM monitor</div><div class="arch-node-sub">latency-drift alarm</div></div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node"><div class="arch-node-icon">&#x1F4BB;</div><div class="arch-node-label">Streamlit</div><div class="arch-node-sub">deployed dashboard</div></div>
+            </div>
+          </div>
+        </div>
+
+        <p class="proj-p" style="margin-top:16px"><strong>The fix — a latency-fallback router.</strong> The gateway calls the primary model (<code>llama3.2</code>) with a hard 4-second budget; if it blows the budget it falls back to a fast model (<code>llama3.2:1b</code>). Every call is traced in Langfuse with model, tokens, latency, and a notional cost, grouped by a per-analysis <code>session_id</code> so the timed-out primary and the fallback land in one trace.</p>
+
+        <p class="proj-p" style="margin-top:10px;font-weight:600;font-size:13px;color:var(--black)">Built on $0 — but architected like the enterprise blueprint it came from</p>
+        <table class="decision-table">
+          <thead><tr><th>Layer</th><th class="chosen">Portfolio build ($0)</th><th>Enterprise analog (documented as ADR)</th></tr></thead>
+          <tbody>
+            <tr><td>Warehouse</td><td class="chosen">DuckDB (local file)</td><td>Snowflake on AWS</td></tr>
+            <tr><td>Transformation</td><td class="chosen">dbt-duckdb</td><td>dbt Core on Snowflake</td></tr>
+            <tr><td>LLM gateway / models</td><td class="chosen">LiteLLM → local Ollama</td><td>LiteLLM/Portkey → GPT-4o / Claude</td></tr>
+            <tr><td>LLM observability</td><td class="chosen">Langfuse (<code>langfuse_otel</code>)</td><td>Langfuse Cloud</td></tr>
+            <tr><td>Experimentation</td><td class="chosen">statsmodels / scipy</td><td>Statsig</td></tr>
+            <tr><td>Dashboard</td><td class="chosen">Streamlit (deployed free)</td><td>Apache Superset</td></tr>
+          </tbody>
+        </table>
+
+        <p class="proj-p" style="margin-top:14px;font-weight:600;font-size:13px;color:var(--black)">Full stack</p>
+        <div class="stack-row">
+          <span class="stag-proj">Python</span><span class="stag-proj">DuckDB</span><span class="stag-proj">dbt-duckdb</span><span class="stag-proj">SDV / Faker</span><span class="stag-proj">LiteLLM</span><span class="stag-proj">Ollama (llama3.2)</span><span class="stag-proj">Langfuse</span><span class="stag-proj">OpenTelemetry</span><span class="stag-proj">statsmodels</span><span class="stag-proj">scipy</span><span class="stag-proj">pandas</span><span class="stag-proj">Plotly</span><span class="stag-proj">Streamlit</span><span class="stag-proj">uv</span><span class="stag-proj">pytest / AppTest</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 6 · KEY FINDINGS ─────────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#E6F1FB;color:#185FA5">6</div>
+        <div class="sec-head-text"><div class="sec-title">Key Findings &amp; Results</div><div class="sec-desc">The fix works — and it's validated rigorously, not just asserted</div></div>
+        <div class="sec-audience"><span class="rtag rtag-da" style="font-size:11px;padding:3px 8px">DA</span><span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span></div>
+      </div>
+      <div class="proj-section-body">
+        <div class="insight-grid">
+          <div class="insight-card"><div class="insight-num">+9.2pp</div><div class="insight-title">The 2×2 factorial fix</div><div class="insight-body">Progress bar +3.3pp, fallback router +8.5pp, both +9.2pp completion — with a significant <em>sub-additive</em> interaction (the two fixes share some lift). The interaction is exactly why a 2×2 beats two separate A/Bs.</div></div>
+          <div class="insight-card"><div class="insight-num">4.8&times;</div><div class="insight-title">The router cuts cost AND lifts completion</div><div class="insight-body">LLM cost per converted user: primary <strong>$0.036</strong> vs fast <strong>$0.0076</strong>. The fast fallback is ~4.8× cheaper per conversion <em>and</em> faster (so it abandons less) — the core LLM-ops result.</div></div>
+          <div class="insight-card"><div class="insight-num">+0.64pp</div><div class="insight-title">Default-rate guardrail holds</div><div class="insight-body">One-sided, fixed-horizon non-inferiority test: the 95% upper bound on the default-rate increase is +0.64pp, below the pre-registered 1.0pp margin → non-inferior. Speed didn't silently degrade credit quality.</div></div>
+          <div class="insight-card"><div class="insight-num">+1.25pp</div><div class="insight-title">Fair-lending guardrail holds</div><div class="insight-body">A second non-inferiority test checks the router doesn't widen the prime−subprime completion gap. 95% UB +1.25pp &lt; 2.0pp margin → non-inferior. Falsifiable: an injected disparity exists, so this <em>can</em> fail.</div></div>
+        </div>
+
+        <p class="proj-p" style="font-weight:600;font-size:13px;color:var(--black);margin-top:18px">The ship decision</p>
+        <p class="proj-p">The recommendation gates on three conditions at once: completion improves <strong>and</strong> the default-rate guardrail holds <strong>and</strong> the fairness guardrail holds. All three pass → <strong>SHIP</strong>. Supporting rigor — Sample-Ratio-Mismatch χ² (fires on an injected bad split), an A/A simulation (false-positive rate ≈ 5%, uniform p-values), Benjamini-Hochberg multiple-testing correction, and a CUSUM monitor that catches an injected latency regression in 1 day — all run in the analysis layer and surface on the dashboard.</p>
+      </div>
+    </div>
+
+    <!-- ── LIVE DASHBOARD ───────────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#0f172a;color:#818cf8">&#x25A0;</div>
+        <div class="sec-head-text"><div class="sec-title">Live Dashboard</div><div class="sec-desc">The deployed Streamlit app — embedded below, or open it full-screen</div></div>
+        <div class="sec-audience"><span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span><span class="rtag rtag-da" style="font-size:11px;padding:3px 8px">DA</span></div>
+      </div>
+      <div class="proj-section-body">
+        <p class="proj-p">A tabbed Streamlit dashboard reads small committed snapshots, so the deployed app needs no DuckDB, dbt, or Ollama at runtime. Five tabs, written exec-first with the statistical rigor one tab deeper:</p>
+        <div class="tab-pills">
+          <span class="tab-pill">📊 Executive Summary</span>
+          <span class="tab-pill">🔍 Funnel Diagnosis</span>
+          <span class="tab-pill">🧪 Experiment Results</span>
+          <span class="tab-pill">💰 Cost Economics</span>
+          <span class="tab-pill">🛡️ Production Monitoring</span>
+        </div>
+        <div class="live-embed">
+          <iframe src="https://fintechai-analytics-project-ankitaddya.streamlit.app/?embed=true" title="LoanLens live Streamlit dashboard" loading="lazy" referrerpolicy="no-referrer"></iframe>
+        </div>
+        <p class="live-note">Embedded live app on Streamlit Community Cloud — it may take ~30s to wake from sleep on first load. If the embed is blocked by your browser, <a href="https://fintechai-analytics-project-ankitaddya.streamlit.app/" target="_blank" rel="noopener noreferrer" style="color:var(--acc-deep);font-weight:600">open it in a new tab&#x2197;</a>.</p>
+      </div>
+    </div>
+
+    <!-- ── 7 · BUSINESS IMPACT ──────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#EAF3DE;color:#3B6D11">7</div>
+        <div class="sec-head-text"><div class="sec-title">Business Impact</div><div class="sec-desc">Translated into the language the business actually cares about</div></div>
+        <div class="sec-audience"><span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span><span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span></div>
+      </div>
+      <div class="proj-section-body">
+        <div class="impact-grid">
+          <div class="impact-card"><div class="impact-val">+9.2pp</div><div class="impact-label">completion uplift — recovers ~9 of the ~33 points lost at the AI step</div></div>
+          <div class="impact-card"><div class="impact-val">~$776K</div><div class="impact-label">annualized margin recovered (projected, labeled assumptions)</div></div>
+          <div class="impact-card"><div class="impact-val">~0.003%</div><div class="impact-label">LLM cost as a share of CAC — inference is a rounding error vs. the conversion uplift</div></div>
+          <div class="impact-card"><div class="impact-val">2</div><div class="impact-label">guardrails (credit-default + fair-lending) protect the downside</div></div>
+          <div class="impact-card"><div class="impact-val">1 day</div><div class="impact-label">to detect a latency regression in production before it tanks the funnel</div></div>
+          <div class="impact-card"><div class="impact-val">$0</div><div class="impact-label">infrastructure cost — fully local / free-tier</div></div>
+        </div>
+        <p class="proj-p" style="font-size:12px;color:var(--gray)"><strong>Note on metrics:</strong> the data is synthetic (the latency→abandonment mechanism and a credit-subgroup fairness disparity are deliberately <em>injected</em> so the methods can be honestly validated against a known ground truth). The completion lift is measured in the simulated 2×2 experiment, then projected onto the observed funnel. Dollar figures use labeled assumptions (avg loan $2,300, 12% margin, $1,450 CAC) and are framed as <em>margin on incremental funded loans</em>, not loan principal.</p>
+      </div>
+    </div>
+
+    <!-- ── 8 · REFLECTIONS ──────────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:var(--gray-light);color:var(--gray)">8</div>
+        <div class="sec-head-text"><div class="sec-title">Reflections &amp; What I'd Do Differently</div><div class="sec-desc">The honest section most portfolios skip</div></div>
+        <div class="sec-audience"><span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span></div>
+      </div>
+      <div class="proj-section-body">
+        <div class="refl-grid">
+          <div class="refl-card good">
+            <div class="refl-card-label">&#x2713; What worked well</div>
+            <div class="refl-item"><div class="refl-dot"></div><div>Injecting a real confounder so the back-door adjustment <em>moves</em> the estimate (−0.264 → −0.298) — the causal section demonstrates method value rather than recovering a number I planted.</div></div>
+            <div class="refl-item"><div class="refl-dot"></div><div>Making the fairness guardrail falsifiable: an audit caught an earlier version that grouped by the wrong flag and was null-by-construction; rebuilding it as a real non-inferiority test on an injected disparity made it defensible.</div></div>
+            <div class="refl-item"><div class="refl-dot"></div><div>Keeping the guardrails <em>fixed-horizon</em> while the primary metric can run sequential — and writing down <em>why</em> in an ADR — reads like production experimentation, not a notebook.</div></div>
+          </div>
+          <div class="refl-card change">
+            <div class="refl-card-label">&#x21BA; What I'd do differently</div>
+            <div class="refl-item"><div class="refl-dot"></div><div>Add a sequential mSPRT on the primary completion metric to show always-valid early stopping alongside the fixed-horizon guardrails.</div></div>
+            <div class="refl-item"><div class="refl-dot"></div><div>Local Ollama is CPU-bound and slow, so the live gateway proves the mechanism on a few cases while scale analysis uses synthetic traces — a real deployment would fine-tune a small model or buy provisioned throughput instead.</div></div>
+            <div class="refl-item"><div class="refl-dot"></div><div>Wire the fairness audit to true protected-class attributes (with consented data + a maturation window on defaults) rather than a credit-score proxy.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Footer nav ───────────────────────────────────────────── -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:40px;padding-top:32px;border-top:1px solid var(--card-border)">
+      <a href="../index.html#projects" class="proj-back">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to all projects
+      </a>
+      <a href="../index.html#contact" style="font-size:13px;font-weight:500;color:var(--acc-deep)">Hire me →</a>
+    </div>
+
+  </div><!-- /.proj-page -->
+
+</body>
+</html>
