@@ -64,6 +64,19 @@
     .info-card-label { font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--gray); margin-bottom:6px; }
     .info-card-value { font-size:13px; color:var(--black); font-weight:500; line-height:1.5; }
 
+    .gloss-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .gloss-item { background:var(--gray-light); border-radius:10px; padding:12px 14px; }
+    .gloss-term { font-size:13px; font-weight:700; color:var(--black); margin-bottom:3px; }
+    .gloss-def { font-size:12px; color:var(--gray); line-height:1.55; }
+    .gloss-def code { font-size:11px; background:#eef0fe; color:#3730A3; padding:1px 5px; border-radius:4px; }
+
+    .assump-box { background:var(--gray-light); border-radius:10px; padding:16px 18px; margin-top:4px; }
+    .assump-cat { font-size:12px; font-weight:700; color:var(--acc-deep); margin:12px 0 6px; }
+    .assump-cat:first-of-type { margin-top:0; }
+    .assump-box ul { font-size:12px; color:var(--gray); line-height:1.7; margin:0; padding-left:18px; }
+    .assump-box ul li { margin-bottom:3px; }
+    .assump-box code { font-size:11px; background:#eef0fe; color:#3730A3; padding:1px 5px; border-radius:4px; }
+
     .pull-quote { border-left:3px solid var(--acc); padding:12px 16px; background:var(--acc-soft); border-radius:0 10px 10px 0; margin-bottom:14px; }
     .pull-quote p { font-size:14px; font-style:italic; color:#333; line-height:1.7; }
 
@@ -128,7 +141,7 @@
       .proj-page { padding:0 20px 80px; }
       .proj-hero { padding:28px 24px; border-radius:14px; }
       .proj-metrics-row { grid-template-columns:1fr 1fr; }
-      .two-col, .insight-grid, .refl-grid { grid-template-columns:1fr; }
+      .two-col, .insight-grid, .refl-grid, .gloss-grid { grid-template-columns:1fr; }
       .impact-grid { grid-template-columns:1fr 1fr; }
       .proj-hero::before { font-size:110px; }
       .live-embed iframe { height:520px; }
@@ -179,6 +192,31 @@
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
           View on GitHub
         </a>
+      </div>
+    </div>
+
+    <!-- ── KEY TERMS (glossary) ─────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#EEF0FE;color:#3730A3">&#x1F4D6;</div>
+        <div class="sec-head-text"><div class="sec-title">Key Terms</div><div class="sec-desc">Plain-language definitions for the terms used throughout this page</div></div>
+      </div>
+      <div class="proj-section-body">
+        <div class="gloss-grid">
+          <div class="gloss-item"><div class="gloss-term">AI-analysis "completion"</div><div class="gloss-def">A user who reaches <code>ai_analysis_completed</code> — the LLM finished analysing their bank statement and they didn't abandon during the wait. The metric the whole project optimises.</div></div>
+          <div class="gloss-item"><div class="gloss-term">Drop-off</div><div class="gloss-def">The share of users who <em>start</em> the AI analysis but never complete it. The ~33% headline is this figure for the AI-analysis step.</div></div>
+          <div class="gloss-item"><div class="gloss-term">LLM latency</div><div class="gloss-def">How long the LLM takes to analyse a bank statement. The longer the wait, the more users abandon — the root cause of the drop-off.</div></div>
+          <div class="gloss-item"><div class="gloss-term">Fallback router</div><div class="gloss-def">The fix: the gateway calls the primary model with a 4-second budget; if it's too slow, it falls back to a faster, cheaper model.</div></div>
+          <div class="gloss-item"><div class="gloss-term">Converted user / funded loan</div><div class="gloss-def">A user who reaches <code>loan_accepted</code> — an actual funded loan. "Cost per converted user" = total LLM spend ÷ funded loans.</div></div>
+          <div class="gloss-item"><div class="gloss-term">pp (percentage points)</div><div class="gloss-def">The absolute gap between two rates. +9.2pp means completion rose from ~66.6% to ~75.8% — not a 9.2% relative change.</div></div>
+          <div class="gloss-item"><div class="gloss-term">2×2 factorial experiment</div><div class="gloss-def">An A/B/C/D test crossing two fixes (progress bar × fallback router) so you measure each effect <em>and</em> their interaction in one experiment.</div></div>
+          <div class="gloss-item"><div class="gloss-term">Interaction (sub-additive)</div><div class="gloss-def">When two fixes together deliver <em>less</em> than the sum of their individual lifts (they overlap). Measuring it is the whole point of a 2×2.</div></div>
+          <div class="gloss-item"><div class="gloss-term">Non-inferiority guardrail (NIM)</div><div class="gloss-def">A one-sided test that a safety metric (e.g. default rate) is not <em>meaningfully worse</em> than control, within a pre-registered margin (the NIM). It can fail — that's the point.</div></div>
+          <div class="gloss-item"><div class="gloss-term">Confounder / back-door adjustment</div><div class="gloss-def">A variable (here <code>requested_amount</code>) that affects both latency and completion, biasing the naïve estimate. Adjusting for it recovers the true effect.</div></div>
+          <div class="gloss-item"><div class="gloss-term">Prime vs Subprime</div><div class="gloss-def">Credit-quality bands used as a socioeconomic proxy for the fairness check: <code>credit_score ≥ 670</code> (prime) vs <code>&lt; 670</code> (subprime).</div></div>
+          <div class="gloss-item"><div class="gloss-term">CUSUM drift detection</div><div class="gloss-def">A production monitor that raises an alarm when a metric (e.g. latency) drifts upward — used to catch a model regression quickly.</div></div>
+          <div class="gloss-item"><div class="gloss-term">Net margin per loan</div><div class="gloss-def">The profit the platform keeps per funded loan <em>after</em> costs (funding, expected defaults, servicing, acquisition) — <strong>not</strong> the interest rate, which is gross revenue upstream of it.</div></div>
+        </div>
       </div>
     </div>
 
@@ -371,7 +409,40 @@
           <div class="impact-card"><div class="impact-val">1 day</div><div class="impact-label">to detect a latency regression in production before it tanks the funnel</div></div>
           <div class="impact-card"><div class="impact-val">$0</div><div class="impact-label">infrastructure cost — fully local / free-tier</div></div>
         </div>
-        <p class="proj-p" style="font-size:12px;color:var(--gray)"><strong>Note on metrics:</strong> the data is synthetic (the latency→abandonment mechanism and a credit-subgroup fairness disparity are deliberately <em>injected</em> so the methods can be honestly validated against a known ground truth). The completion lift is measured in the simulated 2×2 experiment, then projected onto the observed funnel. Dollar figures use labeled assumptions (avg loan $2,300, 12% margin, $1,450 CAC) and are framed as <em>margin on incremental funded loans</em>, not loan principal.</p>
+        <div class="assump-box">
+          <p class="proj-p" style="font-size:12px;color:var(--gray);margin-bottom:8px"><strong style="color:var(--black)">Note on metrics — every assumption, in one place.</strong> This is a portfolio pilot on <strong>synthetic data</strong>: the key mechanisms are deliberately <em>injected</em> so each method can be validated against a known ground truth, and the dollar figures use clearly-labeled assumptions rather than real disclosures.</p>
+
+          <div class="assump-cat">Data &amp; injected ground truth</div>
+          <ul>
+            <li>20,000 synthetic users, fixed random seed; generated with Faker + numpy.</li>
+            <li><strong>Latency is the dominant, causal driver</strong> of AI-step abandonment, with secondary device-type and irreducible-noise effects.</li>
+            <li><code>requested_amount</code> is an <strong>injected confounder</strong>: bigger loans → more tokens → higher latency, <em>and</em> → more-committed applicants → higher completion.</li>
+            <li><code>credit_score ~ Beta(5,2)</code> scaled to 300–850 (a realistic left-skewed, FICO-like shape); base loan-default rate ≈ 8%.</li>
+            <li>An <strong>injected fairness disparity</strong>: the fast fallback model gives subprime applicants ~0.6pp less completion benefit than prime ones — so the fairness guardrail <em>can</em> fail.</li>
+          </ul>
+
+          <div class="assump-cat">LLM &amp; routing</div>
+          <ul>
+            <li>Primary model <code>llama3.2</code> (slower), fast fallback <code>llama3.2:1b</code>; fallback latency threshold = <strong>4 s</strong>.</li>
+            <li>Local Ollama is free, so per-call cost uses a <strong>notional cloud-equivalent token price</strong> (mirroring the generator) purely to demonstrate cost capture.</li>
+          </ul>
+
+          <div class="assump-cat">Experiment &amp; guardrails</div>
+          <ul>
+            <li>Fresh randomised 2×2 population, 50,000 users/arm; baseline completion ≈ 66.6% (grounded in the observed funnel).</li>
+            <li>Injected effects: progress bar +3pp, fallback +8pp, with a −1.5pp sub-additive interaction. The lift is <strong>measured in the experiment, then projected onto the observed funnel</strong>.</li>
+            <li>Non-inferiority margins (pre-registered): default rate <strong>1.0pp</strong>, fairness gap <strong>2.0pp</strong>; α = 0.05, one-sided, fixed-horizon.</li>
+            <li><code>credit_score &lt; 670</code> used as the subprime / socioeconomic <strong>proxy</strong> (no protected-class data in the synthetic set).</li>
+          </ul>
+
+          <div class="assump-cat">Unit economics (labeled assumptions)</div>
+          <ul>
+            <li>Average loan <strong>$2,300</strong> (≈ the mean <code>requested_amount</code> in the data).</li>
+            <li><strong>12% net contribution per funded loan ≈ $276</strong> — an assumed take-rate <em>after</em> funding cost, expected defaults, servicing &amp; acquisition; <strong>not</strong> the interest rate (which is gross revenue).</li>
+            <li>CAC <strong>$1,450</strong> (blueprint SMB-fintech benchmark); funded-per-completion ≈ <strong>0.61</strong> (from the funnel).</li>
+            <li>Annualised by ×365/120 (~3×), since the cohort spans ~120 days; revenue is framed as <strong>margin on incremental funded loans</strong>, not loan principal.</li>
+          </ul>
+        </div>
       </div>
     </div>
 
