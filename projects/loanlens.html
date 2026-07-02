@@ -379,6 +379,20 @@
           </tbody>
         </table>
         <p class="proj-p">The progress bar recovers only ~⅓ of the lost cohort and <strong>cannot move the &gt;8s tail</strong> — the users actually driving the drop-off. They need real speed, not animation; and the 4.8× cost saving is a second-order win a progress bar can't deliver. <strong>Verdict: ship the progress bar for the quick, zero-risk win, and the router because it's the only thing that fixes the tail.</strong></p>
+
+        <p class="proj-p" style="font-weight:600;font-size:13px;color:var(--black);margin-top:22px">Is the fast model <em>safe</em>, not just fast? — the real-model quality gate</p>
+        <p class="proj-p">Every result above runs on <strong>synthetic</strong> data with injected effects — honest for testing <em>methods</em>, but silent on how the real <code>llama3.2:1b</code> actually reasons about a bank statement. So the project's one piece of <strong>real-model evidence</strong>: both Ollama models run a 14-case underwriting benchmark (edge cases included — thin file, income mismatch, gig volatility, loan stacking), graded deterministically (every cited dollar figure verified against the input facts) and then by an independent <strong>GPT-4o judge</strong> (GitHub Models' free tier) for fact accuracy and hallucination. The gate is deliberately strict, because it governs <em>autonomous approval</em>.</p>
+        <table class="decision-table">
+          <thead><tr><th>Real-model quality (14 cases)</th><th>Primary (3B)</th><th>Fast (1B)</th><th>Auto-approve bar</th></tr></thead>
+          <tbody>
+            <tr><td>Judge fact accuracy</td><td>74%</td><td>70%</td><td>&ge; 90% <span style="color:#B02A37;font-weight:700">&#x2717;</span></td></tr>
+            <tr><td>Hallucination rate</td><td>64%</td><td class="chosen">86%</td><td>&le; 5% <span style="color:#B02A37;font-weight:700">&#x2717;</span></td></tr>
+            <tr><td>Recommendation defensible</td><td>71%</td><td>43%</td><td>&mdash;</td></tr>
+            <tr><td>Verdict safe-side (&ge; as conservative)</td><td>86%</td><td>79%</td><td>&mdash;</td></tr>
+          </tbody>
+        </table>
+        <p class="proj-p"><strong>The gate failed — and that is the finding.</strong> The judge's flags are real, not noise: on a clean-approve case the 1B invented an "existing $400/mo loan" and a "6-year account age" that were never in the facts; elsewhere it hallucinated a "$3,000 credit limit" and an interest rate. Even the 3B hallucinates on ~64% of cases. <strong>Neither local model is underwriting-grade.</strong></p>
+        <p class="proj-p">So the honest boundary: the router makes the <em>analysis step faster and ~4.8× cheaper</em> — a latency and funnel win — <strong>not</strong> a licence to hand the credit decision to a 1B. The approve/decline call stays gated behind human review and the model's own abstention rule (confidence &lt; 0.45 → no auto-offer). This is a <strong>parallel</strong> gate, never folded into the synthetic ship decision: two different evidence bases must not be laundered into one green checkmark. A gate that <em>can</em> fail, and did — which is exactly why it's worth having.</p>
       </div>
     </div>
 
