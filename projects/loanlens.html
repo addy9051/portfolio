@@ -509,6 +509,19 @@
           </tbody>
         </table>
         <p class="proj-p" style="font-size:12px;color:var(--gray)"><strong>Runbook snippet:</strong> if the fallback-trigger rate exceeds 15% for two days, the <em>primary</em> model is the bottleneck — fix the infrastructure, don't just lean harder on the smaller model.</p>
+
+        <p class="proj-p" style="font-weight:600;font-size:13px;color:var(--black);margin-top:22px">Messy data — sudden breaks vs. gradual drift</p>
+        <p class="proj-p">The CUSUM monitor catches <em>gradual</em> statistical drift. But real pipelines also hit <em>sudden</em> messes — a schema change nulls a field, an infra hiccup 10&times;'s latency, a bad join doubles a funnel stage. Those need a different defence: a fail-fast <strong>data-contract gate</strong> that runs <em>before</em> dbt and refuses to load, so bad data never reaches the warehouse.</p>
+        <table class="decision-table">
+          <thead><tr><th>&nbsp;</th><th class="chosen">Data-contract gate (<code>validate.py</code>)</th><th>CUSUM monitor</th></tr></thead>
+          <tbody>
+            <tr><td>Catches</td><td class="chosen">Sudden breaks</td><td>Gradual drift</td></tr>
+            <tr><td>When</td><td class="chosen">Pre-load — blocks the load</td><td>In production — raises an alarm</td></tr>
+            <tr><td>Checks</td><td class="chosen">No null / duplicate keys, sane latency bounds, funnel users monotone, drop-off &amp; default in expected bands</td><td>Latency / default-rate creeping past a threshold</td></tr>
+            <tr><td>Response</td><td class="chosen">Fail fast — messy data never enters DuckDB</td><td>Investigate — ~1-day detection</td></tr>
+          </tbody>
+        </table>
+        <p class="proj-p">True to the project's <strong>inject-and-catch ethos</strong> (the same pattern as the SRM bad split and the CUSUM shift): <code>generate.py --inject-anomaly {schema_break | latency_spike}</code> injects a real break, and <code>validate.py --expect-anomaly</code> exits <em>successfully only if it catches it</em>. The funnel contract is enforced in <strong>two layers</strong> — the pre-load validator <em>and</em> an in-warehouse dbt singular test — so a bad join is caught whether it arrives in the raw data or is introduced by a broken model.</p>
       </div>
     </div>
 
