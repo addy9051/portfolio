@@ -1324,32 +1324,37 @@
       <div class="proj-section-body">
         <div class="insight-grid">
           <div class="insight-card">
-            <div class="insight-num">0.50</div>
-            <div class="insight-title">The filter threshold was calibrated, not guessed</div>
-            <div class="insight-body">Scoring 48,040 real sentences, precision jumps from ~50% ("very comfortable"
-              chatter) to <strong>~90%</strong> at the 0.50 similarity band. Precision over recall — a false "scratchy"
-              would eventually trigger a false supplier audit.</div>
+            <div class="insight-num">9 in 10</div>
+            <div class="insight-title">flags are correct — up from about 1 in 2</div>
+            <div class="insight-body">The system only marks a review as a genuine fabric complaint when it's confident.
+              I tuned that confidence cut-off on 48,000 real review sentences, which lifted the share of
+              <strong>correct</strong> flags from roughly half to about nine in ten. It matters because a wrongly-flagged
+              "scratchy" could get an innocent supplier audited — so it catches fewer complaints in exchange for trusting
+              the ones it does catch.</div>
           </div>
           <div class="insight-card">
-            <div class="insight-num">7</div>
-            <div class="insight-title">The negation gate suppressed real false positives</div>
-            <div class="insight-body">Rule-based negation scope stops <em>"it was <strong>not</strong> scratchy"</em>
-              counting as a complaint. Complaints only count from &le;3&#9733; reviews; CRITICAL needs &ge;2
-              <em>independent</em> sentences — one review saying "rough &amp; scratchy" is one witness, not two.
-            </div>
+            <div class="insight-num">3</div>
+            <div class="insight-title">guardrails so it's hard to fool into a false complaint</div>
+            <div class="insight-body">A gripe only counts if the customer truly meant it. Three checks: ignore negatives
+              (<em>"it was <strong>not</strong> scratchy"</em>), only count unhappy reviews (3 stars or fewer), and
+              require <strong>two separate reviews</strong> before raising a top-priority "audit this supplier" alert —
+              one review saying "rough and scratchy" is a single opinion, not two.</div>
           </div>
           <div class="insight-card">
             <div class="insight-num">4</div>
-            <div class="insight-title">A grounded 2×2 response matrix</div>
-            <div class="insight-body">Feel × weather &rarr; substitution (audit), poor quality (source premium),
-              wrong-weather (educate + adjustments), or product-fine (escalate only past a returns threshold). All four
-              verified live on Groq.</div>
+            <div class="insight-title">look-alike return reasons it tells apart</div>
+            <div class="insight-body">"The fabric felt wrong" can mean four very different things, and the assistant
+              works out which: the fabric is <strong>fake</strong> (a cheaper fibre swapped in), it's <strong>real but
+              low-grade</strong>, the buyer wore it in the <strong>wrong weather</strong>, or <strong>nothing is actually
+              wrong</strong>. Each gets the seller a different, specific action — all four tested on a live AI model.</div>
           </div>
           <div class="insight-card">
             <div class="insight-num">98%</div>
-            <div class="insight-title">Two-axis ontology grounds the catalog</div>
-            <div class="insight-body">Adding weave-level tactile + thermal expectations lifted grounding of 104 catalog
-              materials from 86.5% &rarr; 98% — the remainder are genuinely fibre-ambiguous or non-textile.</div>
+            <div class="insight-title">of the fabrics real listings name, it understands</div>
+            <div class="insight-body">The system knows 12 fibres (cotton, wool, polyester…) and 23 weaves (satin, denim,
+              fleece…) — how each should feel and which weather it suits. Together they cover 98% of the materials
+              listings actually mention; the small rest are vague words like "blended" that point to no specific
+              fabric.</div>
           </div>
         </div>
 
