@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>True-Texture Intelligence — A Returns Concierge Agent That Reads Fabric — Ankit Addya</title>
+  <meta name="description"
+    content="A multi-agent returns-intelligence system for fashion e-commerce: mines tactile complaints from 2.5M Amazon reviews, cross-checks them against a two-axis fabric ontology (12 fibres × 23 weaves), and runs a Groq-powered returns concierge that diagnoses fabric substitution vs poor quality vs wrong-weather usage via a 2x2 response matrix — with a staged 3-tier agent memory and an honest CLIP negative result." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Bebas+Neue&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    /* ── Accent for this page ──────────────────────────────────── */
+    .proj-page {
+      --acc: #BE123C;
+      --acc-soft: #FDE7EC;
+      --acc-deep: #881337;
+    }
+
+    .proj-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray);
+      padding: 10px 0 0;
+      transition: color .2s;
+    }
+
+    .proj-back:hover {
+      color: var(--black);
+    }
+
+    .proj-back svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      fill: none;
+    }
+
+    .proj-page {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0 32px 120px;
+    }
+
+    /* role tags */
+    .role-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .rtag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 999px;
+      letter-spacing: .02em;
+    }
+
+    .rtag-da {
+      background: #E6F1FB;
+      color: #0C447C;
+    }
+
+    .rtag-ba {
+      background: #E1F5EE;
+      color: #085041;
+    }
+
+    .rtag-ds {
+      background: #EEEDFE;
+      color: #3C3489;
+    }
+
+    /* hero */
+    .proj-hero {
+      background: #1c0a10;
+      border-radius: 20px;
+      padding: 48px;
+      margin: 32px 0 10px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .proj-hero::before {
+      content: 'TEX';
+      position: absolute;
+      right: 14px;
+      bottom: -30px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 150px;
+      color: rgba(244, 63, 94, 0.14);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .proj-hero-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #fb7185;
+      margin-bottom: 14px;
+    }
+
+    .proj-hero h1 {
+      font-size: clamp(22px, 3.5vw, 36px);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 14px;
+      color: #fff;
+    }
+
+    .proj-hero-sub {
+      font-size: 15px;
+      color: #d8b9c1;
+      line-height: 1.65;
+      max-width: 600px;
+      margin-bottom: 28px;
+    }
+
+    .proj-metrics-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .proj-metric {
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid rgba(251, 113, 133, .2);
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .proj-metric-val {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fb7185;
+      line-height: 1.05;
+    }
+
+    .proj-metric-label {
+      font-size: 10px;
+      color: #c99aa4;
+      margin-top: 5px;
+      line-height: 1.4;
+    }
+
+    .proj-meta-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .proj-meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #c99aa4;
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid rgba(251, 113, 133, .2);
+      border-radius: 999px;
+      padding: 5px 12px;
+    }
+
+    .proj-hero-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-hero-github {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(255, 255, 255, .2);
+      background: transparent;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background .2s, border-color .2s;
+      text-decoration: none;
+    }
+
+    .btn-hero-github svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+
+    .btn-hero-github:hover {
+      background: rgba(255, 255, 255, .08);
+      border-color: rgba(255, 255, 255, .4);
+    }
+
+    /* section cards */
+    .proj-section {
+      border: 1.5px solid var(--card-border);
+      border-radius: 16px;
+      background: var(--white);
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .proj-section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .sec-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .sec-head-text {
+      flex: 1;
+    }
+
+    .sec-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--black);
+    }
+
+    .sec-desc {
+      font-size: 12px;
+      color: var(--gray);
+      margin-top: 2px;
+    }
+
+    .sec-audience {
+      display: flex;
+      gap: 5px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .proj-section-body {
+      padding: 20px;
+    }
+
+    .proj-p {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.75;
+      margin-bottom: 12px;
+    }
+
+    .proj-p:last-child {
+      margin-bottom: 0;
+    }
+
+    .proj-p code,
+    .info-card-value code {
+      font-size: 11px;
+      background: var(--acc-soft);
+      color: var(--acc-deep);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .info-card {
+      background: var(--gray-light);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .info-card-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--gray);
+      margin-bottom: 6px;
+    }
+
+    .info-card-value {
+      font-size: 13px;
+      color: var(--black);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .gloss-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .gloss-item {
+      background: var(--gray-light);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .gloss-term {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--black);
+      margin-bottom: 3px;
+    }
+
+    .gloss-def {
+      font-size: 12px;
+      color: var(--gray);
+      line-height: 1.55;
+    }
+
+    .gloss-def code {
+      font-size: 11px;
+      background: var(--acc-soft);
+      color: var(--acc-deep);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .assump-box {
+      background: var(--gray-light);
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-top: 4px;
+    }
+
+    .assump-cat {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--acc-deep);
+      margin: 12px 0 6px;
+    }
+
+    .assump-cat:first-of-type {
+      margin-top: 0;
+    }
+
+    .assump-box ul {
+      font-size: 12px;
+      color: var(--gray);
+      line-height: 1.7;
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .assump-box ul li {
+      margin-bottom: 3px;
+    }
+
+    .assump-box code {
+      font-size: 11px;
+      background: var(--acc-soft);
+      color: var(--acc-deep);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .pull-quote {
+      border-left: 3px solid var(--acc);
+      padding: 12px 16px;
+      background: var(--acc-soft);
+      border-radius: 0 10px 10px 0;
+      margin-bottom: 14px;
+    }
+
+    .pull-quote p {
+      font-size: 14px;
+      font-style: italic;
+      color: #333;
+      line-height: 1.7;
+    }
+
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .step-row {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 10px 0;
+    }
+
+    .step-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 16px;
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 3px;
+    }
+
+    .step-body {
+      font-size: 13px;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    .step-connector {
+      width: 2px;
+      height: 10px;
+      background: var(--card-border);
+      margin-left: 15px;
+    }
+
+    .stack-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .stag-proj {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--gray-light);
+      color: #333;
+      border: 1px solid var(--card-border);
+    }
+
+    .arch-diagram {
+      background: var(--gray-light);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 14px 0;
+    }
+
+    .arch-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .arch-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 10px 14px;
+      background: #fff;
+      border: 1.5px solid var(--card-border);
+      border-radius: 10px;
+      min-width: 84px;
+      text-align: center;
+    }
+
+    .arch-node-icon {
+      font-size: 18px;
+    }
+
+    .arch-node-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--black);
+    }
+
+    .arch-node-sub {
+      font-size: 9px;
+      color: var(--gray);
+    }
+
+    .arch-arrow {
+      font-size: 16px;
+      color: var(--gray);
+      flex-shrink: 0;
+    }
+
+    .arch-layer-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--gray);
+      margin-bottom: 8px;
+    }
+
+    .arch-layer {
+      margin-bottom: 12px;
+    }
+
+    .arch-layer:last-child {
+      margin-bottom: 0;
+    }
+
+    .decision-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 13px;
+    }
+
+    .decision-table th {
+      text-align: left;
+      padding: 8px 12px;
+      background: var(--gray-light);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--gray);
+      border-bottom: 1.5px solid var(--card-border);
+    }
+
+    .decision-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--card-border);
+      color: #333;
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    .decision-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .decision-table .chosen {
+      font-weight: 600;
+      color: var(--acc-deep);
+    }
+
+    .decision-table code {
+      font-size: 11px;
+      background: var(--acc-soft);
+      color: var(--acc-deep);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .insight-card {
+      border: 1.5px solid var(--card-border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .insight-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px;
+      line-height: 1;
+      color: var(--acc);
+      margin-bottom: 4px;
+    }
+
+    .insight-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 6px;
+    }
+
+    .insight-body {
+      font-size: 12px;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    .insight-body code {
+      font-size: 11px;
+      background: var(--acc-soft);
+      color: var(--acc-deep);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .impact-card {
+      background: #F5FFF9;
+      border: 1.5px solid #C2EDDA;
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .impact-val {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0F6E56;
+      line-height: 1.1;
+    }
+
+    .impact-label {
+      font-size: 11px;
+      color: #3B6D55;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .refl-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .refl-card {
+      background: var(--gray-light);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .refl-card-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 10px;
+    }
+
+    .refl-card.good .refl-card-label {
+      color: #0F6E56;
+    }
+
+    .refl-card.change .refl-card-label {
+      color: #854F0B;
+    }
+
+    .refl-item {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: #333;
+      line-height: 1.55;
+    }
+
+    .refl-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .refl-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+
+    .refl-card.good .refl-dot {
+      background: #0F6E56;
+    }
+
+    .refl-card.change .refl-dot {
+      background: #EF9F27;
+    }
+
+    /* future roadmap */
+    .road-lane {
+      margin-bottom: 18px;
+    }
+
+    .road-lane:last-child {
+      margin-bottom: 0;
+    }
+
+    .road-lane-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .road-horizon {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
+    .road-horizon.near {
+      background: #E1F5EE;
+      color: #0F6E56;
+    }
+
+    .road-horizon.mid {
+      background: #FDF3DE;
+      color: #854F0B;
+    }
+
+    .road-horizon.long {
+      background: var(--acc-soft);
+      color: var(--acc-deep);
+    }
+
+    .road-lane-note {
+      font-size: 11px;
+      color: var(--gray);
+    }
+
+    .road-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 10px 14px;
+      border: 1.5px solid var(--card-border);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      background: var(--white);
+    }
+
+    .road-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .road-item-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .road-item-body {
+      flex: 1;
+    }
+
+    .road-item-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 3px;
+    }
+
+    .road-item-desc {
+      font-size: 12px;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    .road-item-desc code {
+      font-size: 11px;
+      background: var(--acc-soft);
+      color: var(--acc-deep);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    @media (max-width:640px) {
+      .proj-page {
+        padding: 0 20px 80px;
+      }
+
+      .proj-hero {
+        padding: 28px 24px;
+        border-radius: 14px;
+      }
+
+      .proj-metrics-row {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .two-col,
+      .insight-grid,
+      .refl-grid,
+      .gloss-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .impact-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .proj-hero::before {
+        font-size: 100px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="../index.html#projects" class="nav-link active">← Portfolio</a>
+    </div>
+  </nav>
+
+  <div class="proj-page" style="padding-top:100px;">
+
+    <!-- ── HERO ─────────────────────────────────────────────────── -->
+    <div class="proj-hero">
+      <div class="proj-hero-eyebrow">Project Deep-Dive · Agentic AI · Returns Intelligence</div>
+      <h1>True-Texture — Fabric-Mismatch<br>Returns Intelligence</h1>
+      <p class="proj-hero-sub">Fashion listings lie about fabric; customers find out on their skin; returns follow.
+        True-Texture mines the tactile truth out of review text, cross-checks it against the material each listing
+        <em>claims</em> — across a two-axis <strong>fibre × weave</strong> ontology — interrogates the returner at
+        return time with an adaptive LLM concierge, and hands the seller an evidence-backed fix, down to <em>"your
+          supplier is likely substituting polyester for the listed cotton."</em>
+      </p>
+
+      <div class="role-tags" style="margin-bottom:24px">
+        <span class="rtag rtag-da">&#x1F4CA; Data / NLP Engineer</span>
+        <span class="rtag rtag-ba">&#x1F4BC; Product / Market Analyst</span>
+        <span class="rtag rtag-ds">&#x1F9E0; Agentic AI / GenAI</span>
+      </div>
+
+      <div class="proj-metrics-row">
+        <div class="proj-metric">
+          <div class="proj-metric-val">₹52,371&ndash;71,415 crore</div>
+          <div class="proj-metric-label">/yr India fashion returns targeted</div>
+        </div>
+        <div class="proj-metric">
+          <div class="proj-metric-val">2.5M</div>
+          <div class="proj-metric-label">reviews scanned · filter calibrated on 48K sentences</div>
+        </div>
+        <div class="proj-metric">
+          <div class="proj-metric-val">12 &times; 23</div>
+          <div class="proj-metric-label">fibres × weaves · 98% catalog grounding</div>
+        </div>
+        <div class="proj-metric">
+          <div class="proj-metric-val">₹0</div>
+          <div class="proj-metric-label">cloud spend — free-tier / local stack</div>
+        </div>
+      </div>
+
+      <div class="proj-meta-pills">
+        <span class="proj-meta-pill">&#x1F457; E-commerce · fashion apparel</span>
+        <span class="proj-meta-pill">&#x1F1EE;&#x1F1F3; India-first market case</span>
+        <span class="proj-meta-pill">&#x1F916; 4-case returns concierge</span>
+        <span class="proj-meta-pill" style="color:#fbbf24">&#x1F6E0; Prototype · actively evolving</span>
+      </div>
+
+      <div class="proj-hero-actions">
+        <a href="https://github.com/addy9051/True-texture-detector-AI-system" class="btn-hero-github" target="_blank"
+          rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+          </svg>
+          View on GitHub
+        </a>
+      </div>
+    </div>
+
+    <!-- ── KEY TERMS (glossary) ─────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:var(--acc-soft);color:var(--acc-deep)">&#x1F4D6;</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Key Terms</div>
+          <div class="sec-desc">Plain-language definitions for the terms used throughout this page</div>
+        </div>
+      </div>
+      <div class="proj-section-body">
+        <div class="gloss-grid">
+          <div class="gloss-item">
+            <div class="gloss-term">Fabric ontology</div>
+            <div class="gloss-def">The system's "ground truth" for materials: per fibre, how it <em>should</em> feel,
+              its thermal / ideal-weather profile, and the adjectives that signal it's <strong>not</strong> what was
+              claimed.</div>
+          </div>
+          <div class="gloss-item">
+            <div class="gloss-term">Fibre vs weave (two axes)</div>
+            <div class="gloss-def">Fibre (cotton, polyester) governs warmth &amp; substitution; weave / construction
+              (satin, fleece, denim) governs surface feel &amp; how much air it traps. A garment carries both.</div>
+          </div>
+          <div class="gloss-item">
+            <div class="gloss-term">Substitution signature</div>
+            <div class="gloss-def">The tactile tell-tale a cheap fibre leaves when masquerading as a premium one —
+              cotton reported as "shiny / slick" points to polyester.</div>
+          </div>
+          <div class="gloss-item">
+            <div class="gloss-term">Semantic filter</div>
+            <div class="gloss-def">A local embedding model that keeps only the review sentences actually about fabric
+              <em>feel</em>, scored against anchor phrases — an upgrade over keyword or topic-model matching.
+            </div>
+          </div>
+          <div class="gloss-item">
+            <div class="gloss-term">Negation gate</div>
+            <div class="gloss-def">A rule that stops <em>"it was <strong>not</strong> scratchy"</em> being counted as a
+              complaint — the dominant false-positive the naïve keyword approach produced.</div>
+          </div>
+          <div class="gloss-item">
+            <div class="gloss-term">Returns concierge</div>
+            <div class="gloss-def">The LLM agent that, at return time, asks 1&ndash;3 adaptive questions with tappable
+              options, then emits a structured diagnosis — replacing the vague "reason for return" dropdown.</div>
+          </div>
+          <div class="gloss-item">
+            <div class="gloss-term">Response matrix (2×2)</div>
+            <div class="gloss-def">Feel-problem × weather-problem &rarr; four cases, each with a distinct customer
+              message and seller action (audit / quality / listing-fix / no-action).</div>
+          </div>
+          <div class="gloss-item">
+            <div class="gloss-term">Tool-use / forced function call</div>
+            <div class="gloss-def">The concierge can only answer through two tools (<code>ask_question</code>,
+              <code>submit_diagnosis</code>); after the question budget the model is <em>forced</em> to submit — so
+              output is always structured.
+            </div>
+          </div>
+          <div class="gloss-item">
+            <div class="gloss-term">Three-tier agent memory</div>
+            <div class="gloss-def"><strong>Semantic</strong> (durable facts, JSON) · <strong>procedural</strong>
+              (how-to-act, <code>skill.md</code>) · <strong>episodic</strong> (dated sessions, SQLite) — the CoALA
+              agent-memory pattern.</div>
+          </div>
+          <div class="gloss-item">
+            <div class="gloss-term">Control-group experiment</div>
+            <div class="gloss-def">Testing the visual-match idea against products nobody complains about — if flagged
+              and clean score the same, the signal doesn't discriminate. It didn't.</div>
+          </div>
+          <div class="gloss-item">
+            <div class="gloss-term">RTO (Return-to-Origin)</div>
+            <div class="gloss-def">India-specific: a COD order refused at the doorstep, never opened. A different
+              problem from post-delivery fabric returns — deliberately <em>out of scope</em> here.</div>
+          </div>
+          <div class="gloss-item">
+            <div class="gloss-term">Provider abstraction</div>
+            <div class="gloss-def">One duck-typed chat interface behind Groq, Gemini and AWS Bedrock — swapping LLM
+              providers is a single env var, no code change.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 2 · BUSINESS CONTEXT ─────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:var(--acc-soft);color:var(--acc-deep)">2</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Business Context</div>
+          <div class="sec-desc">Why "the fabric feels wrong" is a first-order problem for a fashion marketplace</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span></div>
+      </div>
+      <div class="proj-section-body">
+        <p class="proj-p">Online fashion returns at <strong>25&ndash;35%</strong> are among the highest of any retail
+          category, and a large share are driven not by size but by <em>"the product is different from the listing"</em>
+          — the colour, the drape, and above all the <strong>fabric feel</strong>. On a value-fashion marketplace this
+          is the single most common stated return reason, fuelled by unbranded sellers, reseller-copied studio photos,
+          and rampant fibre substitution (viscose sold as "cotton", polyester "art silk" sold as silk).</p>
+        <p class="proj-p">The reverse-logistics maths is brutal: a single return costs &#8377;200&ndash;400 all-in
+          against a value-fashion order value of &#8377;300&ndash;600 — <strong>one fabric-mismatch return erases the
+            margin of three-to-five good orders</strong>. And the marketplace's own return-reason codes are
+          near-useless: customers click whatever option is fastest, so the true fabric-disappointment volume hides
+          inside "didn't like it". <strong>Producing trustworthy root-cause data is itself the product.</strong></p>
+        <div class="two-col" style="margin-top:14px">
+          <div class="info-card">
+            <div class="info-card-label">Sector</div>
+            <div class="info-card-value">Fashion e-commerce (India-first: Myntra · Flipkart · Meesho · Ajio · Amazon.in)
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">The leak</div>
+            <div class="info-card-value">Fabric / "not as described" — a top-tier apparel return driver, not the fit
+              bucket</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Why data is the product</div>
+            <div class="info-card-value">Reason codes are unreliable; the system manufactures the honest diagnosis codes
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Headline skills</div>
+            <div class="info-card-value">Agentic AI · applied NLP · domain ontology · market analysis</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 3 · MARKET SIZING ────────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#E1F5EE;color:#0F6E56">3</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Is This Worth Solving? — Market Sizing</div>
+          <div class="sec-desc">The analysis that came before a line of code: how big is the addressable slice, honestly
+          </div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span></div>
+      </div>
+      <div class="proj-section-body">
+        <p class="proj-p">Before building, I sized the opportunity — and deliberately looked for reasons <em>not</em> to
+          build it. The verdict: worth building, and <strong>India is the better market for it than the US</strong>. In
+          the US, fabric mismatch is the minority slice of a fit-dominated returns problem, already circled by Amazon's
+          Fit Insights. In India it is closer to the main event.</p>
+        <table class="decision-table">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th class="chosen">India (primary)</th>
+              <th>US (contrast)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Fashion e-commerce GMV</td>
+              <td class="chosen">~$21.6B (2025) · largest category</td>
+              <td>Amazon apparel ~$72B</td>
+            </tr>
+            <tr>
+              <td>Online fashion return rate</td>
+              <td class="chosen">25&ndash;35% &rarr; <strong>~$5.5&ndash;7.5B/yr returned</strong></td>
+              <td>~24&ndash;25%</td>
+            </tr>
+            <tr>
+              <td>"Not as described / fabric" share</td>
+              <td class="chosen"><strong>#1 stated return reason</strong> on value platforms</td>
+              <td>~10&ndash;13% (fit dominates)</td>
+            </tr>
+            <tr>
+              <td>Addressable returned GMV / yr</td>
+              <td class="chosen">~$1.1&ndash;2.2B (conservative 20&ndash;30% share)</td>
+              <td>~$1.8&ndash;2.3B</td>
+            </tr>
+            <tr>
+              <td>Incumbent tooling</td>
+              <td class="chosen">none at maturity</td>
+              <td>Amazon Fit Insights (2024)</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="proj-p" style="margin-top:6px">Even a <strong>10% dent</strong> in the fabric-mismatch slice is
+          ~$110&ndash;220M/yr of kept GMV plus reverse-logistics savings — and the corrective action for a seller (fix
+          the listing, audit the supplier) costs almost nothing relative to the bleed. That is a genuinely high
+          actionability-to-effort ratio.</p>
+        <p class="proj-p" style="font-weight:600;font-size:13px;color:var(--black);margin-top:8px">Two honest
+          boundaries, stated up front</p>
+        <div class="two-col">
+          <div class="info-card">
+            <div class="info-card-label">Out of scope: fit / size</div>
+            <div class="info-card-value">The other majority bucket — already served by size recommenders and
+              True-Fit-style tools. Not this project's problem.</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-label">Out of scope: COD RTO</div>
+            <div class="info-card-value">Doorstep-refused orders (20&ndash;40% of COD) were never opened. True-Texture
+              addresses <em>post-delivery</em> quality returns only.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 4 · PROBLEM STATEMENT / WHITE SPACE ──────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#FAEEDA;color:#854F0B">4</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Problem Statement &amp; White Space</div>
+          <div class="sec-desc">What everyone else does passively, and the active loop nobody runs</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span><span
+            class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span></div>
+      </div>
+      <div class="proj-section-body">
+        <div class="pull-quote">
+          <p>Amazon's Fit Insights already mines reviews for fabric sentiment — but passively, after the fact. Nobody
+            interrogates the customer <em>at return time</em> with a material rulebook, separates fibre substitution
+            from poor quality from wrong-weather usage, and feeds a specific corrective action back to the seller. That
+            active loop is the white space.</p>
+        </div>
+        <div class="step-list">
+          <div class="step-row">
+            <div class="step-icon" style="background:var(--acc-soft)">1&#xFE0F;&#x20E3;</div>
+            <div class="step-content">
+              <div class="step-title">Active diagnosis, not passive mining</div>
+              <div class="step-body">Structured 1&ndash;3-question interview at the moment of return, with neutral
+                option chips — not a review scraped weeks later, and not a dropdown the customer lies on.</div>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-row">
+            <div class="step-icon" style="background:var(--acc-soft)">2&#xFE0F;&#x20E3;</div>
+            <div class="step-content">
+              <div class="step-title">Physics cross-check</div>
+              <div class="step-body">The reported sensation is checked against what the <em>claimed</em> material should
+                actually feel like — turning "didn't like it" into "claims cotton, feels like shiny polyester".</div>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-row">
+            <div class="step-icon" style="background:var(--acc-soft)">3&#xFE0F;&#x20E3;</div>
+            <div class="step-content">
+              <div class="step-title">Closed loop to the seller</div>
+              <div class="step-body">A specific, cheap action — verify the fibre, source premium-grade material, or
+                clarify the ideal-weather guidance in the listing — routed by the case, not a generic alert.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 5 · TECHNICAL APPROACH ───────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#EEEDFE;color:#3C3489">5</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Technical Approach</div>
+          <div class="sec-desc">The pipeline, the two-axis ontology, and the provider-agnostic agent</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-da" style="font-size:11px;padding:3px 8px">DA</span><span
+            class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span></div>
+      </div>
+      <div class="proj-section-body">
+
+        <div class="arch-diagram">
+          <div class="arch-layer">
+            <div class="arch-layer-label">Evidence engine (local · $0)</div>
+            <div class="arch-row">
+              <div class="arch-node">
+                <div class="arch-node-icon">&#x1F4E6;</div>
+                <div class="arch-node-label">Amazon Reviews 2023</div>
+                <div class="arch-node-sub">public · no scraping</div>
+              </div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node">
+                <div class="arch-node-icon">&#x1F9F5;</div>
+                <div class="arch-node-label">MiniLM filter</div>
+                <div class="arch-node-sub">fabric-feel sentences</div>
+              </div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node">
+                <div class="arch-node-icon">&#x2696;</div>
+                <div class="arch-node-label">Diagnosis engine</div>
+                <div class="arch-node-sub">claim vs reported feel</div>
+              </div>
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-label">Ground truth (two orthogonal axes)</div>
+            <div class="arch-row">
+              <div class="arch-node" style="min-width:150px">
+                <div class="arch-node-icon">&#x1F9EC;</div>
+                <div class="arch-node-label">Fibre ontology (12)</div>
+                <div class="arch-node-sub">feel · thermal · substitution</div>
+              </div>
+              <div class="arch-arrow">+</div>
+              <div class="arch-node" style="min-width:150px">
+                <div class="arch-node-icon">&#x1FAA1;</div>
+                <div class="arch-node-label">Weave ontology (23)</div>
+                <div class="arch-node-sub">surface feel · weather</div>
+              </div>
+              <div class="arch-arrow">+</div>
+              <div class="arch-node" style="min-width:150px">
+                <div class="arch-node-icon">&#x1F4D1;</div>
+                <div class="arch-node-label">Category priors (93)</div>
+                <div class="arch-node-sub">fabric when unlisted</div>
+              </div>
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-label">Returns concierge (Groq / Gemini / Bedrock — 1 interface)</div>
+            <div class="arch-row">
+              <div class="arch-node">
+                <div class="arch-node-icon">&#x1F916;</div>
+                <div class="arch-node-label">Interview engine</div>
+                <div class="arch-node-sub">&le;3 Qs · forced tools</div>
+              </div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node">
+                <div class="arch-node-icon">&#x1F9ED;</div>
+                <div class="arch-node-label">2×2 matrix</div>
+                <div class="arch-node-sub">feel × weather</div>
+              </div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node">
+                <div class="arch-node-icon">&#x1F4E4;</div>
+                <div class="arch-node-label">Structured diagnosis</div>
+                <div class="arch-node-sub">+ customer message</div>
+              </div>
+            </div>
+          </div>
+          <div class="arch-layer">
+            <div class="arch-layer-label">Delivery</div>
+            <div class="arch-row">
+              <div class="arch-node">
+                <div class="arch-node-icon">&#x1F4F8;</div>
+                <div class="arch-node-label">Visual audit</div>
+                <div class="arch-node-sub">CLIP — corroborate only</div>
+              </div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node">
+                <div class="arch-node-icon">&#x1F5C4;</div>
+                <div class="arch-node-label">SQLite store</div>
+                <div class="arch-node-sub">episodic memory</div>
+              </div>
+              <div class="arch-arrow">→</div>
+              <div class="arch-node">
+                <div class="arch-node-icon">&#x1F4BB;</div>
+                <div class="arch-node-label">Streamlit</div>
+                <div class="arch-node-sub">seller dashboard</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="proj-p" style="margin-top:16px"><strong>The two-axis ontology is the core idea.</strong> Fibre and
+          weave are independent: fibre (cotton, wool) drives warmth and what a cheap substitute feels like; weave
+          (satin, fleece, denim) drives surface feel and how much air it traps. A garment carries both, so the diagnosis
+          carries both — a satin reported as "rough" is a mismatch regardless of fibre, and a cotton <em>fleece</em> is
+          warm even though cotton is breathable, because the construction traps heat. Weave weather profiles are
+          web-grounded (open weaves &rarr; summer, pile weaves &rarr; winter).</p>
+
+        <p class="proj-p" style="margin-top:10px"><strong>Grounding, not trusting.</strong> The engine injects the
+          material ground truth into every diagnosis deterministically — the seller always sees "claims cotton
+          (soft/matte/breathable) &rarr; customer got rough/coarse", regardless of what the LLM chose to mention. When a
+          listing states no fabric (61% of the sample), it falls back to the category's likely fibres so the agent can
+          still probe intelligently.</p>
+
+        <p class="proj-p" style="font-weight:600;font-size:13px;color:var(--black);margin-top:16px">Deliberate
+          architecture calls</p>
+        <table class="decision-table">
+          <thead>
+            <tr>
+              <th>Decision</th>
+              <th class="chosen">Chosen</th>
+              <th>Rejected — and why</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Data source</td>
+              <td class="chosen">McAuley Amazon Reviews 2023 (public)</td>
+              <td>Scraping Amazon — ToS violation, brittle</td>
+            </tr>
+            <tr>
+              <td>Structure enforcement</td>
+              <td class="chosen">Tool-use + forced function call</td>
+              <td>Free-text parsing — unreliable schema</td>
+            </tr>
+            <tr>
+              <td>Fabric facts to the LLM</td>
+              <td class="chosen">Injected in the prompt</td>
+              <td>Bedrock Knowledge Base (RAG) — its vector store alone would burn the whole budget</td>
+            </tr>
+            <tr>
+              <td>Visual signal</td>
+              <td class="chosen">Corroborate text only</td>
+              <td>"Flag if CLIP &lt; 0.75" — fires on 20/20 (see &sect;6)</td>
+            </tr>
+            <tr>
+              <td>Semantic memory</td>
+              <td class="chosen">Injected JSON</td>
+              <td>RAG over 35 facts — slower, costlier, retrieve-miss risk</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p class="proj-p" style="font-weight:600;font-size:13px;color:var(--black);margin-top:14px">Full stack</p>
+        <div class="stack-row">
+          <span class="stag-proj">Python</span><span class="stag-proj">uv</span><span
+            class="stag-proj">Sentence-Transformers (MiniLM)</span><span class="stag-proj">Hugging Face
+            datasets</span><span class="stag-proj">CLIP (ViT-B/32)</span><span class="stag-proj">rembg</span><span
+            class="stag-proj">Groq (Llama 3.3 · gpt-oss-120b)</span><span class="stag-proj">AWS Bedrock
+            (Converse)</span><span class="stag-proj">Google Gemini</span><span class="stag-proj">Tool-Use / Function
+            Calling</span><span class="stag-proj">SQLite</span><span class="stag-proj">Streamlit</span><span
+            class="stag-proj">pandas</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 6 · KEY FINDINGS ─────────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#E6F1FB;color:#185FA5">6</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Key Findings &amp; Results</div>
+          <div class="sec-desc">Calibrated, gated, verified live — including a negative result kept as a feature</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-da" style="font-size:11px;padding:3px 8px">DA</span><span
+            class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span></div>
+      </div>
+      <div class="proj-section-body">
+        <div class="insight-grid">
+          <div class="insight-card">
+            <div class="insight-num">0.50</div>
+            <div class="insight-title">The filter threshold was calibrated, not guessed</div>
+            <div class="insight-body">Scoring 48,040 real sentences, precision jumps from ~50% ("very comfortable"
+              chatter) to <strong>~90%</strong> at the 0.50 similarity band. Precision over recall — a false "scratchy"
+              would eventually trigger a false supplier audit.</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-num">7</div>
+            <div class="insight-title">The negation gate suppressed real false positives</div>
+            <div class="insight-body">Rule-based negation scope stops <em>"it was <strong>not</strong> scratchy"</em>
+              counting as a complaint. Complaints only count from &le;3&#9733; reviews; CRITICAL needs &ge;2
+              <em>independent</em> sentences — one review saying "rough &amp; scratchy" is one witness, not two.
+            </div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-num">4</div>
+            <div class="insight-title">A grounded 2×2 response matrix</div>
+            <div class="insight-body">Feel × weather &rarr; substitution (audit), poor quality (source premium),
+              wrong-weather (educate + adjustments), or product-fine (escalate only past a returns threshold). All four
+              verified live on Groq.</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-num">98%</div>
+            <div class="insight-title">Two-axis ontology grounds the catalog</div>
+            <div class="insight-body">Adding weave-level tactile + thermal expectations lifted grounding of 104 catalog
+              materials from 86.5% &rarr; 98% — the remainder are genuinely fibre-ambiguous or non-textile.</div>
+          </div>
+        </div>
+
+        <p class="proj-p" style="font-weight:600;font-size:13px;color:var(--black);margin-top:18px">The concierge
+          separates three look-alike causes — verified on live model runs</p>
+        <table class="decision-table">
+          <thead>
+            <tr>
+              <th>Customer says…</th>
+              <th class="chosen">Diagnosis</th>
+              <th>Seller action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>"shiny, cheap plastic, not cotton"</td>
+              <td class="chosen">Fibre <strong>substitution</strong> &rarr; polyester</td>
+              <td>SUPPLY_CHAIN_AUDIT — verify / declare fibre</td>
+            </tr>
+            <tr>
+              <td>"rough, coarse, scratchy cotton"</td>
+              <td class="chosen"><strong>Low-grade genuine</strong> cotton</td>
+              <td>QUALITY_IMPROVEMENT — source combed / long-staple</td>
+            </tr>
+            <tr>
+              <td>"felt fine, but I was cold outdoors"</td>
+              <td class="chosen"><strong>Wrong-weather</strong> usage (no defect)</td>
+              <td>LISTING_FIX — clarify ideal weather; educate + layering tip</td>
+            </tr>
+            <tr>
+              <td>"fabric fine, mild day, just not my style"</td>
+              <td class="chosen"><strong>No fault</strong> found</td>
+              <td>NO_ACTION — escalate to distributor only past a returns threshold</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="proj-p" style="font-size:12px;color:var(--gray)">The weave axis genuinely overrides the fibre: a live
+          run on a cotton/polyester <em>fleece</em> hoodie worn on a hot day flagged a weather mismatch even though the
+          cotton fibre is hot-ideal — because the fleece construction traps heat. The model resolved the fibre-vs-weave
+          conflict in favour of the construction, exactly as designed.</p>
+
+        <p class="proj-p" style="font-weight:600;font-size:13px;color:var(--black);margin-top:20px">The honest negative
+          result — a control experiment that killed the obvious idea</p>
+        <p class="proj-p">The tempting feature is "compare the listing photo to the customer photo with CLIP and flag
+          big differences." I tested it <strong>properly — against a control group</strong> of products nobody complains
+          about, in two conditions:</p>
+        <table class="decision-table">
+          <thead>
+            <tr>
+              <th>Condition</th>
+              <th>Flagged (n=10)</th>
+              <th>Control (n=10)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Whole frame</td>
+              <td>CLIP 0.648 · colour&Delta; 0.689</td>
+              <td>CLIP 0.659 · colour&Delta; 0.598</td>
+            </tr>
+            <tr>
+              <td>Garment crops (rembg)</td>
+              <td>CLIP 0.727 · colour&Delta; 0.711</td>
+              <td>CLIP 0.738 · colour&Delta; 0.686</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="proj-p">The distributions <strong>overlap in both conditions</strong> — photo-level appearance
+          comparison cannot see texture, and the popular "flag if CLIP &lt; 0.75" heuristic fires on 20 of 20 products.
+          So the visual channel is demoted to <em>corroboration only</em> (INCONCLUSIVE unless a product falls outside
+          the entire control band), and text stays the primary signal by design. <strong>Keeping this negative result —
+            rather than dressing up a detector that doesn't work — is the point.</strong></p>
+      </div>
+    </div>
+
+    <!-- ── 7 · AGENT MEMORY ─────────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#EEEDFE;color:#3C3489">7</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Agent Memory Architecture (staged)</div>
+          <div class="sec-desc">Three tiers — kept deliberately lightweight, infrastructure added only where the simple
+            approach breaks</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span></div>
+      </div>
+      <div class="proj-section-body">
+        <table class="decision-table">
+          <thead>
+            <tr>
+              <th>Tier</th>
+              <th class="chosen">Implementation</th>
+              <th>Why not more (yet)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Semantic</strong> — durable facts</td>
+              <td class="chosen">Fibre + weave ontology &amp; category priors, injected as JSON</td>
+              <td>Only a few KB; RAG over 35 facts is slower, costlier, and can retrieve-miss. Stays git-diffable.</td>
+            </tr>
+            <tr>
+              <td><strong>Procedural</strong> — how to act</td>
+              <td class="chosen">Interview policy + response matrix in <code>skill.md</code></td>
+              <td>Loaded every turn, not retrieved — a versioned file separates policy from code.</td>
+            </tr>
+            <tr>
+              <td><strong>Episodic</strong> — dated events</td>
+              <td class="chosen">Concierge sessions in SQLite (SQL recency by ASIN / date / case)</td>
+              <td>Vector-store relevance is a later stage, once session volume justifies it.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="proj-p" style="margin-top:6px">The judgment that reads as senior here is knowing <em>when not</em> to
+          reach for a vector database. A fixed 35-fact ontology injected into the prompt is faster, cheaper, and more
+          reliable than RAG over it — and it keeps the curated ground truth auditable. Infrastructure earns its place
+          only when the knowledge grows unbounded; the store already isolates persistence behind two functions so the
+          upgrade is a drop-in.</p>
+      </div>
+    </div>
+
+    <!-- ── 8 · BUSINESS IMPACT ──────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:#EAF3DE;color:#3B6D11">8</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Business Impact</div>
+          <div class="sec-desc">Translated into the language the marketplace and its sellers actually care about</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span></div>
+      </div>
+      <div class="proj-section-body">
+        <div class="impact-grid">
+          <div class="impact-card">
+            <div class="impact-val">$110&ndash;220M</div>
+            <div class="impact-label">/yr GMV kept at just a 10% dent in the fabric-mismatch slice (India)</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">3&ndash;5&times;</div>
+            <div class="impact-label">good-order margin saved for each fabric return prevented</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">Reason codes &rarr; audits</div>
+            <div class="impact-label">vague "quality" returns become supplier-actionable diagnosis codes</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">Seller retention</div>
+            <div class="impact-label">gives small unbranded sellers QC insight they have no infrastructure for</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">~$0.001</div>
+            <div class="impact-label">per concierge session — LLM cost is a rounding error vs a return</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-val">Fewer future returns</div>
+            <div class="impact-label">customer education (ideal weather + layering) prevents repeat mistakes</div>
+          </div>
+        </div>
+        <div class="assump-box">
+          <p class="proj-p" style="font-size:12px;color:var(--gray);margin-bottom:8px"><strong
+              style="color:var(--black)">Note on metrics.</strong> This is a portfolio prototype built on a public
+            research dataset. Market figures are sourced (2026) estimates for the Indian fashion-e-commerce market; the
+            dollar impact is an illustrative projection of a 10% reduction on the addressable slice, not a measured A/B
+            outcome. The engineering results (calibration, gates, the live concierge runs, the visual control
+            experiment) are real and reproducible.</p>
+          <div class="assump-cat">Grounded / reproducible</div>
+          <ul>
+            <li>300 products / 17,754 reviews sampled from 2.5M; similarity threshold calibrated on 48,040 sentences.
+            </li>
+            <li>Concierge verified live on Groq across all four response-matrix cases at ~$0 (free tier).</li>
+            <li>Visual control experiment run in two conditions (whole-frame &amp; rembg crops), n=10 flagged vs 10
+              control.</li>
+          </ul>
+          <div class="assump-cat">Projected / illustrative</div>
+          <ul>
+            <li>Return-rate reduction (10%) is an assumption for the impact projection — not yet measured against a live
+              funnel.</li>
+            <li>Per-return cost (&#8377;200&ndash;400) and AOV (&#8377;300&ndash;600) are value-fashion benchmark
+              figures.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 9 · REFLECTIONS ──────────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:var(--gray-light);color:var(--gray)">9</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Reflections &amp; What I'd Do Differently</div>
+          <div class="sec-desc">The honest section — including the cloud-account saga most write-ups would hide</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span></div>
+      </div>
+      <div class="proj-section-body">
+        <div class="refl-grid">
+          <div class="refl-card good">
+            <div class="refl-card-label">&#x2713; What worked well</div>
+            <div class="refl-item">
+              <div class="refl-dot"></div>
+              <div>Grounding the diagnosis <em>deterministically</em> from the ontology, rather than trusting the LLM to
+                recite facts — the seller always sees the claim-vs-experience contrast.</div>
+            </div>
+            <div class="refl-item">
+              <div class="refl-dot"></div>
+              <div>Running a real control-group experiment on the visual idea and <strong>keeping the negative
+                  result</strong> instead of shipping a detector that fires on everything.</div>
+            </div>
+            <div class="refl-item">
+              <div class="refl-dot"></div>
+              <div>The provider abstraction — when AWS and Google both blocked me at the billing layer, switching to
+                Groq was one env var, and the whole pipeline kept running at $0.</div>
+            </div>
+          </div>
+          <div class="refl-card change">
+            <div class="refl-card-label">&#x21BA; What I'd do differently</div>
+            <div class="refl-item">
+              <div class="refl-dot"></div>
+              <div>The demo dataset uses Amazon category strings, not the Indian taxonomy — the category-prior fallback
+                is built and tested but won't auto-fire until a taxonomy mapper is added.</div>
+            </div>
+            <div class="refl-item">
+              <div class="refl-dot"></div>
+              <div>The fabric ontology is heuristic, not lab physics (GSM / RET values are rarely on listings) — fine
+                for a prototype, but I'd label it an ontology, not an instrument.</div>
+            </div>
+            <div class="refl-item">
+              <div class="refl-dot"></div>
+              <div>Groq's free-tier token-per-minute cap makes multi-question sessions pause mid-run; a paid tier or a
+                smaller model would smooth the live demo.</div>
+            </div>
+          </div>
+        </div>
+        <p class="proj-p" style="font-weight:600;font-size:13px;color:var(--black);margin-top:16px">The cloud-account
+          saga (a real lesson, not a footnote)</p>
+        <p class="proj-p">The concierge was designed for AWS Bedrock. Three walls, in order: Anthropic models on Bedrock
+          are Marketplace-billed and <em>not</em> covered by promotional credits; the account then hit an
+          <strong>AISPL</strong> (India billing entity) restriction returning
+          <code>ValidationException: Operation not allowed</code> on every invoke; and a pivot to Google AI Studio hit a
+          separate billing issue. The fix wasn't more code — it was recognising these as <em>account-level</em> walls
+          and choosing a provider with <strong>no billing surface at all</strong> (Groq, sign-in-only free tier). The
+          takeaway I'd carry into any real deployment: abstract the provider on day one, and treat "it works in the
+          console" as no guarantee the API will.
+        </p>
+      </div>
+    </div>
+
+    <!-- ── 10 · FUTURE PLANS ────────────────────────────────────── -->
+    <div class="proj-section">
+      <div class="proj-section-header">
+        <div class="sec-num" style="background:var(--acc-soft);color:var(--acc-deep)">&#x1F5FA;</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Future Plans &amp; Roadmap</div>
+          <div class="sec-desc">Where this goes next — grouped by horizon, honest about what's built vs planned</div>
+        </div>
+        <div class="sec-audience"><span class="rtag rtag-ba" style="font-size:11px;padding:3px 8px">BA</span><span
+            class="rtag rtag-ds" style="font-size:11px;padding:3px 8px">DS</span></div>
+      </div>
+      <div class="proj-section-body">
+
+        <!-- NEAR TERM -->
+        <div class="road-lane">
+          <div class="road-lane-head">
+            <span class="road-horizon near">Near-term</span>
+            <span class="road-lane-note">closing the gaps this prototype already exposed</span>
+          </div>
+          <div class="road-item">
+            <div class="road-item-icon">&#x1F1EE;&#x1F1F3;</div>
+            <div class="road-item-body">
+              <div class="road-item-title">India-market validation (Phase 1b)</div>
+              <div class="road-item-desc">Re-run the semantic filter on Hinglish / regional Flipkart &amp; Myntra review
+                sets with a <strong>multilingual</strong> MiniLM (so <em>"kapda bilkul plastic jaisa hai"</em> maps to
+                the English "feels like plastic" anchor), and verify the ontology's India vocabulary — art silk, faux
+                georgette, hosiery cotton, khadi.</div>
+            </div>
+          </div>
+          <div class="road-item">
+            <div class="road-item-icon">&#x1F5FA;</div>
+            <div class="road-item-body">
+              <div class="road-item-title">Amazon &rarr; Myntra category mapper</div>
+              <div class="road-item-desc">Map marketplace category strings onto the 93-category taxonomy so the
+                <strong>category-material prior auto-fires</strong> on products that list no fabric (61% of the sample)
+                — the fallback is already built and tested; it just needs the mapping to trigger on real data.
+              </div>
+            </div>
+          </div>
+          <div class="road-item">
+            <div class="road-item-icon">&#x1F310;</div>
+            <div class="road-item-body">
+              <div class="road-item-title">Live, deployed demo</div>
+              <div class="road-item-desc">Ship the buyer concierge + seller dashboard as a public Streamlit app on a
+                stable free-tier provider — the same "live dashboard" treatment as my other projects, once the
+                token-rate ceiling is handled.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MID TERM -->
+        <div class="road-lane">
+          <div class="road-lane-head">
+            <span class="road-horizon mid">Mid-term</span>
+            <span class="road-lane-note">deeper intelligence &amp; the memory Stage 2</span>
+          </div>
+          <div class="road-item">
+            <div class="road-item-icon">&#x1F441;</div>
+            <div class="road-item-body">
+              <div class="road-item-title">Multimodal-LLM visual comparison</div>
+              <div class="road-item-desc">Replace the failed CLIP cosine-similarity approach with a
+                <strong>vision-LLM</strong> that <em>describes the difference in words</em> ("the listing looks matte,
+                the customer photo looks glossy") — the one remaining avenue for a real visual signal, unlocked once
+                vision-model access is restored (Bedrock Nova / a vision provider).
+              </div>
+            </div>
+          </div>
+          <div class="road-item">
+            <div class="road-item-icon">&#x1F5C4;</div>
+            <div class="road-item-body">
+              <div class="road-item-title">Episodic memory — Stage 2 (relevance retrieval)</div>
+              <div class="road-item-desc">Add <code>pgvector</code> (Supabase or Neon free tier) alongside the SQLite
+                recency store, so the concierge can ask <em>"has anyone reported this exact complaint on this product
+                  before?"</em> — SQL for recency, vectors for relevance, in one Postgres store. A drop-in behind the
+                existing persistence interface.</div>
+            </div>
+          </div>
+          <div class="road-item">
+            <div class="road-item-icon">&#x1F9EA;</div>
+            <div class="road-item-body">
+              <div class="road-item-title">Measure the real return-rate lift</div>
+              <div class="road-item-desc">Move the 10% impact number from projection to measurement — an A/B on a live
+                returns funnel, with the honest experimental rigour (guardrails, non-inferiority) I built for the
+                LoanLens project.</div>
+            </div>
+          </div>
+          <div class="road-item">
+            <div class="road-item-icon">&#x1F9F5;</div>
+            <div class="road-item-body">
+              <div class="road-item-title">Richer physics in the ontology</div>
+              <div class="road-item-desc">Add more fibres, blends and weaves, and where listings expose them, real
+                textile metrics — <strong>GSM</strong> (weight), <strong>RET</strong> (breathability) — to move a step
+                from heuristic ontology toward measurable physics.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LONG TERM -->
+        <div class="road-lane">
+          <div class="road-lane-head">
+            <span class="road-horizon long">Long-term</span>
+            <span class="road-lane-note">the self-evolving, production system</span>
+          </div>
+          <div class="road-item">
+            <div class="road-item-icon">&#x1F504;</div>
+            <div class="road-item-body">
+              <div class="road-item-title">Self-evolving memory — a summariser agent</div>
+              <div class="road-item-desc">After every N sessions, a summariser distils recurring patterns into a
+                <strong>separate</strong> learned-facts namespace — never auto-mutating the curated ontology — gated by
+                provenance, support-count and a promotion threshold before any distilled fact is trusted. The
+                seller-escalation threshold is already this pattern in miniature.
+              </div>
+            </div>
+          </div>
+          <div class="road-item">
+            <div class="road-item-icon">&#x1F3EA;</div>
+            <div class="road-item-body">
+              <div class="road-item-title">Real marketplace integration</div>
+              <div class="road-item-desc">Wire the concierge into an actual returns flow and the seller diagnosis into a
+                real seller-central analytics page — the closed buyer&rarr;seller loop running on live orders instead of
+                a sampled dataset.</div>
+            </div>
+          </div>
+          <div class="road-item">
+            <div class="road-item-icon">&#x2601;</div>
+            <div class="road-item-body">
+              <div class="road-item-title">Graduate the stack to managed services</div>
+              <div class="road-item-desc">Switch back to <strong>AWS Bedrock (Nova Pro)</strong> once the AISPL
+                restriction lifts — a one env-var change, since the provider is abstracted — and graduate SQLite &rarr;
+                managed Postgres, trading a higher invoice for lower total cost of ownership at scale.</div>
+            </div>
+          </div>
+          <div class="road-item">
+            <div class="road-item-icon">&#x1F4C8;</div>
+            <div class="road-item-body">
+              <div class="road-item-title">Supplier-level trust scoring</div>
+              <div class="road-item-desc">Aggregate substitution diagnoses across products and sellers into a
+                <strong>supplier reliability score</strong> — turning one-off return diagnoses into a systemic quality
+                signal the marketplace can act on at the supplier tier.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Footer nav ───────────────────────────────────────────── -->
+    <div
+      style="display:flex;justify-content:space-between;align-items:center;margin-top:40px;padding-top:32px;border-top:1px solid var(--card-border)">
+      <a href="../index.html#projects" class="proj-back">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        Back to all projects
+      </a>
+      <a href="../index.html#contact" style="font-size:13px;font-weight:500;color:var(--acc-deep)">Hire me →</a>
+    </div>
+
+  </div><!-- /.proj-page -->
+
+</body>
+
+</html>
