@@ -250,6 +250,15 @@ img { display: block; max-width: 100%; }
   margin-bottom: 18px;
 }
 
+.about-text h3,
+.about-subtitle {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--black);
+  line-height: 1.75;
+  margin-bottom: 18px;
+}
+
 .about-text ul {
   padding-left: 20px;
   margin-top: -10px;
